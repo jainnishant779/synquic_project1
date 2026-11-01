@@ -30,6 +30,12 @@ def test_redaction_removes_email_phone_and_handle():
     assert count == 3 and not contains_pii(text)
 
 
+def test_redaction_leaves_iso_dates_alone():
+    text, count = redact("Launched on 2026-10-21, call +1 202 555 0143")
+    assert "2026-10-21" in text and count == 1 and "[PHONE]" in text
+    assert redact("Posted 2026-10-02T17:00:00Z")[1] == 0
+
+
 def test_ingest_refuses_unapproved_and_stores_no_pii(tmp_path):
     platform = Platform(tmp_path, tmp_path / "unused.pt")
     store = platform.add_tenant(TENANT)

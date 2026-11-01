@@ -11,7 +11,8 @@ from .tenancy import TenantContext
 
 PII_PATTERNS = {
     "EMAIL": re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+"),
-    "PHONE": re.compile(r"\+?\d[\d\s().-]{7,}\d"),
+    # Neither a match that starts inside a longer digit run, nor an ISO date such as 2026-10-21, is a phone number.
+    "PHONE": re.compile(r"(?<!\d)(?!\d{4}-\d{2}-\d{2}(?!\d))\+?\d[\d\s().-]{7,}\d"),
     "HANDLE": re.compile(r"(?<![\w@])@[A-Za-z0-9_]{2,}"),
 }
 

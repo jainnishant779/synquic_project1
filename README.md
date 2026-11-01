@@ -20,6 +20,10 @@ Technical and commercial assessment, architecture and proof of concept, as of 20
 
 [notebooks/synquic_video_benchmark.ipynb](notebooks/synquic_video_benchmark.ipynb) runs every prompt on every model on Kaggle, then does technical QC, cost comparison and a 30-second hybrid reel. Its flow is tested by `tools/test_kaggle_notebook.py` in dry-run mode. On a real T4 GPU it generated 3 LTX-Video clips at about 170 s each, and Wan 2.1 ran out of system RAM. Paid APIs have not been run live. Rebuild it with `tools/build_kaggle_notebook.py`.
 
+## Sample data for Social 360
+
+[poc/sample_data/social360_sample.jsonl](poc/sample_data/social360_sample.jsonl) shows the format the backend should export: six record types, system fields on every record, and no personal data. Both brands are fictional, and platform API records are marked as not training-eligible. Regenerate it with `python -m poc.social360.sample_dataset`. It is a schema example, not training data. `[SIMULATED]`
+
 ## Deliverables
 
 | Deliverable | Location | Status |
