@@ -10,7 +10,7 @@ from pathlib import Path
 import openpyxl
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from build_workbook import FACTS, INPUTS, MIX, OUT, PACKS, TIERS, com_call, excel_workbook  # noqa: E402
+from build_workbook import FACTS, INPUTS, LAUNCH, MIX, OUT, PACKS, TIERS, com_call, excel_workbook  # noqa: E402
 
 TOLERANCE = 1e-6
 
@@ -85,7 +85,19 @@ def expected():
         sensitivity[("Sensitivity", f"five_min_{label}")] = cost * 5
         sensitivity[("Sensitivity", f"unaided_{label}")] = (1 - (1 - rate_value) ** i["max_attempts"]) ** 60
 
-    return tiers | sensitivity | {
+    launch = {}
+    for name, runtime, target, cap, stills, fact_id, _ in LAUNCH:
+        rate_usd = price(facts, fact_id)
+        fixed_cost = (stills * i["keyframe_attempts_per_shot"] * price(facts, "V-919")
+                      + runtime / 60 * i["narration_chars_per_min"] / 1000 * price(facts, "R3-112")
+                      + math.ceil(runtime / 120) * price(facts, "R3-122") + runtime / 60 * i["render_usd_per_min"])
+        for key, r in (("low", i["accept_scenario_1"]), ("high", i["accept_scenario_4"])):
+            spend = min(cap, target / r * rate_usd)
+            launch[("Launch_Plan", f"{name}|{key}|ai_seconds")] = min(target, cap / rate_usd * r)
+            launch[("Launch_Plan", f"{name}|{key}|total")] = spend + spend / rate_usd * qc + fixed_cost
+        launch[("Launch_Plan", f"{name}|maximum")] = fixed_cost + cap * (1 + qc / rate_usd)
+
+    return tiers | sensitivity | launch | {
         ("Unit_Costs", "stack"): stack,
         ("Unit_Costs", "gen45_raw"): gen45,
         ("Unit_Costs", "gen45_accepted"): accepted(gen45),
@@ -118,6 +130,15 @@ def actual():
     tiers = {row[0]: row for row in book["Tiers"].iter_rows(values_only=True) if row[0]}
     sensitivity = {row[0]: row for row in book["Sensitivity"].iter_rows(values_only=True) if row[0]}
     tier_values = {}
+    plan = list(book["Launch_Plan"].iter_rows(values_only=True))
+    for row in plan[1:]:
+        if row[0] and isinstance(row[1], float) and row[7] is not None and not isinstance(row[7], str):
+            key = {0.25: "low", 0.85: "high"}.get(row[1])
+            if key:
+                tier_values[("Launch_Plan", f"{row[0]}|{key}|ai_seconds")] = row[2]
+                tier_values[("Launch_Plan", f"{row[0]}|{key}|total")] = row[7]
+        if row[0] in {item[0] for item in LAUNCH} and isinstance(row[7], str):
+            tier_values[("Launch_Plan", f"{row[0]}|maximum")] = row[3]
     for index in range(len(TIERS)):
         tier_values[("Tiers", f"video_cogs_{index}")] = tiers["Video COGS USD"][index + 1]
         tier_values[("Tiers", f"margin_{index}")] = tiers["Gross margin"][index + 1]

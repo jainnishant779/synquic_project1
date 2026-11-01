@@ -2,6 +2,21 @@
 
 **As of 2026-11-01.** All figures are `[ESTIMATE]`, computed in [the workbook](../workbook/synquic_comparison_pricing.xlsx). Tier volumes, labour rates and pack prices are `[ASSUMPTION]`, not traction. Change inputs on the `Inputs` sheet only.
 
+## Final launch plan
+
+Full-AI video at 5 minutes was rejected on cost. The final plan is a hybrid: AI video on key shots under a hard spend cap, with animated stills everywhere else and as the fallback for failed shots. It launches at 30 seconds. See [Task1-Final-Plan-and-Research.docx](Task1-Final-Plan-and-Research.docx).
+
+| Format | AI spend cap | Accepted AI video | Cost range | Retail at target margin | Source |
+|---|---|---|---|---|---|
+| 30-second, Veo Fast | $2.00 | 5 to 10 s | $1.45 to $2.27 | $8.42 | [WB:Launch_Plan] |
+| 60-second, Veo Fast | $3.00 | 7.5 to 15 s | $2.21 to $3.45 | $12.77 | [WB:Launch_Plan] |
+| 5-minute, Veo Fast | $3.50 | 8.8 to 25 s | $4.70 to $5.26 | $19.49 | [WB:Launch_Plan] |
+| 5-minute, Veo Standard | $6.50 | 8.1 to 25 s | $7.64 to $8.26 | $30.60 | [WB:Launch_Plan] |
+
+Ranges run from a 25% to an 85% accept rate. [ESTIMATE] These exclude human review, motion graphics engineering, licensed footage and legal cost. The cap holds cost, but a low accept rate cuts the AI share of the video. Rates are V-914 and V-003; stills use V-919. The pilot is budgeted at about $486. [WB:Launch_Plan]
+
+The rest of this document is the full-AI analysis that led to that decision.
+
 ## Summary
 
 The biggest unknown is not GPU price. It is how many generations a usable shot takes, and nobody has published a reliable figure. That one number decides cost, retail price, and whether a long video can finish without a person.

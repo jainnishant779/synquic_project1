@@ -4,11 +4,11 @@
 
 ## How the research was done
 
-AI-assisted, checked against primary sources on 2026-11-01. No human or lawyer has reviewed it. Seven AI research agents collected 711 facts, each with source URL, verbatim quote and date. Two separate AI verifier agents re-fetched 362 of them: every pricing and licence fact, plus a one-in-five sample of the rest. "Verified" means another agent in the same process confirmed the page says it, not that a third party audited it. The verifiers added 87 new facts and marked them verified themselves, and 13 more came from direct checks of render times, Runway's terms and a repository catalog, for a ledger of 811.
+AI-assisted, checked against primary sources on 2026-11-01. No human or lawyer has reviewed it. Seven AI research agents collected 711 facts, each with source URL, verbatim quote and date. Two separate AI verifier agents re-fetched 362 of them: every pricing and licence fact, plus a one-in-five sample of the rest. "Verified" means another agent in the same process confirmed the page says it, not that a third party audited it. The verifiers added 87 new facts and marked them verified themselves, and 20 more came from direct checks of render times, Runway's and Google's terms and a repository catalog, for a ledger of 818.
 
 | Status | Facts |
 |---|---|
-| Verified | 423, of which 100 were created and marked by the checkers |
+| Verified | 430, of which 107 were created and marked by the checkers |
 | Single source, unchecked | 294, outside the sampled set. Many support design rationale, not just description |
 | Conflict | 50, recorded rather than averaged |
 | Unverifiable | 37, mostly login walls and unread terms |
@@ -173,6 +173,21 @@ A pasted catalog of repositories and methods, also AI-generated, claimed to be g
 | Wan 4n+1 frames | Confirmed for Wan only (V-910). Placed in the local adapter, not the shared `Shot` schema |
 | English default negative prompt | Upstream default is Chinese (V-911). The English text was not found at source, so it was not adopted. A `wan_local` dialect sends the style bible's exclusions as a negative prompt, and the upstream default is not embedded |
 | `[REAL: test_video_qc]` label | That test does not exist |
+
+### V2 plan (fourth input)
+
+A pasted "Production Research & Architecture V2", also AI-generated. Its hybrid architecture, Scene JSON, adapters, fallback and benchmark-first approach were adopted.
+
+| Claim | Finding |
+|---|---|
+| 5-minute video as the standard | Changed. AI share would be about 3% to 8%, so launch is 30 seconds [WB:Launch_Plan] |
+| 25 s of Veo for $5, with $1.50 for retries | Holds the cap, but at a 25% accept rate only about 8 s is accepted [WB:Launch_Plan] |
+| Veo Fast and Lite rates, Kling promo | Confirmed (V-914, V-915, R1-043) |
+| FLUX.2 Pro at $0.06 per 1080p image | Not found on BFL's pages, so FLUX 3 rates are used (V-919, V-920) |
+| Omni Flash native 1080p | Upscaled (R1-006) |
+| Runway: commercial use permitted | Incomplete. Input training and a competitive-use bar also apply (V-903, V-904) |
+| Google indemnity lists Veo | Not confirmed: the page returned no text |
+| Retirement risk | Omitted by the plan. Veo shows "November 17, 2026 or later" (R1-021) |
 
 ### Reference guide
 

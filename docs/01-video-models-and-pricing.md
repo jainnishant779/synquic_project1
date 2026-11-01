@@ -2,6 +2,10 @@
 
 **As of 2026-11-01.** Prices come from vendor pages, re-fetched by a separate AI verifier agent. No human has reviewed them. The full comparison is in [the workbook](../workbook/synquic_comparison_pricing.xlsx). Licence verdicts are `[COUNSEL]`: research for a lawyer to review, not legal advice. Verdicts assume a commercial SaaS with global customers.
 
+## Final selection
+
+The final launch plan uses Veo 3.1 Fast at $0.10 per second, 1080p without audio, with Kling 4.0 as the second vendor (V-914, R1-057). Veo Generate and Fast are GA with 9:16 and 16:9, 4, 6 or 8 second clips, and first and last frame control (V-916). Google's terms say it will not train on Customer Data without permission, which is better for brand assets than Runway's (V-917, V-903). They also bar using the service to develop a similar or competing product, so counsel must still clear it (V-918). Veo retirement is listed as "November 17, 2026 or later" (R1-021). Whether Veo is covered by Google's indemnity could not be confirmed.
+
 ## Recommendation
 
 1. **Launch on paid APIs through a multi-vendor adapter.** Vendors disappear: the Sora API ended 2026-09-24 and Gemini API Veo previews ended 2026-10-22 (R1-001, R1-020).

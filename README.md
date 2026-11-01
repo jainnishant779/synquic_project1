@@ -12,6 +12,10 @@ Technical and commercial assessment, architecture and proof of concept, as of 20
 | The numbers | [Cost and credit pricing](docs/06-gpu-deployment-cost-assessment.md) |
 | What is real | [Demo plan](docs/07-demo-plan.md), [claims register](docs/09-claims-register.md) |
 
+## Task 1 final plan
+
+[docs/Task1-Final-Plan-and-Research.docx](docs/Task1-Final-Plan-and-Research.docx) is the current Task 1 document. Launch a hybrid 30-second video product on Veo 3.1 Fast, with a capped AI spend and animated-image fallback, after a benchmark of about $486. The full-AI 5-minute route was rejected on cost. `docs/Task1-AI-Video-Engine-Research-Summary.docx` predates this decision. `[ESTIMATE]`
+
 ## Deliverables
 
 | Deliverable | Location | Status |

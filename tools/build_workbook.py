@@ -69,6 +69,13 @@ INPUTS = [
     ("score_weight_licence", 0.3, "weight", "Weighted score: licence"),
     ("score_weight_capability", 0.2, "weight", "Weighted score: capability"),
     ("licence_score_counsel", 0.5, "score", "Score for a Counsel verdict"),
+    ("render_usd_per_min", 0.10, "USD", "Rendering and processing per finished minute, from the V2 plan's $0.50 per 5 minutes"),
+    ("pilot_prompts", 30, "count", "Benchmark prompts"),
+    ("pilot_attempts", 3, "count", "Attempts per prompt per model"),
+    ("pilot_clip_seconds", 6, "s", "Clip length in the benchmark"),
+    ("pilot_short_videos", 20, "count", "Full 30-second videos in the pilot"),
+    ("pilot_long_videos", 5, "count", "Full 5-minute videos in the pilot"),
+    ("pilot_contingency", 0.25, "ratio", "Reserve on pilot spend"),
     ("freshness_price_days", 30, "days", "Pricing and licence facts expire"),
     ("freshness_other_days", 90, "days", "Other facts expire"),
 ]
@@ -94,8 +101,15 @@ ROUTES = [
     dict(key="wan22_5b_4090", name="Wan 2.2 TI2V-5B I2V, RTX 4090", kind="self", res="720p", price=("self", "R3-001", "V-901", 5), clip=5, w=1280, h=720, refs=True, verdict="Allowed", src="R2-045"),
     dict(key="wan22_14b_h100", name="Wan 2.2 A14B, H100", kind="self", res="720p", price=("self", "R3-007", "R2-049", 5), clip=5, w=1280, h=720, refs=True, verdict="Allowed", src="R2-045"),
     dict(key="ltx25_4090", name="LTX-2.5 distilled, RTX 4090", kind="self", res="640x384", price=("self", "R3-001", "R2-033", 5), clip=5, w=640, h=384, refs=True, verdict="Counsel", src="R2-025"),
+    dict(key="veo31_fast", name="Veo 3.1 Fast, 1080p, no audio", kind="api", res="1080p", price=("fact", "V-914"), clip=8, w=1920, h=1080, refs=True, verdict="Counsel", src="V-918"),
+    dict(key="veo31_std", name="Veo 3.1, 1080p, no audio", kind="api", res="1080p", price=("fact", "V-003"), clip=8, w=1920, h=1080, refs=True, verdict="Counsel", src="V-918"),
     dict(key="magihuman_h100", name="daVinci-MagiHuman, H100", kind="self", res="1080p", price=("self", "R3-007", "R2-085", 5), clip=5, w=1920, h=1080, refs=True, verdict="Counsel", src="R2-083"),
 ]
+# name, runtime s, target AI s, AI spend cap USD, stills, price fact, cost target USD
+LAUNCH = [("Reel 30 s", 30, 10, 2.00, 6, "V-914", 3), ("Video 60 s", 60, 15, 3.00, 11, "V-914", 5),
+          ("Long 5 min, Fast", 300, 25, 3.50, 40, "V-914", 10), ("Long 5 min, Standard", 300, 25, 6.50, 40, "V-003", 10)]
+LAUNCH_RATES = ("accept_scenario_1", "accept_scenario_2", "accept_scenario_3", "accept_scenario_4")
+LAUNCH_IMAGE, LAUNCH_VOICE, LAUNCH_MUSIC = "V-919", "R3-112", "R3-122"
 GPU_FACTS = ["R3-001", "R3-003", "R3-005", "R3-007", "R3-009", "R3-035", "R3-037", "R3-077", "R3-084", "R3-088"]
 LLM_MODELS = [
     ("Gemma 4 31B", "Primary", "R5-032", "R5-033", "R5-034", "R5-042", "R5-043"),
@@ -134,7 +148,7 @@ def build():
     wrap = book.add_format({"text_wrap": True, "valign": "top"})
 
     sheets = {n: book.add_worksheet(n) for n in ("README", "Inputs", "Facts", "Video_Models", "LLM_Models", "GPU",
-                                                 "Unit_Costs", "Credits", "Tiers", "Breakeven", "Sensitivity", "Checks")}
+                                                 "Unit_Costs", "Credits", "Tiers", "Breakeven", "Sensitivity", "Launch_Plan", "Checks")}
     last = len(rows) + 1
     used = []
 
@@ -200,6 +214,13 @@ def build():
         ws.write(pack_row + offset, 1, pack[1], blue)
         ws.write(pack_row + offset, 2, pack[2], blue)
     row = pack_row + len(PACKS) + 1
+    header(ws, row, ["Launch format", "Runtime s", "Target AI s", "AI spend cap USD", "Stills", "Cost target USD"])
+    launch_row = row + 1
+    for offset, item in enumerate(LAUNCH):
+        ws.write(launch_row + offset, 0, item[0])
+        for col, value in zip((1, 2, 3, 4, 5), (item[1], item[2], item[3], item[4], item[6])):
+            ws.write(launch_row + offset, col, value, blue)
+    row = launch_row + len(LAUNCH) + 1
     header(ws, row, ["Route key", "Name", "Kind", "Resolution", "Clip s for rate", "Max clip s", "Max width",
                      "Max height", "References", "Licence verdict", "Verdict source"])
     route_row = row + 1
@@ -491,6 +512,63 @@ def build():
         ws.write_formula(offset, 6, f"=({plan}+300*F{x}+5*{assembly})*credit_price", money)
         ws.write_formula(offset, 8, f"=(1-(1-B{x})^max_attempts)^60", book.add_format({"num_format": "0.0E+00"}))
 
+    # Launch_Plan: AI spend is capped, and a shot that misses the cap falls back to an animated still.
+    ws = sheets["Launch_Plan"]
+    ws.set_column(0, 0, 24)
+    ws.set_column(1, 9, 13)
+    header(ws, 0, ["Format", "Accept rate", "Accepted AI s", "AI share of runtime", "AI spend USD", "QC USD",
+                   "Stills, voice, music, render USD", "Total USD"])
+    summary_row = 1 + len(LAUNCH) * len(LAUNCH_RATES) + 1
+    fixed_cells, price_cells = {}, {}
+    header(ws, summary_row, ["Format", "AI rate USD/s", "Fixed USD", "Maximum cost USD", "Retail USD at target", "Credits", "Cost target USD", "Within target"])
+    for index, item in enumerate(LAUNCH):
+        r = summary_row + 1 + index
+        x = r + 1
+        source = launch_row + index
+        runtime, stills = f"Inputs!{cell(source, 1)}", f"Inputs!{cell(source, 4)}"
+        cap = f"Inputs!{cell(source, 3)}"
+        ws.write_formula(r, 0, f"=Inputs!{cell(source, 0)}")
+        ws.write_formula(r, 1, f"={fact(item[5])}", green_money)
+        ws.write_formula(r, 2, f"={stills}*keyframe_attempts_per_shot*{fact(LAUNCH_IMAGE)}"
+                                f"+{runtime}/60*narration_chars_per_min/1000*{fact(LAUNCH_VOICE)}"
+                                f"+ROUNDUP({runtime}/120,0)*{fact(LAUNCH_MUSIC)}+{runtime}/60*render_usd_per_min", fine)
+        ws.write_formula(r, 3, f"=C{x}+{cap}*(1+qc_per_sec/B{x})", money)
+        ws.write_formula(r, 4, f"=D{x}/(1-target_gm-payment_fee_pct)", money)
+        ws.write_formula(r, 5, f"=ROUNDUP(E{x}/credit_price,0)", whole)
+        ws.write_formula(r, 6, f"=Inputs!{cell(source, 5)}", money)
+        ws.write_formula(r, 7, f'=IF(D{x}<=G{x},"Yes","No")')
+        fixed_cells[index], price_cells[index] = f"$C${x}", f"$B${x}"
+    within = f"$H${summary_row + 2}:$H${summary_row + 1 + len(LAUNCH)}"
+    r = 1
+    for index, item in enumerate(LAUNCH):
+        source = launch_row + index
+        runtime, target, cap = (f"Inputs!{cell(source, col)}" for col in (1, 2, 3))
+        for rate in LAUNCH_RATES:
+            x = r + 1
+            ws.write_formula(r, 0, f"=Inputs!{cell(source, 0)}")
+            ws.write_formula(r, 1, f"={rate}")
+            ws.write_formula(r, 2, f"=MIN({target},{cap}/{price_cells[index]}*B{x})", book.add_format({"num_format": "0.0"}))
+            ws.write_formula(r, 3, f"=C{x}/{runtime}", pct)
+            ws.write_formula(r, 4, f"=MIN({cap},{target}/B{x}*{price_cells[index]})", money)
+            ws.write_formula(r, 5, f"=E{x}/{price_cells[index]}*qc_per_sec", fine)
+            ws.write_formula(r, 6, f"={fixed_cells[index]}", money)
+            ws.write_formula(r, 7, f"=E{x}+F{x}+G{x}", money)
+            r += 1
+    pilot = summary_row + len(LAUNCH) + 3
+    header(ws, pilot, ["Pilot budget", "USD"])
+    seconds = "pilot_prompts*pilot_attempts*pilot_clip_seconds"
+    lines = [("Video bake-off: Veo Standard, Veo Fast, Kling 4.0", f"={seconds}*({fact('V-003')}+{fact('V-914')}+{fact('R1-057')})"),
+             ("Image bake-off: FLUX 3 Klein, FLUX 3 Image, Nano Banana", f"=pilot_prompts*pilot_attempts*({fact('V-919')}+{fact('V-920')}+{fact('R3-107')})"),
+             ("Full videos: 30-second and 5-minute", f"=pilot_short_videos*D{summary_row + 2}+pilot_long_videos*D{summary_row + 5}")]
+    for offset, (label, formula) in enumerate(lines, 1):
+        ws.write(pilot + offset, 0, label)
+        ws.write_formula(pilot + offset, 1, formula, money)
+    ws.write(pilot + 4, 0, "Contingency")
+    ws.write_formula(pilot + 4, 1, f"=SUM(B{pilot + 2}:B{pilot + 4})*pilot_contingency", money)
+    ws.write(pilot + 5, 0, "Total", bold)
+    ws.write_formula(pilot + 5, 1, f"=SUM(B{pilot + 2}:B{pilot + 5})", money)
+    ws.write(pilot + 7, 0, "All [ESTIMATE]. Accept rates are unmeasured. Cost excludes people, motion graphics engineering, licensed footage and model retirement risk.")
+
     # Checks
     ws = sheets["Checks"]
     ws.set_column(0, 0, 58)
@@ -504,7 +582,7 @@ def build():
     used_status = f"$B${start + 2}:$B${start + 1 + len(used)}"
     used_age = f"$C${start + 2}:$C${start + 1 + len(used)}"
     errors = "+".join(f"SUMPRODUCT(--ISERROR({s}!$A$1:$N$70))" for s in
-                      ("Video_Models", "LLM_Models", "GPU", "Unit_Costs", "Credits", "Tiers", "Breakeven", "Sensitivity"))
+                      ("Video_Models", "LLM_Models", "GPU", "Unit_Costs", "Credits", "Tiers", "Breakeven", "Sensitivity", "Launch_Plan"))
     checks = [
         ("Formula errors on calculation sheets", f"={errors}", '=0'),
         ("Stale facts used by formulas", f'=COUNTIF({used_age},">"&freshness_price_days)', '=0'),
@@ -516,6 +594,7 @@ def build():
          f'=COUNTIF(Credits!$E${first_op}:$E${last_op},"<"&margin_floor)', '=0'),
         ("Selected routes still at Counsel (information)",
          "=" + "+".join(f'IF({route_value(s, "I")}="Counsel",1,0)' for s, _ in SELECTED), None),
+        ("Launch formats above their cost target", f'=COUNTIF(Launch_Plan!{within},"No")', '=0'),
         ("Mix shares sum to 1", "=ROUND(mix_draft+mix_standard+mix_premium,6)", '=1'),
         ("Score weights sum to 1", "=ROUND(score_weight_cost+score_weight_licence+score_weight_capability,6)", '=1'),
     ]
