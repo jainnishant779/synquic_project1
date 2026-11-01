@@ -1,5 +1,6 @@
 {
-  "status": "placeholder until the workbook build replaces this file",
+  "status": "workbook",
+  "as_of": "2026-11-01",
   "providers": [
     {
       "name": "mock",
@@ -9,6 +10,186 @@
       "max_height": 1080,
       "supports_references": true,
       "licence_verdict": "Allowed"
+    },
+    {
+      "name": "gen4_turbo",
+      "display_name": "Runway Gen-4 Turbo",
+      "kind": "api",
+      "price_per_second_usd": 0.05,
+      "max_clip_seconds": 10,
+      "max_width": 1280,
+      "max_height": 720,
+      "supports_references": true,
+      "licence_verdict": "Allowed",
+      "verdict_source": "R1-051"
+    },
+    {
+      "name": "gen45",
+      "display_name": "Runway Gen-4.5",
+      "kind": "api",
+      "price_per_second_usd": 0.12,
+      "max_clip_seconds": 10,
+      "max_width": 1280,
+      "max_height": 720,
+      "supports_references": true,
+      "licence_verdict": "Allowed",
+      "verdict_source": "R1-051"
+    },
+    {
+      "name": "luma_ray32",
+      "display_name": "Luma Ray3.2 SDR",
+      "kind": "api",
+      "price_per_second_usd": 0.06,
+      "max_clip_seconds": 10,
+      "max_width": 1280,
+      "max_height": 720,
+      "supports_references": true,
+      "licence_verdict": "Allowed",
+      "verdict_source": "R1-112"
+    },
+    {
+      "name": "h3_direct",
+      "display_name": "MiniMax H3 API",
+      "kind": "api",
+      "price_per_second_usd": 0.08,
+      "max_clip_seconds": 15,
+      "max_width": 1366,
+      "max_height": 768,
+      "supports_references": true,
+      "licence_verdict": "Counsel",
+      "verdict_source": "R1-087"
+    },
+    {
+      "name": "h3_lite",
+      "display_name": "MiniMax H3 Lite API",
+      "kind": "api",
+      "price_per_second_usd": 0.04,
+      "max_clip_seconds": 15,
+      "max_width": 1366,
+      "max_height": 768,
+      "supports_references": true,
+      "licence_verdict": "Counsel",
+      "verdict_source": "R1-087"
+    },
+    {
+      "name": "wan3_api",
+      "display_name": "Wan 3.0 API (Singapore list)",
+      "kind": "api",
+      "price_per_second_usd": 0.1,
+      "max_clip_seconds": 30,
+      "max_width": 1280,
+      "max_height": 720,
+      "supports_references": true,
+      "licence_verdict": "Counsel",
+      "verdict_source": "R1-096"
+    },
+    {
+      "name": "omni_flash",
+      "display_name": "Gemini Omni Flash 1.1",
+      "kind": "api",
+      "price_per_second_usd": 0.1,
+      "max_clip_seconds": 10,
+      "max_width": 1280,
+      "max_height": 720,
+      "supports_references": true,
+      "licence_verdict": "Counsel",
+      "verdict_source": "R1-017"
+    },
+    {
+      "name": "veo31_fal",
+      "display_name": "Veo 3.1 via fal, no audio",
+      "kind": "api",
+      "price_per_second_usd": 0.2,
+      "max_clip_seconds": 8,
+      "max_width": 1920,
+      "max_height": 1080,
+      "supports_references": true,
+      "licence_verdict": "Counsel",
+      "verdict_source": "R1-116"
+    },
+    {
+      "name": "kling4_720",
+      "display_name": "Kling 4.0 via Replicate",
+      "kind": "api",
+      "price_per_second_usd": 0.157,
+      "max_clip_seconds": 30,
+      "max_width": 1280,
+      "max_height": 720,
+      "supports_references": true,
+      "licence_verdict": "Counsel",
+      "verdict_source": "R1-055"
+    },
+    {
+      "name": "kling4_1080",
+      "display_name": "Kling 4.0 via Replicate",
+      "kind": "api",
+      "price_per_second_usd": 0.235,
+      "max_clip_seconds": 30,
+      "max_width": 1920,
+      "max_height": 1080,
+      "supports_references": true,
+      "licence_verdict": "Counsel",
+      "verdict_source": "R1-055"
+    },
+    {
+      "name": "seedance25",
+      "display_name": "Seedance 2.5 (BytePlus sample)",
+      "kind": "api",
+      "price_per_second_usd": 0.231,
+      "max_clip_seconds": 30,
+      "max_width": 1280,
+      "max_height": 720,
+      "supports_references": true,
+      "licence_verdict": "Counsel",
+      "verdict_source": "R1-069"
+    },
+    {
+      "name": "wan22_5b_4090",
+      "display_name": "Wan 2.2 TI2V-5B, RTX 4090",
+      "kind": "self",
+      "price_per_second_usd": 0.040674,
+      "max_clip_seconds": 5,
+      "max_width": 1280,
+      "max_height": 720,
+      "supports_references": true,
+      "licence_verdict": "Allowed",
+      "verdict_source": "R2-045"
+    },
+    {
+      "name": "wan22_14b_h100",
+      "display_name": "Wan 2.2 A14B, H100",
+      "kind": "self",
+      "price_per_second_usd": 0.355178,
+      "max_clip_seconds": 5,
+      "max_width": 1280,
+      "max_height": 720,
+      "supports_references": true,
+      "licence_verdict": "Allowed",
+      "verdict_source": "R2-045"
+    },
+    {
+      "name": "ltx25_4090",
+      "display_name": "LTX-2.5 distilled, RTX 4090",
+      "kind": "self",
+      "price_per_second_usd": 0.003324,
+      "max_clip_seconds": 5,
+      "max_width": 640,
+      "max_height": 384,
+      "supports_references": true,
+      "licence_verdict": "Counsel",
+      "verdict_source": "R2-025"
+    },
+    {
+      "name": "magihuman_h100",
+      "display_name": "daVinci-MagiHuman, H100",
+      "kind": "self",
+      "price_per_second_usd": 0.013095,
+      "max_clip_seconds": 5,
+      "max_width": 1920,
+      "max_height": 1080,
+      "supports_references": true,
+      "licence_verdict": "Counsel",
+      "verdict_source": "R2-083"
     }
   ]
 }

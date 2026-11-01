@@ -11,10 +11,10 @@ from poc.video.adapters.local_http import LocalAdapter
 from poc.video.adapters.mock import BAND_HEIGHT, MockAdapter
 from poc.video.credits import charge, load_rate_card
 from poc.video.pipeline import run
-from poc.video.planner import build_storyboard
+from poc.video.planner import PROMPTS_DIR, build_storyboard
 from poc.video.qc import FAIL, NOT_EVALUATED, SEMANTIC_CHECKS, check_clip, probe
 from poc.video.router import NoProviderAvailable, Requirements, route
-from poc.video.schemas import Brief, CharacterProfile, ProductReference, StyleBible, VideoSpec
+from poc.video.schemas import Brief, CharacterProfile, ProductReference, Storyboard, StyleBible, VideoSpec
 
 CAPS = Capabilities(max_clip_seconds=10, max_width=1280, max_height=720)
 REQUEST = ClipRequest("sh1", "a prompt", "", 2, 320, 180, 24, seed=1)
@@ -116,6 +116,30 @@ def test_every_prompt_carries_canonical_references():
         assert shot.reference_images == ["maya.png", "kettle.png"]
 
 
+def test_master_prompt_example_validates_against_the_schema():
+    plan = Storyboard.model_validate_json((PROMPTS_DIR / "example_plan.json").read_text(encoding="utf-8"))
+    assert sum(s.duration_seconds for s in plan.shots) == 10
+    assert all(s.audio for s in plan.shots)
+
+
+def test_dialects_render_exclusions_their_own_way():
+    brief = make_brief(5)
+    veo = build_storyboard(brief, dialect_name="veo").shots[0]
+    assert "No " not in veo.prompt and "watermark" in veo.negative_prompt
+
+    wan = build_storyboard(brief, dialect_name="wan").shots[0]
+    assert "No watermark." in wan.prompt and wan.negative_prompt == ""
+
+    omni = build_storyboard(brief, dialect_name="omni_flash").shots[0]
+    assert omni.prompt.startswith("Single continuous shot")
+
+
+def test_image_to_video_dialect_is_motion_only():
+    shot = build_storyboard(make_brief(5), dialect_name="wan_i2v").shots[0]
+    assert "curly black hair" not in shot.prompt
+    assert shot.reference_images == ["maya.png", "kettle.png"]
+
+
 def test_regeneration_recovers_from_fault(tmp_path):
     adapter = MockAdapter(tmp_path / "j", {("sc01_sh02", 1): "black", ("sc01_sh03", 1): "frozen"})
     manifest = run(make_brief(20), adapter, tmp_path / "run")
@@ -162,6 +186,17 @@ def test_five_minute_mock_run(tmp_path):
     assert all(c["status"] != FAIL for c in manifest["final_qc"]["checks"])
     for timestamp in (1, 150, 299):
         assert _band_is_red(final, timestamp), f"watermark missing at {timestamp}s"
+
+
+def test_rate_card_matches_the_workbook():
+    openpyxl = pytest.importorskip("openpyxl")
+    book = openpyxl.load_workbook("workbook/synquic_comparison_pricing.xlsx", data_only=True)
+    rows = {row[5]: row[2] for row in book["Credits"].iter_rows(values_only=True) if len(row) > 5 and row[5]}
+    operations = load_rate_card()["operations"]
+    assert operations["planning_per_video"] == rows["planning_per_video"]
+    assert operations["assembly_per_minute"] == rows["assembly_per_minute"]
+    for tier, credits in operations["generation_per_second"].items():
+        assert credits == rows[f"generation_per_second.{tier}"]
 
 
 def test_credits_follow_the_rate_card():

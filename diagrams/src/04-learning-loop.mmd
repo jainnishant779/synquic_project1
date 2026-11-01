@@ -1,0 +1,20 @@
+flowchart TD
+    A[Daily: approved brand data] --> B[Verify tenant, refuse unapproved]
+    B --> C[Redact PII, encrypt per tenant]
+    C --> D[Refresh tenant retrieval index]
+    C --> E{Enough new data?}
+    E -- No --> F[Skip training, keep champion]
+    E -- Yes --> G[Extract insights, build dataset]
+    G --> H[Train candidate adapter]
+    H --> I{G1 data}
+    I -- Pass --> J{G2 beats few-shot baseline and champion}
+    J -- Pass --> K{G3 canary leakage}
+    K -- Pass --> L{G4 latency}
+    L -- Pass --> M[Register immutable version]
+    M --> N[Canary rollout, move prod pointer]
+    N --> O[Monitor]
+    O -- Regression --> P[Rollback to previous version]
+    I -- Fail --> Q[Reject, keep champion]
+    J -- Fail --> Q
+    L -- Fail --> Q
+    K -- Fail --> R[Discard artefact, raise incident]

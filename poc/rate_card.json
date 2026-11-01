@@ -1,8 +1,14 @@
 {
-  "status": "placeholder until the workbook build replaces this file",
+  "status": "workbook",
+  "as_of": "2026-11-01",
+  "label": "[ESTIMATE]",
   "operations": {
-    "planning_per_video": 1,
-    "generation_per_second": {"standard": 1},
-    "assembly_per_minute": 1
+    "planning_per_video": 2,
+    "generation_per_second": {
+      "draft": 52,
+      "standard": 124,
+      "premium": 242
+    },
+    "assembly_per_minute": 126
   }
 }

@@ -1,6 +1,39 @@
 {
   "generic": {
     "separator": ". ",
-    "field_order": ["subject", "characters", "products", "action", "setting", "camera", "lighting", "style", "continuity"]
+    "field_order": ["subject", "characters", "products", "action", "setting", "camera", "lighting", "style", "audio", "continuity"],
+    "exclusions": "parameter"
+  },
+  "veo": {
+    "source_facts": ["R4-013", "R4-014", "R4-015"],
+    "separator": ". ",
+    "field_order": ["subject", "characters", "products", "action", "setting", "camera", "style", "lighting", "timing", "audio"],
+    "exclusions": "parameter"
+  },
+  "omni_flash": {
+    "source_facts": ["R4-016", "R4-017"],
+    "separator": ". ",
+    "directive": "Single continuous shot",
+    "field_order": ["subject", "characters", "products", "action", "setting", "camera", "lighting", "style", "audio"],
+    "exclusions": "inline"
+  },
+  "wan": {
+    "source_facts": ["R4-023", "R4-026"],
+    "separator": ". ",
+    "field_order": ["subject", "characters", "products", "setting", "action", "camera", "lighting", "style", "audio"],
+    "exclusions": "inline"
+  },
+  "wan_i2v": {
+    "source_facts": ["R4-024"],
+    "note": "Motion only. The keyframe carries identity, so canonical descriptions are left out.",
+    "separator": ". ",
+    "field_order": ["action", "camera"],
+    "exclusions": "inline"
+  },
+  "kling": {
+    "source_facts": ["R4-022"],
+    "separator": ". ",
+    "field_order": ["subject", "characters", "products", "action", "setting", "camera", "lighting", "style", "audio"],
+    "exclusions": "parameter"
   }
 }

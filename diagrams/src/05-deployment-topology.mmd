@@ -1,0 +1,19 @@
+flowchart LR
+    Users[Customers] --> Edge[CDN and gateway]
+    Edge --> App[Stateless API services]
+    App --> DB[(Postgres: accounts, ledger, registry)]
+    App --> Obj[(Object storage, encrypted)]
+    App --> Vec[(Per-tenant retrieval indexes)]
+    subgraph Rented[Rented GPUs, scale to demand]
+        Inf[Always-on inference GPU]
+        Train[Batch training jobs]
+        Video[Video workers, optional until breakeven]
+    end
+    App --> Inf
+    App --> Train
+    App --> Video
+    App --> APIs[Paid video and LLM APIs]
+    Train --> Obj
+    Inf --> Obj
+    Mon[Metrics, traces, audit log: no raw content] --- App
+    Mon --- Inf

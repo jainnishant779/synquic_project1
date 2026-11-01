@@ -1,0 +1,57 @@
+{
+  "title": "Northwind Kettle launch",
+  "script": [
+    "Your morning is about to run late.",
+    "The Northwind Kettle boils before your first meeting starts."
+  ],
+  "assumptions": [
+    "No boil time is stated in the brief, so the script makes no numeric claim.",
+    "Home office setting chosen to match the stated audience."
+  ],
+  "scenes": [
+    {
+      "id": "sc01",
+      "order": 1,
+      "purpose": "Hook: the morning rush",
+      "setting": "Small home office, early morning, rain on the window",
+      "shots": [
+        {
+          "id": "sc01_sh01",
+          "scene_id": "sc01",
+          "order": 1,
+          "duration_seconds": 5,
+          "subject": "maya",
+          "action": "Glances at a laptop clock, then looks at an empty mug",
+          "beats": ["0-3s: reads the clock", "3-5s: looks down at the mug"],
+          "setting": "Small home office, early morning",
+          "camera": "Medium shot, eye level, slow push-in",
+          "narration": "Your morning is about to run late.",
+          "audio": "Rain on glass, soft keyboard taps, no dialogue on screen, narration added at assembly",
+          "on_screen_text": [],
+          "mode": "image_to_video",
+          "character_ids": ["maya"],
+          "product_ids": [],
+          "continuity_from": null
+        },
+        {
+          "id": "sc01_sh02",
+          "scene_id": "sc01",
+          "order": 2,
+          "duration_seconds": 5,
+          "subject": "kettle",
+          "action": "Steam rises from the spout as the switch clicks off",
+          "beats": [],
+          "setting": "Kitchen counter beside the office door, morning light",
+          "camera": "Close-up, low angle, static",
+          "narration": "The Northwind Kettle boils before your first meeting starts.",
+          "audio": "Water settling, a soft switch click, no dialogue",
+          "on_screen_text": ["Northwind Kettle"],
+          "mode": "image_to_video",
+          "character_ids": [],
+          "product_ids": ["kettle"],
+          "continuity_from": null
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+flowchart LR
+    subgraph Real[REAL: runs and is tested]
+        R1[Schemas, prompt compiler, dialects]
+        R2[ffprobe and ffmpeg technical QC]
+        R3[Bounded regeneration and resume]
+        R4[ffmpeg assembly, captions]
+        R5[Credit charge from workbook rate card]
+        R6[PII redaction, per-tenant encryption]
+        R7[Gates, registry, rollback]
+        R8[Tiny CPU classifier adapters]
+        R9[Isolation tests with negative control]
+        R10[Token-scoped FastAPI]
+    end
+    subgraph Mock[MOCK or SIMULATED]
+        M1[Video clips: watermarked test patterns]
+        M2[Planner LLM: template]
+        M3[API and local adapters: fake servers only]
+        M4[Days: simulated time]
+        M5[Tenants: fictional]
+    end
+    subgraph Design[DESIGN: not built]
+        D1[Real AI video generation]
+        D2[Semantic QC]
+        D3[LLM QLoRA training on GPU]
+        D4[Multi-adapter serving]
+        D5[KMS, cloud IAM, GPU memory isolation]
+        D6[Benchmarks on real brand data]
+    end

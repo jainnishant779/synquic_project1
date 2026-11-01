@@ -1,0 +1,20 @@
+flowchart TD
+    A[User brief] --> B[Planner: master prompt]
+    B --> C[Script and narration]
+    C --> D[Storyboard: scenes, 4 to 8 s shots]
+    D --> E[Lock assets: style bible, character and product references]
+    E --> F[Keyframe per shot]
+    F --> G{Keyframe approved?}
+    G -- No --> F
+    G -- Yes --> H[Router: capability, licence verdict, cost]
+    H --> I[Generate clip]
+    I --> J[Technical QC: ffprobe, black, freeze]
+    J -- Fail --> K{Attempts left?}
+    J -- Pass --> L[Semantic QC: vision LLM]
+    L -- Defect found --> M[Repair: edit keyframe or prompt]
+    M --> I
+    L -- Pass --> N[Normalise, colour match, captions, audio mix]
+    K -- Yes --> I
+    K -- No --> O[Flag shot for human review]
+    N --> P[Final QC]
+    P --> Q[Final video and manifest]

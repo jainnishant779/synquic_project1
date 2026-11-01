@@ -1,4 +1,6 @@
 """Data model for the video pipeline: brief, storyboard, scenes, shots and continuity references."""
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
@@ -55,6 +57,10 @@ class Shot(BaseModel):
     setting: str
     camera: str
     narration: str
+    audio: str = "ambient room tone, no dialogue"
+    beats: list[str] = Field(default_factory=list)
+    on_screen_text: list[str] = Field(default_factory=list)
+    mode: Literal["text_to_video", "image_to_video", "first_last_frame"] = "image_to_video"
     character_ids: list[str] = Field(default_factory=list)
     product_ids: list[str] = Field(default_factory=list)
     continuity_from: str | None = None
@@ -74,6 +80,7 @@ class Scene(BaseModel):
 class Storyboard(BaseModel):
     title: str
     script: list[str]
+    assumptions: list[str] = Field(default_factory=list)
     scenes: list[Scene]
 
     @property

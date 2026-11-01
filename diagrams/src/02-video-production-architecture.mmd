@@ -1,0 +1,30 @@
+flowchart LR
+    subgraph App[Application]
+        UI[Web app and API] --> Jobs[Job orchestrator]
+        Jobs --> Ledger[Credit ledger]
+        Jobs --> Assets[Asset vault: references, style bibles]
+    end
+    subgraph Routing[Provider layer]
+        Jobs --> Router[Router]
+        Catalog[(Provider catalog: price, limits, licence verdict)] --> Router
+        Router --> Adapter[Adapter contract: submit, poll, fetch]
+    end
+    subgraph APIs[Paid APIs]
+        Adapter --> P1[Vendor A]
+        Adapter --> P2[Vendor B]
+        Adapter --> P3[Aggregator fallback]
+    end
+    subgraph Local[Rented GPU workers]
+        Adapter --> Queue[Job queue]
+        Queue --> W1[Worker: open-weight model]
+        Queue --> W2[Worker: open-weight model]
+    end
+    P1 --> QC[QC service]
+    P2 --> QC
+    P3 --> QC
+    W1 --> QC
+    W2 --> QC
+    QC --> Store[(Object storage)]
+    QC -- Regenerate --> Jobs
+    Store --> Assemble[ffmpeg assembly]
+    Assemble --> CDN[Delivery]

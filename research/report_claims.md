@@ -70,6 +70,25 @@ Data rights, check against R7:
 - Ingesting "competitor post transcripts", "live competitor content gaps" and "trending motifs" through platform APIs.
 - Using brand telemetry from Meta, TikTok, YouTube, LinkedIn and X to train adapters.
 
+## F. Second report: "AI Video Generation Engine & Social360 Model Research"
+
+Source: `docs\AI Video Generation Engine & Social360 Model Research.pdf`, 5 pages, author metadata "ChatGPT Deep Research". Its citations are unresolvable markers such as `【21†L113-L119】`, and one line still contains a `$X` placeholder. The sources it names are mostly secondary.
+
+To check:
+- Licence: "both GPT-OSS and Llama-2 are Apache 2.0"; Open-Sora Apache 2.0; CogVideoX-1.5; "Wan 2.2/3.0 (Apache-2.0)" against R2's finding that core open weights stop at 2.2.
+- LTX-2.5 at 22B, 32 GB VRAM at FP8, native audio, and its use as the POC's default open model. R2 has the licence as Counsel.
+- Wan 2.2 and HunyuanVideo needing about 80 GB; A100 and H100 at $3-$8 per hour against R3's rates.
+- Seedance 2.0 at about $9 per minute at 1080p; Veo 3.1 at $0.03-$0.40 per second; Sora 2 at $0.10-$0.70 listed as a live option, when R1 reports the API ended.
+- "8×A100 (p4d.24xlarge) spot cluster, about $3/hr per GPU" can fine-tune a 20B model "in a few hours". R3 advises against budgeting on spot and R6 found thin timing evidence.
+- Costs: about $10K for an initial model build; $500-$1000 per month per inference server; 50% margin. One always-on GPU at R3's rates is likely to exceed that server figure.
+
+Already in conflict with decisions or findings:
+- "Anthropic Claude" listed as an open-weight alternative. It is not open-weight.
+- "learns from aggregate brand experience" contradicts the chosen tenancy, where tenant data never reaches the shared base.
+- "the model is our own IP" breaks the wording rule. Use the required "built on [base] under [licence]" wording.
+- "API usage ... to social platforms" as a training source, and daily or hourly fine-tuning, conflict with R7 and with gated retraining.
+- "open-weights ... match closed SaaS quality at near-zero marginal cost" is contradicted by its own GPU cost and by R2's render times.
+
 ## E. Reference guide pasted by the user, 2026-11-01
 
 The guide marks these "verified". In this ledger only V sets that status, so each one is re-checked at the vendor page. Where it agrees, the fact is confirmed; where it disagrees, record a conflict and resolve it by a fresh fetch.

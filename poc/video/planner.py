@@ -84,10 +84,21 @@ def compile_shot_prompts(storyboard: Storyboard, brief: Brief, dialect: dict) ->
             "camera": f"{shot.camera}, {style.lens}",
             "lighting": style.lighting,
             "style": f"{style.visual_style}, palette {style.palette}",
+            "timing": "; ".join(shot.beats),
+            "audio": shot.audio,
             "continuity": f"continues directly from {shot.continuity_from}" if shot.continuity_from else "",
         }
-        shot.prompt = dialect["separator"].join(fields[k] for k in dialect["field_order"] if fields.get(k))
-        shot.negative_prompt = style.negative
+        parts = [fields[k] for k in dialect["field_order"] if fields.get(k)]
+        if dialect.get("directive"):
+            parts.insert(0, dialect["directive"])
+        shot.prompt = dialect["separator"].join(parts)
+        if dialect["exclusions"] == "parameter":
+            shot.negative_prompt = style.negative
+        else:
+            # Models without a negative prompt take exclusions as plain sentences.
+            exclusions = [term.strip() for term in style.negative.split(",")]
+            shot.prompt += " " + " ".join(f"No {term}." for term in exclusions)
+            shot.negative_prompt = ""
         shot.reference_images = [
             image for owner in (*cast, *items) for image in owner.reference_images
         ]

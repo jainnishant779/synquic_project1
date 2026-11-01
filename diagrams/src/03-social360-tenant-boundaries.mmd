@@ -1,0 +1,25 @@
+flowchart TB
+    Client[Brand application] --> GW[API gateway: verifies token, derives tenant]
+    GW --> Salt[Sets per-tenant cache_salt and adapter name]
+    subgraph Shared[Shared: no tenant data]
+        Base[Base model weights: public, licensed or synthetic data only]
+        Serve[Inference server]
+        Base --> Serve
+    end
+    Salt --> Serve
+    subgraph TA[Tenant A boundary]
+        KA[Key A] --- SA[(Encrypted store A)]
+        SA --- RA[(Retrieval index A)]
+        RA --- AA[Adapter A versions]
+    end
+    subgraph TB2[Tenant B boundary]
+        KB[Key B] --- SB[(Encrypted store B)]
+        SB --- RB[(Retrieval index B)]
+        RB --- AB[Adapter B versions]
+    end
+    Serve -. loads only token's adapter .-> AA
+    Serve -. loads only token's adapter .-> AB
+    GW -. tenant-scoped retrieval .-> RA
+    GW -. tenant-scoped retrieval .-> RB
+    Ops[Operators] --> Agg[Aggregate metrics only]
+    Ops --> BG[Break-glass: reason required, audit logged]
