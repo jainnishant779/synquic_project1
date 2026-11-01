@@ -97,7 +97,13 @@ if not DRY_RUN:
         subprocess.run("apt-get -qq update && apt-get -qq install -y ffmpeg", shell=True, check=True)
     source = "git+https://github.com/huggingface/diffusers" if "wan22_5b" in MODELS else "diffusers"
     pip(source, "transformers", "accelerate", "sentencepiece", "ftfy", "imageio", "imageio-ffmpeg", "edge-tts", "fal-client")
+    os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
     import torch
+    # GPUs older than Ampere (T4 is sm75) have no efficient attention for bfloat16. PyTorch then falls
+    # back to a full n x n matrix, which asked for 48 GB on Wan. float16 keeps the efficient path.
+    MODERN_GPU = torch.cuda.is_available() and torch.cuda.get_device_capability(0)[0] >= 8
+    DTYPE = torch.bfloat16 if MODERN_GPU or not torch.cuda.is_available() else torch.float16
+    print("Model dtype:", DTYPE)
     if not torch.cuda.is_available() and any(not m.endswith("_fal") for m in MODELS):
         raise SystemExit("GPU nahi mila. Right panel mein Accelerator: GPU T4 x2 chuno.")
     for index in range(torch.cuda.device_count()):
@@ -158,12 +164,13 @@ def dry_clip(path, width, height, fps, seconds):
 
 def load_local(info):
     import torch
-    from diffusers import AutoencoderKLWan, LTXPipeline, WanPipeline
+    from diffusers import AutoencoderKLWan, LTXPipeline, WanPipeline, WanTransformer3DModel
     if info["family"] == "ltx":
-        pipe = LTXPipeline.from_pretrained(info["repo"], torch_dtype=torch.bfloat16)
+        pipe = LTXPipeline.from_pretrained(info["repo"], torch_dtype=DTYPE)
     else:
+        transformer = WanTransformer3DModel.from_pretrained(info["repo"], subfolder="transformer", torch_dtype=DTYPE)
         vae = AutoencoderKLWan.from_pretrained(info["repo"], subfolder="vae", torch_dtype=torch.float32)
-        pipe = WanPipeline.from_pretrained(info["repo"], vae=vae, torch_dtype=torch.bfloat16)
+        pipe = WanPipeline.from_pretrained(info["repo"], vae=vae, transformer=transformer, torch_dtype=torch.bfloat16)
     pipe.enable_model_cpu_offload()
     if hasattr(pipe.vae, "enable_tiling"):
         pipe.vae.enable_tiling()
@@ -395,13 +402,32 @@ def best_clip(prompt_id):
     return max(options, key=lambda n: RATINGS.get(n, 0), default=None)
 
 
+def load_flux():
+    """Images are optional. Any failure here must leave the reel running on the fallback."""
+    try:
+        import torch
+        from diffusers import FluxPipeline
+        from huggingface_hub import login
+        login(HF_TOKEN)
+        pipe = FluxPipeline.from_pretrained("black-forest-labs/FLUX.1-schnell", torch_dtype=torch.bfloat16)
+        pipe.enable_model_cpu_offload()
+        return pipe
+    except Exception as error:
+        print("FLUX load nahi hua, clip frames use honge:", type(error).__name__, str(error)[:200])
+        print("Gated error ho to huggingface.co/black-forest-labs/FLUX.1-schnell par terms accept karo.")
+        return None
+
+
 def make_image(prompt, path, pipe):
     if pipe is not None:
-        import torch
-        image = pipe(prompt, guidance_scale=0.0, num_inference_steps=4, max_sequence_length=256, width=768, height=1344,
-                     generator=torch.Generator("cpu").manual_seed(42)).images[0]
-        image.save(path)
-        return "flux"
+        try:
+            import torch
+            image = pipe(prompt, guidance_scale=0.0, num_inference_steps=4, max_sequence_length=256, width=576, height=1024,
+                         generator=torch.Generator("cpu").manual_seed(42)).images[0]
+            image.save(path)
+            return "flux"
+        except Exception as error:
+            print("FLUX image fail:", type(error).__name__, str(error)[:200])
     # The fallback must never fail: a frame from any clip on disk, or else a plain colour.
     clip = next(iter(sorted(CLIPS.glob("*.mp4"))), None)
     if clip is not None:
@@ -457,15 +483,8 @@ def narration(path, seconds):
     return "silent"
 
 
-if MAKE_REEL:
-    flux = None
-    if HF_TOKEN and not DRY_RUN:
-        import torch
-        from diffusers import FluxPipeline
-        from huggingface_hub import login
-        login(HF_TOKEN)
-        flux = FluxPipeline.from_pretrained("black-forest-labs/FLUX.1-schnell", torch_dtype=torch.bfloat16)
-        flux.enable_model_cpu_offload()
+def make_reel():
+    flux = load_flux() if HF_TOKEN and not DRY_RUN else None
     built = [scene_clip(scene, index, flux) for index, scene in enumerate(REEL_SCENES, 1)]
     if flux is not None:
         unload(flux)
@@ -484,6 +503,14 @@ if MAKE_REEL:
     print("Reel:", info["streams"][0]["width"], "x", info["streams"][0]["height"], round(float(info["format"]["duration"]), 1), "s")
     if SHOW_INLINE:
         display(Video(str(final), embed=True, width=320))
+
+
+if MAKE_REEL:
+    # A reel failure must never stop Cell 10, which saves everything already made.
+    try:
+        make_reel()
+    except Exception as error:
+        print("Reel nahi bani:", type(error).__name__, str(error)[:300])
 '''),
 
 ("code", r'''# CELL 10: RESULTS DOWNLOAD

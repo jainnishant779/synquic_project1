@@ -8,6 +8,7 @@ import os
 import shutil
 import sys
 import tempfile
+import types
 from pathlib import Path
 
 NOTEBOOK = Path(__file__).resolve().parents[1] / "notebooks" / "synquic_video_benchmark.ipynb"
@@ -76,6 +77,18 @@ def main():
     wan = fourth["summary"].set_index("model").loc["wan21_480p"]
     assert wan["rated"] == 3 and wan["accept_rate"] == 0.67, wan
     assert wan["usd_per_accepted_s"] > wan["usd_per_generated_s"], wan
+
+    # A gated or broken FLUX download must fall back, never stop the run (first Kaggle run died here).
+    sys.modules["diffusers"] = types.ModuleType("diffusers")
+    fourth["HF_TOKEN"] = "dry"
+    assert fourth["load_flux"]() is None
+    del sys.modules["diffusers"]
+
+    # The notebook must pick float16 below sm80 and load Wan's transformer in that dtype.
+    source = "".join(cells())
+    assert "get_device_capability(0)[0] >= 8" in source
+    assert 'subfolder="transformer", torch_dtype=DTYPE' in source
+    assert "from_pretrained(info[\"repo\"], torch_dtype=DTYPE)" in source
 
     shutil.rmtree(root.parent, ignore_errors=True)
     print("dry run passed: 12 jobs, spend cap, QC, summary, resume, fallback, 1080x1920 reel")
