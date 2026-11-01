@@ -92,6 +92,8 @@ def main():
     assert '("T4", "P100", "K80")' in source
     assert "torch.cuda" not in source.split("# CELL 3")[0], "cell 2 must not touch CUDA before models fork"
     assert 'get_context("fork")' in source
+    # Paid models must run with no GPU, and must not start CUDA in the notebook process.
+    assert "        if local:\n            import torch\n            torch.cuda.reset_peak_memory_stats()" in source
     assert 'subfolder="transformer", torch_dtype=DTYPE' in source
     assert "from_pretrained(info[\"repo\"], torch_dtype=DTYPE)" in source
 

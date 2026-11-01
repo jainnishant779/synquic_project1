@@ -271,7 +271,8 @@ def run_model(model, todo):
         row = dict(clip=name, prompt_id=pid, model=model, seed=seed, kind=info["kind"], licence=info["verdict"], status="ok",
                    api_cost_usd=0, note="")
         began = time.time()
-        if not DRY_RUN:
+        local = info["kind"] == "local" and not DRY_RUN
+        if local:
             import torch
             torch.cuda.reset_peak_memory_stats()
         try:
@@ -282,12 +283,12 @@ def run_model(model, todo):
         except Exception as error:
             row["status"] = "failed"
             row["note"] = f"{type(error).__name__}: {str(error)[:160]}"
-            if not DRY_RUN and "out of memory" in str(error).lower():
+            if local and "out of memory" in str(error).lower():
                 row["status"] = "out_of_memory"
                 torch.cuda.empty_cache()
         row["render_seconds"] = round(time.time() - began, 1)
         row["clip_seconds"] = api_seconds(info) if info["kind"] == "api" else round(frame_count(info) / info["fps"], 2)
-        if not DRY_RUN:
+        if local:
             row["peak_vram_gb"] = round(torch.cuda.max_memory_allocated() / 1e9, 1)
         rows[name] = row
         save_rows()
