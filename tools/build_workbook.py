@@ -25,7 +25,7 @@ BUSY = -2147418111  # RPC_E_CALL_REJECTED: Excel is not ready for this call yet.
 INPUTS = [
     # name, value, unit, note. Every value here is an [ASSUMPTION] unless the note says otherwise.
     ("accept_selector", 1, "index", "Scenario in use, 1 to 4: picks from the four rates below"),
-    ("accept_scenario_1", 0.25, "ratio", "User default, informed by the InVideo keep rate. Report-sourced and to be verified"),
+    ("accept_scenario_1", 0.25, "ratio", "User default. Source is a marketing FAQ, 41 of 164 clips in one episode, not telemetry (V-042)"),
     ("accept_scenario_2", 0.333, "ratio", "Three takes per keeper"),
     ("accept_scenario_3", 0.61, "ratio", "Low end of self-reported first-pass figures (R4-059), definition undefined"),
     ("accept_scenario_4", 0.85, "ratio", "High end of self-reported figures (R4-060), definition undefined"),
@@ -82,7 +82,7 @@ ROUTES = [
     dict(key="kling4_720", name="Kling 4.0 via Replicate", kind="api", res="720p", price=("fact", "R1-056"), clip=30, w=1280, h=720, refs=True, verdict="Counsel", src="R1-055"),
     dict(key="kling4_1080", name="Kling 4.0 via Replicate", kind="api", res="1080p", price=("fact", "R1-057"), clip=30, w=1920, h=1080, refs=True, verdict="Counsel", src="R1-055"),
     dict(key="seedance25", name="Seedance 2.5 (BytePlus sample)", kind="api", res="720p", price=("fact", "R1-065"), clip=30, w=1280, h=720, refs=True, verdict="Counsel", src="R1-069"),
-    dict(key="wan22_5b_4090", name="Wan 2.2 TI2V-5B, RTX 4090", kind="self", res="720p", price=("self", "R3-001", "R2-052", 5), clip=5, w=1280, h=720, refs=True, verdict="Allowed", src="R2-045"),
+    dict(key="wan22_5b_4090", name="Wan 2.2 TI2V-5B I2V, RTX 4090", kind="self", res="720p", price=("self", "R3-001", "V-901", 5), clip=5, w=1280, h=720, refs=True, verdict="Allowed", src="R2-045"),
     dict(key="wan22_14b_h100", name="Wan 2.2 A14B, H100", kind="self", res="720p", price=("self", "R3-007", "R2-049", 5), clip=5, w=1280, h=720, refs=True, verdict="Allowed", src="R2-045"),
     dict(key="ltx25_4090", name="LTX-2.5 distilled, RTX 4090", kind="self", res="640x384", price=("self", "R3-001", "R2-033", 5), clip=5, w=640, h=384, refs=True, verdict="Counsel", src="R2-025"),
     dict(key="magihuman_h100", name="daVinci-MagiHuman, H100", kind="self", res="1080p", price=("self", "R3-007", "R2-085", 5), clip=5, w=1920, h=1080, refs=True, verdict="Counsel", src="R2-083"),

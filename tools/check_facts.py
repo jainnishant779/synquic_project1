@@ -3,10 +3,12 @@ import csv
 import json
 import re
 import sys
+from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "research" / "raw"
+VERIFY = ROOT / "research" / "verify"
 OUT = ROOT / "research" / "facts.csv"
 
 KEYS = [
@@ -15,7 +17,7 @@ KEYS = [
     "source_updated", "status", "verified_by", "verified_date", "notes",
 ]
 SOURCE_TYPES = {"primary_pricing", "primary_docs", "licence_text", "paper", "secondary"}
-STATUSES = {"single_source", "conflict", "unverifiable", "verified"}
+STATUSES = {"single_source", "conflict", "unverifiable", "verified", "failed"}
 DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
@@ -41,7 +43,9 @@ def check(fact):
         errors.append(f"bad date_checked {fact['date_checked']!r}")
     if str(fact["source_url"]).split(":")[0] not in ("http", "https"):
         errors.append("source_url is not http(s)")
-    needs_quote = is_number(fact["value"]) or "licence" in str(fact["attribute"])
+    # A fact recording that something is absent has nothing to quote.
+    records_absence = str(fact["value"]).startswith("none ")
+    needs_quote = (is_number(fact["value"]) or "licence" in str(fact["attribute"])) and not records_absence
     if needs_quote and fact["status"] != "unverifiable" and not fact["quote"]:
         errors.append("numeric or licence fact without a quote")
     if fact["quote"] and len(str(fact["quote"]).split()) > 25:
@@ -49,6 +53,43 @@ def check(fact):
     if ("price" in str(fact["attribute"]) or fact["currency"]) and not fact["conditions"]:
         errors.append("price without conditions")
     return errors
+
+
+def merge_verification(facts, problems):
+    """Apply verifier verdicts. A failed fact takes the verifier's value, and keeps the old one in notes."""
+    by_id = {fact["fact_id"]: fact for fact in facts}
+    counts = Counter()
+    for path in sorted(VERIFY.glob("*_results.jsonl")):
+        verifier = path.name.split("_")[0]
+        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            if not line.strip():
+                continue
+            result = json.loads(line)
+            fact_id = result.get("fact_id", "")
+            if "attribute" in result:  # A new fact found by the verifier.
+                for error in check(result):
+                    problems.append(f"{path.name}:{number} {fact_id}: {error}")
+                facts.append(result)
+                by_id[fact_id] = result
+                counts["new"] += 1
+                continue
+            fact = by_id.get(fact_id)
+            if fact is None:
+                problems.append(f"{path.name}:{number}: unknown fact_id {fact_id}")
+                continue
+            verdict = result["verdict"]
+            counts[verdict] += 1
+            fact["status"] = verdict
+            fact["verified_by"] = verifier
+            fact["verified_date"] = result.get("verified_date")
+            note = result.get("note")
+            if verdict == "failed":
+                note = f"Researcher value was {fact['value']!r}. {note or ''}"
+                if result.get("value_seen") is not None:
+                    fact["value"] = result["value_seen"]
+            if note:
+                fact["notes"] = f"{fact.get('notes') or ''} [{verifier}] {note}".strip()
+    return counts
 
 
 def main():
@@ -69,6 +110,10 @@ def main():
                 problems.append(f"{where}: duplicate fact_id {fact['fact_id']}")
             seen.add(fact.get("fact_id"))
             facts.append(fact)
+
+    counts = merge_verification(facts, problems)
+    if counts:
+        print("verification:", dict(counts))
 
     with OUT.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=KEYS, extrasaction="ignore")

@@ -47,7 +47,7 @@ def expected():
     plan_cogs = planning * i["avg_video_seconds"] / 60
 
     gpu = price(facts, "R3-001")
-    render = price(facts, "R2-052") / 5
+    render = price(facts, "V-901") / 5
     capacity = i["gpu_hours_per_month"] * 3600 * i["utilisation"] / render
     raw_launch = TIERS[1][2] * i["avg_video_seconds"] * 0.6 * i["overshoot_ratio"] / rate
     gpus = math.ceil(raw_launch / capacity)

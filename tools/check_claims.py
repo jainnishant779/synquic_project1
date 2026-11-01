@@ -18,15 +18,21 @@ BANNED = [
     "mathematically preventing", "ironclad", "cryptographic tenant isolation",
     "better than gpt", "soc 2 compliant", "gdpr compliant", "zero-human",
 ]
+# These sections exist to quote wording that must not be used, or claims under audit.
+QUOTING_SECTIONS = ["Terms to use in the pitch", "Earlier reports: audit"]
 RISKY = ["proprietary model", "production-ready", "proven", "real-time", "continuous learning",
          "open-source", "compliant", "guarantee"]
 
 
 def check(path: Path) -> list[str]:
-    problems, in_code = [], False
+    problems, in_code, quoting = [], False, False
     for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
         if line.startswith("```"):
             in_code = not in_code
+            continue
+        if line.startswith("## "):
+            quoting = any(title in line for title in QUOTING_SECTIONS)
+        if quoting:
             continue
         lowered = line.lower()
         quoted = "report" in lowered or "do not say" in lowered or line.lstrip().startswith(">")
