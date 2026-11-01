@@ -1,0 +1,6 @@
+{
+  "generic": {
+    "separator": ". ",
+    "field_order": ["subject", "characters", "products", "action", "setting", "camera", "lighting", "style", "continuity"]
+  }
+}

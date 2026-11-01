@@ -1,0 +1,14 @@
+{
+  "status": "placeholder until the workbook build replaces this file",
+  "providers": [
+    {
+      "name": "mock",
+      "price_per_second_usd": 0,
+      "max_clip_seconds": 30,
+      "max_width": 1920,
+      "max_height": 1080,
+      "supports_references": true,
+      "licence_verdict": "Allowed"
+    }
+  ]
+}

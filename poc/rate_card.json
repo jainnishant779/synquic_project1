@@ -1,0 +1,8 @@
+{
+  "status": "placeholder until the workbook build replaces this file",
+  "operations": {
+    "planning_per_video": 1,
+    "generation_per_second": {"standard": 1},
+    "assembly_per_minute": 1
+  }
+}

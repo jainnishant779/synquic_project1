@@ -1,0 +1,32 @@
+{
+  "title": "Northwind Kettle launch",
+  "objective": "Launch film for a fictional smart kettle",
+  "audience": "busy home-office workers",
+  "tone": "warm, confident, lightly humorous",
+  "duration_seconds": 30,
+  "shot_seconds": 5,
+  "shots_per_scene": 4,
+  "characters": [
+    {
+      "id": "maya",
+      "name": "Maya",
+      "canonical_description": "woman in her early thirties, shoulder-length curly black hair, round tortoiseshell glasses",
+      "wardrobe": "mustard cardigan over a white t-shirt",
+      "reference_images": ["refs/maya_front.png", "refs/maya_profile.png"]
+    }
+  ],
+  "products": [
+    {
+      "id": "kettle",
+      "name": "Northwind Kettle",
+      "canonical_description": "matte teal electric kettle with a brushed steel base and a walnut handle",
+      "reference_images": ["refs/kettle_hero.png"]
+    }
+  ],
+  "style": {
+    "visual_style": "photorealistic commercial, soft film grain",
+    "palette": "teal, mustard, warm walnut",
+    "lighting": "soft morning window light",
+    "lens": "35mm, f/2.8"
+  }
+}
