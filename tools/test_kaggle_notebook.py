@@ -57,6 +57,9 @@ def main():
     assert abs(float(reel["format"]["duration"]) - 30) < 0.6, reel["format"]["duration"]
     assert any(s["codec_type"] == "audio" for s in reel["streams"])
 
+    # A dead worker must leave its clips marked, and the notebook must carry on.
+    assert (root.parent / "synquic_results.zip").exists()
+
     # Resume: nothing that succeeded runs again.
     done = {n for n, r in rows.items() if r["status"] == "ok"}
     second = run_all(root, config + "SEEDS = [42]\n")
@@ -86,7 +89,9 @@ def main():
 
     # The notebook must pick float16 below sm80 and load Wan's transformer in that dtype.
     source = "".join(cells())
-    assert "get_device_capability(0)[0] >= 8" in source
+    assert '("T4", "P100", "K80")' in source
+    assert "torch.cuda" not in source.split("# CELL 3")[0], "cell 2 must not touch CUDA before models fork"
+    assert 'get_context("fork")' in source
     assert 'subfolder="transformer", torch_dtype=DTYPE' in source
     assert "from_pretrained(info[\"repo\"], torch_dtype=DTYPE)" in source
 

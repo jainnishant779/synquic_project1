@@ -65,7 +65,7 @@ REEL_SCENES = [
 '''),
 
 ("code", r'''# CELL 2: SETUP
-import csv, gc, html, json, math, os, re, shutil, subprocess, sys, time, urllib.request
+import csv, gc, html, json, math, multiprocessing, os, re, shutil, subprocess, sys, time, urllib.request
 from pathlib import Path
 
 DRY_RUN = os.environ.get("SYNQUIC_DRY_RUN") == "1"
@@ -99,20 +99,28 @@ if not DRY_RUN:
     pip(source, "transformers", "accelerate", "sentencepiece", "ftfy", "imageio", "imageio-ffmpeg", "edge-tts", "fal-client")
     os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
     import torch
-    # GPUs older than Ampere (T4 is sm75) have no efficient attention for bfloat16. PyTorch then falls
-    # back to a full n x n matrix, which asked for 48 GB on Wan. float16 keeps the efficient path.
-    MODERN_GPU = torch.cuda.is_available() and torch.cuda.get_device_capability(0)[0] >= 8
-    DTYPE = torch.bfloat16 if MODERN_GPU or not torch.cuda.is_available() else torch.float16
-    print("Model dtype:", DTYPE)
-    if not torch.cuda.is_available() and any(not m.endswith("_fal") for m in MODELS):
+    # Read the GPU through nvidia-smi. Starting CUDA in this process would stop models running in child processes.
+    query = subprocess.run("nvidia-smi --query-gpu=name,memory.total --format=csv,noheader", shell=True, capture_output=True, text=True)
+    GPUS = query.stdout.strip().splitlines() if query.returncode == 0 else []
+    if not GPUS and any(not m.endswith("_fal") for m in MODELS):
         raise SystemExit("GPU nahi mila. Right panel mein Accelerator: GPU T4 x2 chuno.")
-    for index in range(torch.cuda.device_count()):
-        print("GPU", index, torch.cuda.get_device_name(index), round(torch.cuda.get_device_properties(index).total_memory / 1e9, 1), "GB")
+    print("GPUs:", GPUS)
+    # GPUs older than Ampere (such as T4) have no efficient attention for bfloat16. PyTorch then falls
+    # back to a full n x n matrix, which asked for 48 GB on Wan. float16 keeps the efficient path.
+    OLD_GPU = any(name in GPUS[0] for name in ("T4", "P100", "K80")) if GPUS else False
+    DTYPE = torch.float16 if OLD_GPU else torch.bfloat16
+    print("Model dtype:", DTYPE)
 
 HF_TOKEN, FAL_KEY = secret("HF_TOKEN"), secret("FAL_KEY")
 if FAL_KEY:
     os.environ["FAL_KEY"] = FAL_KEY
 print("Prompts:", list(PROMPTS), "| Models:", MODELS, "| Dry run:", DRY_RUN)
+
+
+def save_zip():
+    archive = shutil.make_archive(str(ROOT.parent / "synquic_results"), "zip", ROOT)
+    print("Results saved:", archive, round(Path(archive).stat().st_size / 1e6, 1), "MB")
+    return archive
 '''),
 
 ("code", r'''# CELL 3: MODEL REGISTRY
@@ -227,9 +235,13 @@ def generate_api(info, prompt, path):
 
 ("code", r'''# CELL 5: RUN. Har prompt x har model x har seed.
 FIELDS = ["clip", "prompt_id", "model", "seed", "kind", "licence", "status", "render_seconds", "clip_seconds", "api_cost_usd", "peak_vram_gb", "note"]
-rows = {}
-if RESULTS_CSV.exists():
-    rows = {r["clip"]: r for r in csv.DictReader(RESULTS_CSV.open(encoding="utf-8"))}
+
+
+def load_rows():
+    return {r["clip"]: r for r in csv.DictReader(RESULTS_CSV.open(encoding="utf-8"))} if RESULTS_CSV.exists() else {}
+
+
+rows = load_rows()
 
 
 def save_rows():
@@ -243,23 +255,16 @@ def out_of_time():
     return (time.time() - START) / 60 > MAX_RUNTIME_MINUTES
 
 
-jobs = [(model, pid, seed) for model in MODELS for pid in PROMPTS for seed in SEEDS]
-print(f"{len(jobs)} clips banenge")
-for model in MODELS:
+def run_model(model, todo):
+    """Make every clip for one model. Local models run this in a child process."""
     info = REGISTRY[model]
-    todo = [(pid, seed) for m, pid, seed in jobs if m == model and rows.get(f"{pid}__{model}__seed{seed}", {}).get("status") != "ok"]
-    if not todo:
-        continue
-    if info["kind"] == "api" and not FAL_KEY and not DRY_RUN:
-        print(model, "skip: FAL_KEY secret nahi mila")
-        continue
     pipe = None
     if info["kind"] == "local" and not DRY_RUN:
-        print("Loading", model, "...")
+        print("Loading", model, "...", flush=True)
         pipe = load_local(info)
     for pid, seed in todo:
         if out_of_time():
-            print("Time limit: baaki clips skip")
+            print("Time limit: baaki clips skip", flush=True)
             break
         name = f"{pid}__{model}__seed{seed}"
         path = CLIPS / f"{name}.mp4"
@@ -286,10 +291,42 @@ for model in MODELS:
             row["peak_vram_gb"] = round(torch.cuda.max_memory_allocated() / 1e9, 1)
         rows[name] = row
         save_rows()
-        print(f'{name}: {row["status"]} in {row["render_seconds"]} s {row["note"]}')
-    if pipe is not None:
-        unload(pipe)
-        pipe = None
+        print(f'{name}: {row["status"]} in {row["render_seconds"]} s {row["note"]}', flush=True)
+
+
+def run_isolated(model, todo):
+    """A child process gives RAM back when it ends, and its crash cannot kill the notebook."""
+    global rows
+    info = REGISTRY[model]
+    worker = multiprocessing.get_context("fork").Process(target=run_model, args=(model, todo))
+    worker.start()
+    worker.join()
+    rows = load_rows()
+    if worker.exitcode != 0:
+        status = "out_of_ram" if worker.exitcode in (-9, 137) else "failed"
+        print(f"{model} worker stopped: {status}, exit code {worker.exitcode}. Baaki models chalte rahenge.")
+        for pid, seed in todo:
+            name = f"{pid}__{model}__seed{seed}"
+            if name not in rows:
+                rows[name] = dict(clip=name, prompt_id=pid, model=model, seed=seed, kind=info["kind"], licence=info["verdict"], status=status,
+                                  render_seconds=0, clip_seconds=0, api_cost_usd=0, note=f"worker exit code {worker.exitcode}")
+        save_rows()
+
+
+jobs = [(model, pid, seed) for model in MODELS for pid in PROMPTS for seed in SEEDS]
+print(f"{len(jobs)} clips banenge")
+for model in MODELS:
+    info = REGISTRY[model]
+    todo = [(pid, seed) for m, pid, seed in jobs if m == model and rows.get(f"{pid}__{model}__seed{seed}", {}).get("status") != "ok"]
+    if not todo:
+        continue
+    if info["kind"] == "api" and not FAL_KEY and not DRY_RUN:
+        print(model, "skip: FAL_KEY secret nahi mila")
+        continue
+    if info["kind"] == "local" and not DRY_RUN:
+        run_isolated(model, todo)
+    else:
+        run_model(model, todo)
 print("API spend so far: $", round(api_spent, 2))
 '''),
 
@@ -393,6 +430,7 @@ if len(table):
     print("Local cost sirf reference hai: render time x", GPU_USD_PER_HOUR, "USD per hour. Kaggle par yeh free hai.")
     if not RATINGS:
         print("RATINGS khali hain, isliye accept rate abhi nahi nikla.")
+save_zip()  # Saved before the reel, so a crash there cannot lose the clips.
 '''),
 
 ("code", r'''# CELL 9: HYBRID REEL. 30 second, 1080x1920. AI clip nahi mila to animated image lagegi.
@@ -514,8 +552,7 @@ if MAKE_REEL:
 '''),
 
 ("code", r'''# CELL 10: RESULTS DOWNLOAD
-archive = shutil.make_archive(str(ROOT.parent / "synquic_results"), "zip", ROOT)
-print("Download karo:", archive, round(Path(archive).stat().st_size / 1e6, 1), "MB")
+print("Download karo:", save_zip())
 print("Total time:", round((time.time() - START) / 60, 1), "minutes | API spend: $", round(api_spent, 2))
 '''),
 ]

@@ -18,7 +18,7 @@ Technical and commercial assessment, architecture and proof of concept, as of 20
 
 ## Model benchmark notebook
 
-[notebooks/synquic_video_benchmark.ipynb](notebooks/synquic_video_benchmark.ipynb) runs every prompt on every model on Kaggle, then does technical QC, cost comparison and a 30-second hybrid reel. Only its flow has been tested, by `tools/test_kaggle_notebook.py` in dry-run mode with test patterns. It has not yet run on a real GPU or a live API. Rebuild it with `tools/build_kaggle_notebook.py`.
+[notebooks/synquic_video_benchmark.ipynb](notebooks/synquic_video_benchmark.ipynb) runs every prompt on every model on Kaggle, then does technical QC, cost comparison and a 30-second hybrid reel. Its flow is tested by `tools/test_kaggle_notebook.py` in dry-run mode. On a real T4 GPU it generated 3 LTX-Video clips at about 170 s each, and Wan 2.1 ran out of system RAM. Paid APIs have not been run live. Rebuild it with `tools/build_kaggle_notebook.py`.
 
 ## Deliverables
 
