@@ -1,0 +1,11 @@
+flowchart LR
+    A[Approved brand data] --> B[Redact PII, tag source, encrypt per brand]
+    B --> C[Refresh brand retrieval]
+    B --> D{Enough eligible data?}
+    D -- No --> E[Keep current version]
+    D -- Yes --> F[G1 data gate]
+    F --> G[Train candidate adapter]
+    G --> H[G2 quality, G3 leakage, G4 latency]
+    H -- Pass --> I[Register version, move prod pointer]
+    H -- Fail --> E
+    I --> J[Monitor, roll back if needed]

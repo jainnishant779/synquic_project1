@@ -1,0 +1,13 @@
+flowchart LR
+    A[Scene from Scene JSON] --> B{Scene type}
+    B -- Image or graphics --> C[Make still or graphic]
+    C --> H[Animate and add to timeline]
+    B -- AI video --> D{AI budget left?}
+    D -- No --> F[Fallback to animated image]
+    D -- Yes --> E[Generate clip]
+    E --> G{QC passed?}
+    G -- Yes --> H
+    G -- No --> I{Attempts left?}
+    I -- Yes --> D
+    I -- No --> F
+    F --> H

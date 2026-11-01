@@ -1,0 +1,25 @@
+flowchart TB
+    U[Client: brief, references, duration, format] --> G[API gateway and job manager: auth, tenant, quota, budget]
+    G --> D[Director Engine: category, script, storyboard, Scene JSON, budget per scene]
+    D --> IM[Image service]
+    D --> VS[Video service]
+    D --> AU[Voice and music services]
+    subgraph P[Adapter layer: vendors can be swapped]
+        IM --> I1[FLUX 3 Klein / Nano Banana]
+        VS --> V1[Veo 3.1 Fast]
+        VS --> V2[Kling 4.0]
+        AU --> A1[ElevenLabs / licensed music]
+    end
+    I1 --> S[(Asset store)]
+    V1 --> S
+    V2 --> S
+    A1 --> S
+    S --> Q{Quality and Cost Engine}
+    Q -- Pass --> T[Timeline composer: timing, captions, transitions, audio mix]
+    Q -- Fail, budget left --> VS
+    Q -- Fail, budget used --> F[Fallback: animated image or motion graphics]
+    F --> T
+    T --> R[FFmpeg render: 1080p, H.264, AAC]
+    R --> O[Final MP4 and project manifest]
+    O -. Regenerate one scene .-> D
+    Q -. Every call .-> L[(Cost ledger)]
