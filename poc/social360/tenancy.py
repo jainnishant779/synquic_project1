@@ -41,7 +41,7 @@ def verify_token(token: str, secret: bytes) -> TenantContext:
     except ValueError as exc:
         raise AuthError("malformed token") from exc
     expected = _b64(hmac.new(secret, body.encode(), hashlib.sha256).digest())
-    if not hmac.compare_digest(signature, expected):
+    if not hmac.compare_digest(signature.encode(), expected.encode()):
         raise AuthError("bad signature")
     claims = json.loads(_unb64(body))
     if claims["exp"] < time.time():

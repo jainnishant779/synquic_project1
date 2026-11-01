@@ -16,10 +16,10 @@ The split exists because the providers disagree on format, and because providers
 | Design choice | Evidence |
 |---|---|
 | Shots of 4 to 8 seconds, assembled | No native clip exceeds 30 s, and extensions cap at 37 to 40 s (R4-001, R4-002, R4-004, R4-006) |
-| Prefer `image_to_video` from an approved keyframe | Best-supported identity method in R4, with limits: ArcFace rose from 0.260 to 0.643 in one author-run ablation, at a cost in motion plausibility (R4-036, R4-046) |
+| Prefer `image_to_video` from an approved keyframe | Spends on an image before video. The strongest related evidence is for a different method: face swap on keyframes raised ArcFace from 0.260 to 0.643 in one author-run ablation, at a cost in motion plausibility (R4-036, R4-046). That gain is not evidence for plain image-to-video, which the pilot must measure |
 | Motion-only prompts for image-to-video | Wan's published formula is motion plus camera movement (R4-024) |
-| Re-anchor each shot to original references | Low-resolution references compound and characters drift across generations (R4-044) |
-| Keep a character's reappearances close together | Identity decayed from 0.765 to 0.420 over 11 to 20 shots in one method (R4-034) |
+| Re-anchor each shot to original references | Vendor advice notes low-resolution references compound and characters drift (R4-044). It also recommends reusing outputs as references, so this is a judgement call, unmeasured |
+| Keep a character's reappearances close together | Identity decayed from 0.765 to 0.420 over 11 to 20 shots in one method, though a memory method held at 0.669 (R4-034) |
 | Always state audio, including "no dialogue" | Wan invents dialogue when lines are omitted (R4-026) |
 | Add on-screen text at assembly, not in the model | The best tested text score was 68.32 of 100 (R4-047) |
 | Name 3 to 5 palette colours | Vendor guidance for keeping palette stable across shots (R4-021) |

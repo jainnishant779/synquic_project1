@@ -23,14 +23,16 @@ Three findings shaped this more than anything else:
 
 | Model | Licence | Type | Context | QLoRA training | Hosted in/out USD per Mtok | Role |
 |---|---|---|---|---|---|---|
-| Gemma 4 31B | Apache 2.0, Allowed (R5-032) | 30.7B dense (R5-033) | 262,144 (R5-034) | 22 GB (R5-036) | 0.10 / 0.34 on FP4 (R5-042, R5-043) | **Primary** |
-| Qwen3.8-27B | Apache 2.0, Allowed (R5-049) | 27B dense (R5-050) | 262,144 (R5-051) | 24 GB (R5-053) | 0.15 / 1.875 (R5-061, R5-062) | **Fallback** |
-| Muse Glimmer 30B | Apache 2.0, Allowed (R5-068) | 29.6B dense (R5-069) | 131,072 (R5-070) | 24 GB (R5-072) | 0.35 / 1.50 (R5-077, R5-078) | Fallback if customers bar Chinese-origin models |
-| gpt-oss-20b | Apache 2.0 plus usage policy (R5-006, R5-008) | 20.91B MoE (R5-014) | 131,072 (R5-015) | BF16 LoRA about 44 GB (R5-023) | 0.075 / 0.30 (R5-027, R5-028) | Not the base. Candidate for synthetic data |
+| Gemma 4 31B | Apache 2.0, Allowed (R5-032) | 30.7B dense (R5-033) | 262,144 (R5-034) | Unsloth 22 GB; Axolotl about 25 GiB (R5-041) | 0.10 / 0.34 on FP4, which adapters cannot use; 0.40 output on BF16 (R5-042, R5-043) | **Primary** |
+| Qwen3.8-27B | Apache 2.0, Allowed (R5-049) | 27B dense (R5-050) | 262,144 (R5-051) | Unsloth 24 GB; Axolotl's nearest 27B config about 47 GiB (R5-058) | 0.15 / 1.875 on BF16 (R5-061, R5-062) | **Fallback** |
+| Muse Glimmer 30B | Apache 2.0, Allowed (R5-068) | 29.6B dense (R5-069) | 131,072 (R5-070) | Unsloth 24 GB (R5-076) | 0.35 / 1.50 (R5-077, R5-078) | Fallback if customers bar Chinese-origin models |
+| gpt-oss-20b | Apache 2.0 plus usage policy (R5-006, R5-008) | 20.91B MoE (R5-014) | 131,072 (R5-015) | Unsloth 14 GB; BF16 LoRA 44 GB (R5-023) | 0.075 / 0.30 (R5-027, R5-028) | Not the primary. Candidate for synthetic data, and worth including in the bake-off |
 
-**GPT-OSS, which the brief named.** It means OpenAI's gpt-oss-120b and gpt-oss-20b, released 2025-08-05 (R5-001, R5-002). The licence is fine. It is not recommended as the base for three reasons: the 16 GB headline covers inference only, its expert weights ship in MXFP4 and must be dequantised for training, and MoE models fit LoRA poorly (R5-019, R5-023, R5-024, R5-041, R5-105). It stays useful as an Apache-licensed generator of synthetic data. Keep "GPT" out of product names, and imply no OpenAI affiliation (R5-010).
+**GPT-OSS, which the brief named.** It means OpenAI's gpt-oss-120b and gpt-oss-20b, released 2025-08-05 (R5-001, R5-002). The licence is fine. It is not the first choice for two reasons. Its expert weights ship in MXFP4 and must be dequantised for training outside Unsloth (R5-023, R5-024). And it is an MoE model: Unsloth advises against QLoRA on Gemma's MoE variant, and TensorRT-LLM rejects quantised bases for routed-expert MoE LoRA, though that is not a vLLM limit (R5-041, R5-105). Its 14 GB QLoRA figure is the lowest here, so the case against it is indirect and a bake-off could overturn it. It stays useful as an Apache-licensed generator of synthetic data. Keep "GPT" out of product names, and imply no OpenAI affiliation (R5-010).
 
-**Why dense.** Dense models train on a single GPU and vLLM lists LoRA for their architectures (R5-102). The selection rests on licence and adapter fit, not task accuracy: no model card reports a social or brand benchmark (R5-107). Qwen has the stronger independent record and Gemma the broader stated language coverage (R5-040, R5-045, R5-065), and a bake-off should decide.
+**Why dense.** vLLM lists LoRA for all of these architectures, including GPT-OSS, so that does not separate them, and a tick does not cover a quantised checkpoint (R5-102). Dense is preferred on the indirect MoE evidence above.
+
+**Why Gemma over Qwen: a close call.** Both are Apache, dense and similar in memory. Gemma leads on stated language coverage, on hosted BF16 output price, and on a published Axolotl config at about half the memory (R5-040, R5-041, R5-043, R5-062). Qwen is the only one of the two with an independent score, 20 on one index, where Gemma shows none (R5-065). The selection rests on licence and adapter fit, not task accuracy: no model card reports a social or brand benchmark (R5-107). A bake-off decides.
 
 **Earlier reports.** Qwen2.5-14B and Llama-3 are superseded for this purpose. Llama is not Apache: Llama 2 has its own community licence, and Llama-3 also bars improving other LLMs (V-516, V-517). Claude is a hosted service, not an open-weight option. DeepSeek-V3 weights are under a licence with use restrictions (V-520).
 
@@ -44,7 +46,7 @@ Three findings shaped this more than anything else:
 |---|---|---|---|
 | RAG, per brand | All facts: products, campaigns, documents, recent performance | Daily | RAG beats fine-tuning for facts (R6-017, R6-019) |
 | Few-shot examples | Voice samples chosen per request | Daily | The baseline every adapter must beat |
-| LoRA adapter, per brand | Voice and style only | Triggered and gated | Fine-tuning beats prompting on style transfer (R6-021, R6-022), but is unproven for brand voice and showed limited utility on small data (R6-020) |
+| LoRA adapter, per brand | Voice and style only | Triggered and gated | Fine-tuning beat prompting on sentiment transfer and detoxification (R6-021), and prompted LLMs struggle with implicit style (R6-022). Neither tests brand voice, and small-data QLoRA showed limited utility (R6-020) |
 | Shared base | General ability | Pinned revision | Does not learn from tenants |
 
 Adding fine-tuning to RAG lowered accuracy in one study, 0.875 to 0.830 (R6-018), though training with retrieved documents may avoid that (R6-024). This is why facts stay out of weights.
@@ -72,31 +74,45 @@ Notes on that table:
 
 - **Only X and Pinterest have express AI clauses.** The Meta, LinkedIn and YouTube "No" readings are inferences from purpose and derived-data limits. The X, LinkedIn and Meta bars have no own-data carve-out (R7-003, R7-007, R7-010, V-528).
 - **YouTube's Conditional is generous.** Its rules on derived data and 30-day storage still apply (R7-014, R7-015, R7-016).
-- **Hosted LLM outputs.** OpenAI, Anthropic and Google Cloud terms restrict this. Gemini and the Llama API bar competing models only (R7-027, V-529, V-530), and a brand LLM product may well compete, so the plan stays self-hosted synthetic generation only. Anthropic's Usage Policy shows an effective date of 12 November 2026, so the version in force today was not read.
+- **Hosted LLM outputs.** OpenAI, Anthropic and Google Cloud terms restrict this. The Gemini API bars developing competing models, and separately bars training on Grounded Results and Maps data; the Llama API bars models competing with Meta's (R7-027, V-529, V-530, V-040). A brand LLM product may well compete, so the plan stays self-hosted synthetic generation only. Anthropic's Usage Policy shows an effective date of 12 November 2026, so the version in force today was not read.
 - **TikTok and Reddit terms could not be read** after retrying official hosts (R7-012, R7-013, R7-019, R7-020). A person must read them before this table is final.
 - The earlier reports' pipeline, training adapters on telemetry from five platforms and on competitor content, is not supportable as written.
 
-**Daily flow.** Connectors pull approved sources for each tenant, redact PII, encrypt, then refresh that tenant's retrieval index. Records are tagged with source and training eligibility at ingestion, so the training job can only see eligible data. This is the mechanism that enforces the table.
+**Daily flow** `[DESIGN]`
+
+| Step | Design |
+|---|---|
+| Consent | Brand authorises each source by OAuth or upload, and records what it approved and the basis |
+| Schedule | One scheduled job per tenant per source, with retries and a dead-letter queue |
+| Connectors | One per source, each carrying that source's storage and deletion rules |
+| Processing | Redact PII with an NER-based redactor, encrypt, then update that tenant's retrieval data |
+| Tagging | Each record is tagged with source and training eligibility |
+| Expiry | Per-source TTL. YouTube's 30-day rule and LinkedIn's ten-day duty need deletion jobs (R7-008, R7-016) |
+
+Tagging is the mechanism that enforces the table. Source tagging and the eligibility filter are built. [REAL: test_platform_api_data_is_stored_but_never_trained_on] Connectors, scheduling, consent records and TTLs are not: "daily" in the POC is a Python loop over simulated days.
 
 ## 4. Privacy and compliance
 
 | Requirement | Control | Status |
 |---|---|---|
 | Tenant comes from the token, never the request | Gateway derives tenant | [REAL: test_01_token_cannot_name_another_tenant] |
-| Per-tenant storage and keys | Envelope encryption, per-tenant keys | [REAL: test_03_stores_are_keyed_and_encrypted] demo cipher; KMS is [DESIGN] |
-| Retrieval scoped to tenant | Separate index per tenant | [REAL: test_02_retrieval_returns_only_own_records] |
-| Detectors can actually detect | Negative controls | [REAL: test_08_negative_control_detectors_catch_a_real_leak] |
-| No raw content in logs | Hashes and counts only | [REAL: test_07_logs_and_metrics_hold_no_content] |
+| Per-tenant storage and keys | Per-tenant key in the POC; KMS envelope encryption in production | [REAL: test_03_stores_are_keyed_and_encrypted] demo cipher; KMS is [DESIGN]. Adapters and metadata are plaintext in the POC, and insights hold tenant vocabulary, so production must encrypt them too [DESIGN] |
+| Retrieval scoped to tenant | BM25 per query over that tenant's records, no shared index | [REAL: test_02_retrieval_returns_only_own_records] A real vector index per tenant is [DESIGN] |
+| Detectors fire on planted leaks | Negative controls | [REAL: test_08_negative_control_detectors_catch_a_real_leak] [REAL: test_08a_log_detector_catches_content_in_telemetry] |
+| Version strings cannot reach another tenant | Validated names, never paths | [REAL: test_04b_version_strings_cannot_traverse] Found by review, then fixed |
+| No raw content in logs | Salted hashes and counts. Break-glass reasons are stored verbatim | [REAL: test_07_logs_and_metrics_hold_no_content] |
 | No unnecessary human access | Aggregate metrics, break-glass with reason and audit | [REAL: test_09_admin_sees_aggregates_only_and_break_glass_is_audited] |
-| Offboarding | Delete data, index, adapters and key | [REAL: test_10_offboarding_removes_everything] |
+| Offboarding | Delete data, adapters, registry and key, drop loaded models, refuse the tenant's tokens, never reuse its id | [REAL: test_10_offboarding_removes_everything] [REAL: test_10b_offboarded_ids_are_never_reused] |
 | Tenant data never changes the base | Frozen base, hash checked | [REAL: test_tenant_training_never_changes_the_shared_base] |
-| Cross-tenant leakage in adapters | Canary gate; generated canaries in production | [REAL: test_08b_leakage_gate_blocks_promotion]; the LLM probe is [DESIGN] |
+| Cross-tenant leakage in adapters | Literal canary scan today; generated canaries on the real model in production | [REAL: test_08b_leakage_gate_blocks_promotion] finds a canary written into the artefact. It cannot find one learned by the weights [REAL: test_08c_byte_scan_limit_is_real]. The LLM probe is [DESIGN] |
 
-These tests show application-level isolation on one machine. Cloud IAM, network, GPU memory and a shared serving process are not covered, and are `[DESIGN]`.
+**How far the isolation evidence goes.** No cross-tenant path was found through the current HTTP routes, after review found and fixed two paths at the code level. That is application-level testing on one machine, by the same AI process that wrote the code. It is not a penetration test or a proof. `check_bytes` cannot read ciphertext, so stores are checked by decrypting them. Cloud IAM, network, GPU memory and a shared serving process are not covered, and are `[DESIGN]`.
 
-**"No human access" has limits.** Support and incident response need a route in, so the design is break-glass, audited and rare, not zero. Say "no routine human access".
+**"No human access" has limits.** Support and incident response need a route in, so the design is break-glass, audited and rare, not zero. Say "no routine human access". Production break-glass needs a second approver and an expiry, which the POC lacks.
 
-**Weights are personal data until shown otherwise.** Presume adapter weights hold personal data, so deletion must reach them (R7-036, R7-047). LoRA reduces membership inference risk but does not remove it: AUC 0.775, and 17.6% against 99.0% TPR at 1% FPR compared with full fine-tuning (R6-054, R6-055). Claims that LoRA is comparable to differential privacy are empirical, not a guarantee (R6-056). Per-brand adapters make deletion possible, which shared-model training does not: the page cited in R7-089 notes weight deletion is impossible in shared models.
+**Retention, residency and sub-processors** `[DESIGN]`. Not researched in depth. Each tenant needs a stated retention period per source, a region, and a list of sub-processors. If retrieval or synthetic data uses any hosted API, that vendor is a sub-processor. RunPod prices were region-unspecified, and its SOC 2 coverage varies by workload, region and provider (R3-027). These are likely to be the first questions from an EU or enterprise buyer.
+
+**Weights are personal data until shown otherwise.** Presume adapter weights hold personal data, so deletion must reach them (R7-036, R7-047). LoRA reduces membership inference risk but does not remove it. Against full fine-tuning, one study found 17.6% against 99.0% TPR at 1% FPR on XSum, but leakage depends on the data: on AG News the same LoRA setup reached AUC 0.961 and 46.7% TPR, and short social posts may sit at that worse end (R6-054, R6-055). Claims that LoRA is comparable to differential privacy are empirical, not a guarantee (R6-056). Per-brand adapters make deletion practical, because deleting the file removes the tenant's weights. Practitioner guidance doubts deletion from shared models is workable, though that is one secondary view (R7-089).
 
 **Regulatory position** `[COUNSEL]`
 
@@ -111,7 +127,7 @@ Use rented GPUs on demand, per training job.
 
 | Job | GPU | Rate | Note |
 |---|---|---|---|
-| Adapter training | L40S, 48 GB, Secure Cloud | $1.09 per hour (R3-003) | Holds the 22 to 24 GB QLoRA footprint |
+| Adapter training | L40S, 48 GB, Secure Cloud | $1.09 per hour (R3-003) | Fits Unsloth's 22 to 24 GB. Axolotl's 47 GiB on the nearest Qwen config is tight, so confirm in the timing test (R5-058) |
 | Inference | A100 PCIe, 80 GB, Secure Cloud | $1.79 per hour (R3-005) | Fits BF16 serving if quantised LoRA fails |
 | Fallback inference | H100 SXM | $3.99 per hour (R3-007) | |
 
@@ -142,7 +158,17 @@ Training jobs run in ephemeral containers, with no interactive access, loading o
 
 **Monitoring.** Latency per adapter, queue depth, cache hit rate, GPU memory, error rate, and rejection rate per gate, with no content in metrics.
 
-**Response time.** Stream tokens, cache retrieval results per tenant, and keep prompts small. Targets are set after the first measurement, not before.
+**Response time.** Stream tokens, cache retrieval results per tenant, and keep prompts small.
+
+**Reliability** `[DESIGN]`
+
+| Item | Starting position, revised after first measurement |
+|---|---|
+| Availability | At least 2 replicas before any paid SLA. One GPU at Seed means no failover |
+| Latency target | Time to first token and p95 agreed per task after the first load test |
+| Failover | Fall back to the base with few-shot examples if an adapter fails to load, and say so in the response metadata |
+| Disaster recovery | Registry and encrypted stores backed up per tenant. Key loss means data loss by design |
+| Rollback | Per-tenant pointer. [REAL: test_day_sequence] on the POC classifier |
 
 ## 7. Commercial strategy
 
@@ -160,6 +186,8 @@ Training jobs run in ephemeral containers, with no interactive access, loading o
 | Publishing | Drafts in brand voice, with sources shown |
 | Inbox | Suggested replies, human-approved |
 | Video engine | Brief and script from brand context, feeding the master prompt |
+
+**Integration contract** `[DESIGN]`. The platform calls a small API with the brand's token: `POST /v1/infer` for answers with sources, `POST /v1/briefs` to draft a video brief, and a webhook when a new adapter version goes live. A real design needs the platform's details.
 
 **Closing the loop.** Video performance can inform the next brief through retrieval and reporting. It must not train adapters where platform terms bar it, which is the case for most sources. This is narrower than the closed loop in the earlier reports.
 

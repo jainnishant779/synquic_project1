@@ -1,10 +1,10 @@
 # Roadmap and YC Readiness
 
-**As of 2026-11-01.** Written for YC partners and technical diligence reviewers. Dates are relative to the start of work. Effort estimates are `[ASSUMPTION]`, for a team of 2 or 3 engineers.
+**As of 2026-11-01.** Written for YC partners and technical diligence reviewers. Dates are relative to the start of work, for a team of 2 or 3 engineers `[ASSUMPTION]`.
 
 ## Where things stand
 
-**Built.** A tested skeleton of both pipelines, a sourced fact ledger of 800 items, a costed workbook, and an architecture for each product.
+**Built.** A tested skeleton of both pipelines, a sourced fact ledger, a costed workbook, and an architecture for each product.
 
 **Not built.** Real video generation, a trained LLM, or anything run on real customer data. See [doc 07](07-demo-plan.md).
 
@@ -21,7 +21,10 @@ Goal: replace the biggest assumptions with data.
 | Video pilot: 50 to 100 shots across 2 or 3 models, on real briefs | Accept rate per route, rejection reasons, hand-labelled defects | Workbook updated from pilot data |
 | Confirm one API adapter against a live provider | First real clips in the pipeline | Real run replaces the mock in the demo |
 | Rented GPU day: Wan 2.2 and one adapter smoke test | Real render times; LoRA on quantised bases settled | R5-104 closed |
-| Counsel review | TikTok, Reddit, Alibaba, Gemini, Lightricks, InsightFace, music | Data table and licence verdicts final |
+| Counsel review | Runway, TikTok, Reddit, Alibaba, Gemini, Lightricks, InsightFace, music | Data table and licence verdicts final; at least one API route cleared |
+| Choose an identity check | A commercially licensed face-matching option | The pilot can measure character drift |
+| Sub-processor and residency review | Vendor retention, input-training and region table | Customer assets can lawfully enter the pipeline |
+| Competitor price survey | What customers pay per finished video today | Pricing has a market reference |
 
 ## Days 31 to 90: first real product
 
@@ -51,6 +54,18 @@ Goal: paying design partners on short-form video and grounded insights.
 | Trust | SOC 2 Type 1 path, DPA template, DPIA, AI Act transparency compliance review, penetration test |
 | Commercial | Credit packs repriced from real cost; Social 360 integrated into the platform |
 | Self-hosting | Only if day 90 justified it |
+
+## Budget
+
+Rough, excluding salaries. All `[ESTIMATE]`.
+
+| Period | Item | USD |
+|---|---|---|
+| Days 1 to 30 | Pilot API spend, rented GPU tests | 500 to 1,000 |
+| Days 1 to 30 | Counsel | 5,000 to 15,000 |
+| Days 31 to 90 | Always-on inference GPU, three months at the A100 rate (R3-005) | 3,900 |
+| Days 31 to 90 | Design-partner video COGS, capped | 3,000 to 10,000 |
+| Days 91 to 180 | SOC 2 Type 1 path and penetration test (R7-084, R7-085, R7-086) | 15,000 to 40,000 |
 
 ## Team
 

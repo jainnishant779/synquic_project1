@@ -13,7 +13,7 @@ from poc.video.credits import charge, load_rate_card
 from poc.video.pipeline import run
 from poc.video.planner import PROMPTS_DIR, build_storyboard
 from poc.video.qc import FAIL, NOT_EVALUATED, SEMANTIC_CHECKS, check_clip, probe
-from poc.video.router import NoProviderAvailable, Requirements, route
+from poc.video.router import NoProviderAvailable, Requirements, load_catalog, route
 from poc.video.schemas import Brief, CharacterProfile, ProductReference, Storyboard, StyleBible, VideoSpec
 
 CAPS = Capabilities(max_clip_seconds=10, max_width=1280, max_height=720)
@@ -99,6 +99,12 @@ def test_qc_catches_each_injected_fault(fault, failed_check, tmp_path):
     assert failed_check in check_clip(clip, 2, VideoSpec()).failures
 
 
+def test_qc_fails_a_file_with_no_video(tmp_path):
+    audio = tmp_path / "audio.m4a"
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-f", "lavfi", "-i", "sine=duration=1", str(audio)], check=True)
+    assert "has_video_stream" in check_clip(audio, 1, VideoSpec()).failures
+
+
 def test_clean_clip_passes_and_semantic_checks_are_not_passes(tmp_path):
     adapter = MockAdapter(tmp_path)
     clip = adapter.fetch(adapter.submit(REQUEST), tmp_path / "clip.mp4")
@@ -159,9 +165,18 @@ def test_attempts_are_bounded_and_run_fails_cleanly(tmp_path):
 
 
 def test_resume_reuses_passed_shots(tmp_path):
-    first = run(make_brief(10), MockAdapter(tmp_path / "j"), tmp_path / "run")
-    second = run(make_brief(10), MockAdapter(tmp_path / "j2"), tmp_path / "run")
-    assert first["total_attempts"] == 2 and second["total_attempts"] == 0
+    faults = {("sc01_sh02", attempt): "black" for attempt in range(1, 10)}
+    failed = run(make_brief(10), MockAdapter(tmp_path / "j", faults), tmp_path / "run", max_attempts=2)
+    assert failed["status"] == "failed_qc" and failed["total_attempts"] == 3
+    resumed = run(make_brief(10), MockAdapter(tmp_path / "j2"), tmp_path / "run")
+    assert resumed["status"] == "complete" and resumed["total_attempts"] == 1
+
+
+def test_changed_references_are_not_served_from_cache(tmp_path):
+    run(make_brief(5), MockAdapter(tmp_path / "j"), tmp_path / "run")
+    changed = make_brief(5)
+    changed.characters[0].reference_images = ["someone_else.png"]
+    assert run(changed, MockAdapter(tmp_path / "j2"), tmp_path / "run")["total_attempts"] == 1
 
 
 def _band_is_red(video, timestamp: float, width=640) -> bool:
@@ -183,7 +198,12 @@ def test_five_minute_mock_run(tmp_path):
     assert orders == sorted(orders)
     final = tmp_path / "run" / "final.mp4"
     assert abs(float(probe(final)["format"]["duration"]) - 300) < 1
-    assert all(c["status"] != FAIL for c in manifest["final_qc"]["checks"])
+    checks = {c["name"]: c["status"] for c in manifest["final_qc"]["checks"]}
+    assert set(checks) >= {"has_video_stream", "has_audio_stream", "has_captions", "duration", "silent_audio"}
+    assert FAIL not in checks.values()
+    shots = Storyboard.model_validate(storyboard).shots
+    listed = (tmp_path / "run" / "concat.txt").read_text().splitlines()
+    assert len(listed) == len(shots) and len(set(listed)) == len(shots)
     for timestamp in (1, 150, 299):
         assert _band_is_red(final, timestamp), f"watermark missing at {timestamp}s"
 
@@ -215,6 +235,22 @@ def test_router_picks_cheapest_eligible_and_skips_blocked():
                ENTRY | {"name": "c", "price_per_second_usd": 0.08}]
     chosen, rejected = route(catalog, Requirements(5, 1280, 720), {"a", "b", "c"})
     assert chosen["name"] == "c" and rejected == {"b": "licence blocked"}
+
+
+def test_router_excludes_counsel_routes_unless_accepted():
+    catalog = [ENTRY | {"name": "clear", "price_per_second_usd": 0.2},
+               ENTRY | {"name": "legal", "price_per_second_usd": 0.1, "licence_verdict": "Counsel"}]
+    names = {"clear", "legal"}
+    chosen, rejected = route(catalog, Requirements(5, 1280, 720), names)
+    assert chosen["name"] == "clear" and rejected == {"legal": "needs counsel"}
+    assert route(catalog, Requirements(5, 1280, 720), names, allow_counsel=True)[0]["name"] == "legal"
+
+
+def test_real_catalog_routes_only_to_allowed_and_rejects_blocked():
+    catalog = [e for e in load_catalog() if e["name"] != "mock"]
+    chosen, rejected = route(catalog, Requirements(5, 640, 360), {e["name"] for e in catalog})
+    assert chosen["licence_verdict"] == "Allowed"
+    assert "licence blocked" in rejected.values() and "needs counsel" in rejected.values()
 
 
 def test_router_fails_loudly_when_nothing_fits():

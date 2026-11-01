@@ -29,6 +29,8 @@ INPUTS = [
     ("accept_scenario_2", 0.333, "ratio", "Three takes per keeper"),
     ("accept_scenario_3", 0.61, "ratio", "Low end of self-reported first-pass figures (R4-059), definition undefined"),
     ("accept_scenario_4", 0.85, "ratio", "High end of self-reported figures (R4-060), definition undefined"),
+    ("accept_stress", 0.10, "ratio", "Stress case. None of these rates is a measured first-pass rate per shot (V-042, R4-060)"),
+    ("max_attempts", 3, "count", "Automatic attempts per shot, as in poc/video/pipeline.py"),
     ("overshoot_ratio", 1.0, "ratio", "Extra seconds generated per second used. 1.0 because keep rate already covers retakes (R4 found no solid figure)"),
     ("avg_shot_seconds", 6, "s", "Midpoint of the 4 to 8 s shot range (R4-001)"),
     ("kept_clip_seconds", 5, "s", "Clip length for cost-per-clip display"),
@@ -40,7 +42,12 @@ INPUTS = [
     ("music_share", 1.0, "ratio", "Share of runtime with music"),
     ("lipsync_share", 0.10, "ratio", "Share of runtime needing lip-sync"),
     ("lipsync_usd_per_second", 0.05, "USD/s", "Upper end of the R3-126 range, which the ledger holds as text"),
-    ("qc_tokens_per_output_sec", 300, "tokens", "Vision LLM tokens per generated second"),
+    ("qc_tokens_per_output_sec", 300, "tokens", "Vision LLM input tokens per generated second"),
+    ("qc_output_tokens_per_output_sec", 50, "tokens", "Vision LLM output tokens per generated second"),
+    ("upscale_gpu_sec_per_output_sec", 0.5, "s", "GPU seconds to upscale one output second"),
+    ("review_minutes_per_finished_min", 2, "minutes", "Human approval and sampled review per finished minute"),
+    ("rework_minutes_per_failed_shot", 10, "minutes", "Human handling of a shot that exhausts its attempts"),
+    ("reviewer_usd_hour", 30, "USD/hour", "Loaded cost of a reviewer"),
     ("storage_gb_per_min", 0.1, "GB", "Master and working files per finished minute"),
     ("storage_retention_months", 3, "months", "Retention before purge"),
     ("gpu_hours_per_month", 730, "hours", "Hours a rented GPU is billed per month"),
@@ -51,9 +58,11 @@ INPUTS = [
     ("payment_fee_pct", 0.03, "ratio", "Payment processing"),
     ("fte_usd_month", 12000, "USD/month", "Loaded engineer cost"),
     ("selfhost_fte", 1.0, "FTE", "Engineering needed to run self-hosted video"),
+    ("selfhost_enabled", 0, "0 or 1", "1 moves standard generation to self-hosting where Breakeven says Yes. Off because quality is unproven"),
     ("selfhost_saving_threshold", 0.20, "ratio", "Minimum saving, after engineering, to recommend self-hosting"),
     ("brand_attach_rate", 0.5, "ratio", "Share of brands buying Social 360"),
     ("social_price_usd_month", 499, "USD/month", "Social 360 subscription per brand"),
+    ("rag_usd_per_brand_month", 25, "USD/month", "Embeddings, index and ingestion compute per Social 360 customer"),
     ("retrains_per_month", 4, "count", "Adapter retrains per brand per month"),
     ("train_hours_per_retrain", 1.0, "hours", "No measured figure exists (R6-011 to 013). A timing test must replace this"),
     ("score_weight_cost", 0.5, "weight", "Weighted score: cost"),
@@ -71,9 +80,9 @@ SELECTED = [("route_draft", "gen4_turbo"), ("route_standard", "gen45"), ("route_
 
 ROUTES = [
     # key, name, kind, resolution, price expression or (gpu, render, clip seconds), max clip, w, h, refs, verdict, source
-    dict(key="gen4_turbo", name="Runway Gen-4 Turbo", kind="api", res="720p", price=("mul", "R1-037", "R1-040"), clip=10, w=1280, h=720, refs=True, verdict="Allowed", src="R1-051"),
-    dict(key="gen45", name="Runway Gen-4.5", kind="api", res="720p", price=("mul", "R1-037", "R1-038"), clip=10, w=1280, h=720, refs=True, verdict="Allowed", src="R1-051"),
-    dict(key="luma_ray32", name="Luma Ray3.2 SDR", kind="api", res="720p", price=("per_clip", "R1-105", 5), clip=10, w=1280, h=720, refs=True, verdict="Allowed", src="R1-112"),
+    dict(key="gen4_turbo", name="Runway Gen-4 Turbo", kind="api", res="720p", price=("mul", "R1-037", "R1-040"), clip=10, w=1280, h=720, refs=True, verdict="Counsel", src="V-904"),
+    dict(key="gen45", name="Runway Gen-4.5", kind="api", res="720p", price=("mul", "R1-037", "R1-038"), clip=10, w=1280, h=720, refs=True, verdict="Counsel", src="V-904"),
+    dict(key="luma_ray32", name="Luma Ray3.2 SDR", kind="api", res="720p", price=("per_clip", "R1-105", 5), clip=5, w=1280, h=720, refs=True, verdict="Counsel", src="R1-112"),
     dict(key="h3_direct", name="MiniMax H3 API", kind="api", res="768p", price=("fact", "R1-074"), clip=15, w=1366, h=768, refs=True, verdict="Counsel", src="R1-087"),
     dict(key="h3_lite", name="MiniMax H3 Lite API", kind="api", res="768p", price=("fact", "R1-077"), clip=15, w=1366, h=768, refs=True, verdict="Counsel", src="R1-087"),
     dict(key="wan3_api", name="Wan 3.0 API (Singapore list)", kind="api", res="720p", price=("fact", "R1-088"), clip=30, w=1280, h=720, refs=True, verdict="Counsel", src="R1-096"),
@@ -288,7 +297,11 @@ def build():
         ("music_per_min", f"=music_share*{fact(MUSIC)}", "Music per finished minute"),
         ("lipsync_per_min", "=60*lipsync_share*lipsync_usd_per_second", "Lip-sync per finished minute"),
         ("storage_per_min", f"=storage_gb_per_min*storage_retention_months*{fact(STORAGE)}", "Storage per finished minute"),
-        ("qc_per_sec", f"=qc_tokens_per_output_sec*{fact(LLM_IN)}/1000000", "Vision QC per generated second"),
+        ("upscale_per_min", f"=60*upscale_gpu_sec_per_output_sec*{fact('R3-001')}/3600", "Upscaling per finished minute"),
+        ("review_per_min", "=review_minutes_per_finished_min/60*reviewer_usd_hour", "Human review per finished minute"),
+        ("rework_per_min", "=(1-first_pass_accept_rate)^max_attempts*60/avg_shot_seconds*rework_minutes_per_failed_shot/60*reviewer_usd_hour",
+         "Human rework of shots that exhaust their attempts, per finished minute"),
+        ("qc_per_sec", f"=(qc_tokens_per_output_sec*{fact(LLM_IN)}+qc_output_tokens_per_output_sec*{fact(LLM_OUT)})/1000000", "Vision QC per generated second"),
     ]
     for offset, (label, formula, note) in enumerate(stack, 1):
         ws.write(offset, 0, label)
@@ -349,7 +362,7 @@ def build():
         "generation_per_second.draft": f"={route_value('route_draft', 'C')}*overshoot_ratio+keyframes_per_min/60",
         "generation_per_second.standard": f"={route_value('route_standard', 'C')}*overshoot_ratio+keyframes_per_min/60",
         "generation_per_second.premium": f"={route_value('route_premium', 'C')}*overshoot_ratio+keyframes_per_min/60",
-        "assembly_per_minute": "=tts_per_min+music_per_min+lipsync_per_min+storage_per_min",
+        "assembly_per_minute": "=tts_per_min+music_per_min+lipsync_per_min+storage_per_min+upscale_per_min+review_per_min+rework_per_min",
     }
     op_rows = {}
     for offset, (key, label) in enumerate(OPS):
@@ -369,6 +382,15 @@ def build():
     ws.write_formula(r, 2, f"=C{op_rows['planning_per_video']}+300*C{op_rows['generation_per_second.standard']}+5*C{op_rows['assembly_per_minute']}", whole)
     ws.write_formula(r, 3, f"=C{r + 1}*credit_price", money)
     name("five_min_retail", "Credits", r, 3)
+    ws.write(r + 1, 0, "Thirty-second standard video, credits")
+    ws.write_formula(r + 1, 2, f"=C{op_rows['planning_per_video']}+30*C{op_rows['generation_per_second.standard']}+C{op_rows['assembly_per_minute']}", whole)
+    ws.write_formula(r + 1, 3, f"=C{r + 2}*credit_price", money)
+    header(ws, r + 3, ["Pack reach", "Standard seconds", "Thirty-second videos"])
+    for offset in range(len(PACKS)):
+        row = r + 4 + offset
+        ws.write_formula(row, 0, f"=A{offset + 2}")
+        ws.write_formula(row, 1, f"=C{offset + 2}/C{op_rows['generation_per_second.standard']}", whole)
+        ws.write_formula(row, 2, f"=C{offset + 2}/C{r + 2}", book.add_format({"num_format": "0.0"}))
 
     # Breakeven
     ws = sheets["Breakeven"]
@@ -411,7 +433,8 @@ def build():
     labels = ["Brands", "Videos", "Finished seconds", "Draft generation USD", "Standard generation USD",
               "Premium generation USD", "Planning USD", "Assembly USD", "Keyframes USD", "Video COGS USD", "Credits sold",
               "Video revenue USD", "Social 360 customers", "Inference GPU USD", "Training GPU USD", "Social 360 COGS USD",
-              "Social 360 revenue USD", "Total revenue USD", "Total COGS USD", "Gross margin"]
+              "Social 360 revenue USD", "Total revenue USD", "Total COGS USD", "Gross margin",
+              "Video spend implied per brand USD", "RAG USD"]
     for offset, label in enumerate(labels, 1):
         ws.write(offset, 0, label)
     op = lambda key, column="C": f"Credits!${column}${op_rows[key]}"
@@ -423,7 +446,7 @@ def build():
         ws.write_formula(3, col, f"={c}3*avg_video_seconds", whole)
         ws.write_formula(4, col, f"={c}4*mix_draft*overshoot_ratio*{route_value('route_draft', 'C')}", money)
         api = f"{c}4*mix_standard*overshoot_ratio*{route_value('route_standard', 'C')}"
-        ws.write_formula(5, col, f'=IF(Breakeven!{c}13="Yes",Breakeven!{c}10+{c}4*mix_standard*overshoot_ratio*qc_per_sec/first_pass_accept_rate,{api})', money)
+        ws.write_formula(5, col, f'=IF(AND(selfhost_enabled=1,Breakeven!{c}13="Yes"),Breakeven!{c}10+{c}4*mix_standard*overshoot_ratio*qc_per_sec/first_pass_accept_rate,{api})', money)
         ws.write_formula(6, col, f"={c}4*mix_premium*overshoot_ratio*{route_value('route_premium', 'C')}", money)
         ws.write_formula(7, col, f"={c}3*{op('planning_per_video', 'B')}", money)
         ws.write_formula(8, col, f"={c}4/60*{op('assembly_per_minute', 'B')}", money)
@@ -434,36 +457,45 @@ def build():
         ws.write_formula(13, col, f"={c}2*brand_attach_rate", whole)
         ws.write_formula(14, col, f"=Inputs!{cell(tier_row + t, 3)}*{fact(SOCIAL_INFER_GPU)}*gpu_hours_per_month", money)
         ws.write_formula(15, col, f"={c}14*retrains_per_month*train_hours_per_retrain*{fact(SOCIAL_TRAIN_GPU)}", money)
-        ws.write_formula(16, col, f"={c}15+{c}16", money)
+        ws.write_formula(16, col, f"={c}15+{c}16+{c}23", money)
+        ws.write_formula(21, col, f"={c}13/{c}2", money)
+        ws.write_formula(22, col, f"={c}14*rag_usd_per_brand_month", money)
         ws.write_formula(17, col, f"={c}14*social_price_usd_month", money)
         ws.write_formula(18, col, f"={c}13+{c}18", money)
         ws.write_formula(19, col, f"={c}11+{c}17", money)
         ws.write_formula(20, col, f"=1-{c}20/{c}19", pct)
-    ws.write(22, 0, "Volumes are [ASSUMPTION], not traction. Prices are set by Credits, so revenue follows cost and does not test demand.")
+    ws.write(24, 0, "Volumes are [ASSUMPTION], not traction. Prices are set by Credits, so revenue follows cost and does not test demand.")
+    ws.write(25, 0, "All-API baseline unless selfhost_enabled is 1. Revenue assumes every credit is redeemed, at the mean pack price.")
 
     # Sensitivity
     ws = sheets["Sensitivity"]
     ws.set_column(0, 0, 30)
     ws.set_column(1, 6, 16)
     header(ws, 0, ["Accept rate scenario", "Rate", "Standard USD per accepted s", "All-in USD per finished min",
-                   "All-in USD, 5-minute video", "Standard credits per s", "Retail USD, 5-minute video"])
+                   "All-in USD, 5-minute video", "Standard credits per s", "Retail USD, 5-minute video",
+                   "Rework USD per finished min", "Chance a 60-shot run needs no human"])
     raw = route_value("route_standard", "B")
-    plan, assembly = op("planning_per_video"), op("assembly_per_minute")
-    for offset, label in enumerate(["1 User default", "2 Three takes", "3 Self-reported low", "4 Self-reported high"], 1):
+    plan = op("planning_per_video")
+    scenarios = [("Stress", "accept_stress"), ("1 User default", "accept_scenario_1"), ("2 Three takes", "accept_scenario_2"),
+                 ("3 Self-reported low", "accept_scenario_3"), ("4 Self-reported high", "accept_scenario_4")]
+    for offset, (label, rate) in enumerate(scenarios, 1):
         x = offset + 1
         ws.write(offset, 0, label)
-        ws.write_formula(offset, 1, f"=accept_scenario_{offset}")
+        ws.write_formula(offset, 1, f"={rate}")
+        ws.write_formula(offset, 7, f"=(1-B{x})^max_attempts*60/avg_shot_seconds*rework_minutes_per_failed_shot/60*reviewer_usd_hour", money)
         ws.write_formula(offset, 2, f"=({raw}+qc_per_sec)/B{x}", fine)
-        ws.write_formula(offset, 3, f"=60*overshoot_ratio*C{x}+stack_per_min", money)
+        ws.write_formula(offset, 3, f"=60*overshoot_ratio*C{x}+stack_per_min-rework_per_min+H{x}", money)
         ws.write_formula(offset, 4, f"=D{x}*5", money)
         ws.write_formula(offset, 5, f"=ROUNDUP((C{x}*overshoot_ratio+keyframes_per_min/60)*(1+risk_buffer)/credit_budget,0)", whole)
+        assembly = f"ROUNDUP((tts_per_min+music_per_min+lipsync_per_min+storage_per_min+upscale_per_min+review_per_min+H{x})*(1+risk_buffer)/credit_budget,0)"
         ws.write_formula(offset, 6, f"=({plan}+300*F{x}+5*{assembly})*credit_price", money)
+        ws.write_formula(offset, 8, f"=(1-(1-B{x})^max_attempts)^60", book.add_format({"num_format": "0.0E+00"}))
 
     # Checks
     ws = sheets["Checks"]
     ws.set_column(0, 0, 58)
     header(ws, 0, ["Check", "Value", "Result"])
-    start = 12
+    start = 13
     header(ws, start, ["Fact used by a formula", "Status", "Age days"])
     for offset, fact_id in enumerate(used, 1):
         ws.write(start + offset, 0, fact_id)
@@ -482,6 +514,8 @@ def build():
          "=" + "+".join(f'IF({route_value(s, "I")}="Blocked",1,0)' for s, _ in SELECTED), '=0'),
         ("Operations below margin floor on cheapest pack",
          f'=COUNTIF(Credits!$E${first_op}:$E${last_op},"<"&margin_floor)', '=0'),
+        ("Selected routes still at Counsel (information)",
+         "=" + "+".join(f'IF({route_value(s, "I")}="Counsel",1,0)' for s, _ in SELECTED), None),
         ("Mix shares sum to 1", "=ROUND(mix_draft+mix_standard+mix_premium,6)", '=1'),
         ("Score weights sum to 1", "=ROUND(score_weight_cost+score_weight_licence+score_weight_capability,6)", '=1'),
     ]
@@ -492,9 +526,9 @@ def build():
             ws.write_formula(offset, 2, f'=IF(B{offset + 1}{test},"PASS","FAIL")')
         else:
             ws.write(offset, 2, "INFO")
-    ws.write(10, 0, "OVERALL", bold)
-    ws.write_formula(10, 2, f'=IF(COUNTIF(C2:C{len(checks) + 1},"FAIL")=0,"PASS","FAIL")', bold)
-    name("overall_check", "Checks", 10, 2)
+    ws.write(11, 0, "OVERALL", bold)
+    ws.write_formula(11, 2, f'=IF(COUNTIF(C2:C{len(checks) + 1},"FAIL")=0,"PASS","FAIL")', bold)
+    name("overall_check", "Checks", 11, 2)
 
     # README
     ws = sheets["README"]
@@ -593,9 +627,14 @@ def export(op_rows):
             "max_width": route["w"], "max_height": route["h"], "supports_references": route["refs"],
             "licence_verdict": route["verdict"], "verdict_source": route["src"],
         })
+    for key, label, source in (("minimax_h3_open_weights", "MiniMax H3 open weights", "R2-002"),
+                               ("hunyuanvideo_15", "HunyuanVideo 1.5", "R2-059")):
+        providers.append({"name": key, "display_name": label, "kind": "self", "price_per_second_usd": None,
+                          "max_clip_seconds": 5, "max_width": 1280, "max_height": 720, "supports_references": True,
+                          "licence_verdict": "Blocked", "verdict_source": source})
     catalog = {"status": "workbook", "as_of": AS_OF, "providers": providers}
     (ROOT / "poc" / "provider_catalog.json").write_text(json.dumps(catalog, indent=2), encoding="utf-8")
-    return values["Checks"]["C11"].value
+    return values["Checks"]["C12"].value
 
 
 def main():

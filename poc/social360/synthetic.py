@@ -49,7 +49,7 @@ def tenant_records(tenant_id: str, count: int, seed: int, day: int = 0) -> list[
             text = f"where can i find the {product} {rng.choice(FILLERS)} ref{seed}x{index}"
         else:
             text = f"the {product} is {rng.choice(profile[label])} {rng.choice(FILLERS)} ref{seed}x{index}"
-        records.append({"text": text, "label": label, "day": day, "approved": True})
+        records.append({"text": text, "label": label, "day": day, "approved": True, "source": "first_party"})
     return records
 
 
@@ -63,7 +63,8 @@ def records_with_pii_and_unapproved(tenant_id: str, day: int) -> list[dict]:
     canary = TENANTS[tenant_id]["canary"]
     return [
         {"text": f"the item is great, reach me at jo.fake@example.test or +1 202 555 0143 {canary}",
-         "label": "positive", "day": day, "approved": True},
-        {"text": "thanks @fake_customer the item is great", "label": "positive", "day": day, "approved": True},
+         "label": "positive", "day": day, "approved": True, "source": "first_party"},
+        {"text": "thanks @fake_customer the item is great", "label": "positive", "day": day, "approved": True,
+         "source": "first_party"},
         {"text": f"UNAPPROVED draft campaign for {tenant_id}", "label": "positive", "day": day, "approved": False},
     ]

@@ -1,15 +1,26 @@
 """Model registry: immutable versions per tenant, with an atomically moved prod pointer."""
 import json
 import os
+import re
 import shutil
 from pathlib import Path
 
 from .tenancy import AccessDenied, TenantContext
 
 
+VERSION = re.compile(r"v\d{4}")
+
+
 class Registry:
     def __init__(self, root: Path):
         self.root = Path(root)
+
+    @staticmethod
+    def _checked(version: str) -> str:
+        """A version is a name, never a path. This is what stops ../ reaching another tenant."""
+        if not VERSION.fullmatch(version):
+            raise AccessDenied("invalid version")
+        return version
 
     def _tenant_dir(self, ctx: TenantContext, tenant_id: str) -> Path:
         if ctx.tenant_id != tenant_id:
@@ -32,12 +43,12 @@ class Registry:
         return version
 
     def metadata(self, ctx: TenantContext, tenant_id: str, version: str) -> dict:
-        path = self._tenant_dir(ctx, tenant_id) / version / "metadata.json"
+        path = self._tenant_dir(ctx, tenant_id) / self._checked(version) / "metadata.json"
         return json.loads(path.read_text(encoding="utf-8"))
 
     def promote(self, ctx: TenantContext, tenant_id: str, version: str) -> None:
         directory = self._tenant_dir(ctx, tenant_id)
-        if not (directory / version).is_dir():
+        if not (directory / self._checked(version)).is_dir():
             raise ValueError(f"unknown version {version}")
         history = self._history(directory) + [version]
         temporary = directory / "prod.tmp"
@@ -64,4 +75,4 @@ class Registry:
         return history[-1] if history else None
 
     def adapter_path(self, ctx: TenantContext, tenant_id: str, version: str) -> Path:
-        return self._tenant_dir(ctx, tenant_id) / version / "adapter.pt"
+        return self._tenant_dir(ctx, tenant_id) / self._checked(version) / "adapter.pt"

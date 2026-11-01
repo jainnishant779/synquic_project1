@@ -20,6 +20,7 @@ from pathlib import Path
 from .tenancy import AccessDenied, TenantContext
 
 TOKEN = re.compile(r"[a-z0-9_]+")
+TENANT_ID = re.compile(r"[a-z0-9_]{1,64}")
 
 
 def tokenize(text: str) -> list[str]:
@@ -50,9 +51,10 @@ class TenantStore:
     """All data for one tenant. Holds no reference to any other tenant."""
 
     def __init__(self, root: Path, tenant_id: str, keyring: "KeyRing"):
+        if not TENANT_ID.fullmatch(tenant_id):
+            raise AccessDenied("invalid tenant id")
         self.tenant_id = tenant_id
         self.dir = Path(root) / tenant_id
-        self.dir.mkdir(parents=True, exist_ok=True)
         self._keyring = keyring
 
     def _authorize(self, ctx: TenantContext) -> bytes:
@@ -68,13 +70,14 @@ class TenantStore:
     def add(self, ctx: TenantContext, records: list[dict]) -> None:
         key = self._authorize(ctx)
         merged = self._read(ctx) + records
+        self.dir.mkdir(parents=True, exist_ok=True)
         (self.dir / "records.enc").write_bytes(encrypt(key, json.dumps(merged).encode()))
 
     def records(self, ctx: TenantContext) -> list[dict]:
         return self._read(ctx)
 
     def search(self, ctx: TenantContext, query: str, limit: int = 3) -> list[dict]:
-        """BM25 over this tenant's records only."""
+        """BM25 over this tenant's decrypted records. There is no index, shared or otherwise."""
         records = self._read(ctx)
         documents = [Counter(tokenize(r["text"])) for r in records]
         if not documents:
@@ -104,6 +107,9 @@ class KeyRing:
     def create(self, tenant_id: str) -> None:
         self._keys.setdefault(tenant_id, secrets.token_bytes(32))
 
+    def has(self, tenant_id: str) -> bool:
+        return tenant_id in self._keys
+
     def key_for(self, tenant_id: str) -> bytes:
         if tenant_id not in self._keys:
             raise AccessDenied(f"no key for {tenant_id}")
@@ -115,5 +121,7 @@ class KeyRing:
 
 def offboard(root: Path, tenant_id: str, keyring: KeyRing) -> None:
     """Remove a tenant's store, adapters and registry entries, then destroy its key."""
-    shutil.rmtree(Path(root) / tenant_id, ignore_errors=True)
+    directory = Path(root) / tenant_id
+    if directory.exists():
+        shutil.rmtree(directory)
     keyring.destroy(tenant_id)

@@ -10,7 +10,7 @@ from pathlib import Path
 import openpyxl
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from build_workbook import FACTS, INPUTS, OUT, PACKS, TIERS, com_call, excel_workbook  # noqa: E402
+from build_workbook import FACTS, INPUTS, MIX, OUT, PACKS, TIERS, com_call, excel_workbook  # noqa: E402
 
 TOLERANCE = 1e-6
 
@@ -24,14 +24,19 @@ def expected():
     i = {name: value for name, value, _, _ in INPUTS}
     rate = i[f"accept_scenario_{i['accept_selector']}"]
     llm_in, llm_out = price(facts, "R3-100"), price(facts, "R3-101")
-    qc = i["qc_tokens_per_output_sec"] * llm_in / 1e6
+    qc = (i["qc_tokens_per_output_sec"] * llm_in + i["qc_output_tokens_per_output_sec"] * llm_out) / 1e6
     planning = (i["planning_input_tokens_per_min"] * llm_in + i["planning_output_tokens_per_min"] * llm_out) / 1e6
     keyframes = 60 / i["avg_shot_seconds"] * i["keyframe_attempts_per_shot"] * price(facts, "R3-110")
     tts = i["narration_chars_per_min"] / 1000 * price(facts, "R3-112")
     music = i["music_share"] * price(facts, "R3-120")
     lipsync = 60 * i["lipsync_share"] * i["lipsync_usd_per_second"]
     storage = i["storage_gb_per_min"] * i["storage_retention_months"] * price(facts, "R3-130")
-    stack = planning + keyframes + tts + music + lipsync + storage
+    upscale = 60 * i["upscale_gpu_sec_per_output_sec"] * price(facts, "R3-001") / 3600
+    review = i["review_minutes_per_finished_min"] / 60 * i["reviewer_usd_hour"]
+    rework_at = lambda r: (1 - r) ** i["max_attempts"] * 60 / i["avg_shot_seconds"] * i["rework_minutes_per_failed_shot"] / 60 * i["reviewer_usd_hour"]
+    rework = rework_at(rate)
+    fixed = planning + keyframes + tts + music + lipsync + storage + upscale + review
+    stack = fixed + rework
 
     gen45 = price(facts, "R1-037") * price(facts, "R1-038")
     turbo = price(facts, "R1-037") * price(facts, "R1-040")
@@ -43,17 +48,44 @@ def expected():
     budget = credit_price * (1 - i["target_gm"] - i["payment_fee_pct"])
     credits = lambda cogs: math.ceil(round(cogs * (1 + i["risk_buffer"]) / budget, 9))
     standard = accepted(gen45) * i["overshoot_ratio"] + keyframes / 60
-    assembly = tts + music + lipsync + storage
+    assembly = tts + music + lipsync + storage + upscale + review + rework
     plan_cogs = planning * i["avg_video_seconds"] / 60
 
     gpu = price(facts, "R3-001")
     render = price(facts, "V-901") / 5
     capacity = i["gpu_hours_per_month"] * 3600 * i["utilisation"] / render
-    raw_launch = TIERS[1][2] * i["avg_video_seconds"] * 0.6 * i["overshoot_ratio"] / rate
+    mix = dict(MIX)
+    raw_launch = TIERS[1][2] * i["avg_video_seconds"] * mix["mix_standard"] * i["overshoot_ratio"] / rate
     gpus = math.ceil(raw_launch / capacity)
     self_total = gpus * gpu * i["gpu_hours_per_month"] + i["selfhost_fte"] * i["fte_usd_month"]
 
-    return {
+    draft_sec, premium_sec = accepted(turbo) * i["overshoot_ratio"], accepted(kling) * i["overshoot_ratio"]
+    standard_sec = accepted(gen45) * i["overshoot_ratio"]
+    packs = [p / c for _, p, c in PACKS]
+    tiers = {}
+    for index, (_, brands, videos, inference_gpus) in enumerate(TIERS):
+        seconds = videos * i["avg_video_seconds"]
+        generation = seconds * (mix["mix_draft"] * draft_sec + mix["mix_standard"] * standard_sec + mix["mix_premium"] * premium_sec)
+        video_cogs = generation + videos * plan_cogs + seconds / 60 * assembly + seconds / 60 * keyframes
+        credits_sold = videos * credits(plan_cogs) + seconds * (
+            mix["mix_draft"] * credits(accepted(turbo) * i["overshoot_ratio"] + keyframes / 60)
+            + mix["mix_standard"] * credits(standard) + mix["mix_premium"] * credits(accepted(kling) * i["overshoot_ratio"] + keyframes / 60)
+        ) + seconds / 60 * credits(assembly)
+        video_revenue = credits_sold * (sum(packs) / len(packs)) * (1 - i["payment_fee_pct"])
+        customers = brands * i["brand_attach_rate"]
+        social_cogs = (inference_gpus * price(facts, "R3-005") * i["gpu_hours_per_month"]
+                       + customers * i["retrains_per_month"] * i["train_hours_per_retrain"] * price(facts, "R3-003")
+                       + customers * i["rag_usd_per_brand_month"])
+        revenue = video_revenue + customers * i["social_price_usd_month"]
+        tiers[("Tiers", f"video_cogs_{index}")] = video_cogs
+        tiers[("Tiers", f"margin_{index}")] = 1 - (video_cogs + social_cogs) / revenue
+    sensitivity = {}
+    for label, rate_value in (("stress", i["accept_stress"]), ("high", i["accept_scenario_4"])):
+        cost = 60 * i["overshoot_ratio"] * (gen45 + qc) / rate_value + fixed + rework_at(rate_value)
+        sensitivity[("Sensitivity", f"five_min_{label}")] = cost * 5
+        sensitivity[("Sensitivity", f"unaided_{label}")] = (1 - (1 - rate_value) ** i["max_attempts"]) ** 60
+
+    return tiers | sensitivity | {
         ("Unit_Costs", "stack"): stack,
         ("Unit_Costs", "gen45_raw"): gen45,
         ("Unit_Costs", "gen45_accepted"): accepted(gen45),
@@ -83,7 +115,17 @@ def actual():
     credits = {row[5]: row for row in book["Credits"].iter_rows(values_only=True) if len(row) > 5 and row[5]}
     labels = {row[0]: row[1] for row in book["Credits"].iter_rows(values_only=True) if row[0]}
     breakeven = {row[0]: row for row in book["Breakeven"].iter_rows(values_only=True) if row[0]}
-    return {
+    tiers = {row[0]: row for row in book["Tiers"].iter_rows(values_only=True) if row[0]}
+    sensitivity = {row[0]: row for row in book["Sensitivity"].iter_rows(values_only=True) if row[0]}
+    tier_values = {}
+    for index in range(len(TIERS)):
+        tier_values[("Tiers", f"video_cogs_{index}")] = tiers["Video COGS USD"][index + 1]
+        tier_values[("Tiers", f"margin_{index}")] = tiers["Gross margin"][index + 1]
+    return tier_values | {
+        ("Sensitivity", "five_min_stress"): sensitivity["Stress"][4],
+        ("Sensitivity", "unaided_stress"): sensitivity["Stress"][8],
+        ("Sensitivity", "five_min_high"): sensitivity["4 Self-reported high"][4],
+        ("Sensitivity", "unaided_high"): sensitivity["4 Self-reported high"][8],
         ("Unit_Costs", "stack"): units["stack_per_min"][1],
         ("Unit_Costs", "gen45_raw"): units["gen45"][1],
         ("Unit_Costs", "gen45_accepted"): units["gen45"][2],
@@ -112,12 +154,12 @@ def input_moves_output():
     with excel_workbook(read_only=True) as (excel, workbook):
         selector = com_call(lambda: workbook.Names("accept_selector").RefersToRange)
         rate = com_call(lambda: workbook.Names("first_pass_accept_rate").RefersToRange)
-        cost = com_call(lambda: workbook.Worksheets("Unit_Costs").Range("F12"))
+        cost = com_call(lambda: workbook.Worksheets("Unit_Costs").Range("F15"))
         before, cost_before = com_call(lambda: rate.Value), com_call(lambda: cost.Value)
         com_call(lambda: setattr(selector, "Value", 3))
         com_call(excel.Calculate)
         after, cost_after = com_call(lambda: rate.Value), com_call(lambda: cost.Value)
-        overall = com_call(lambda: workbook.Worksheets("Checks").Range("C11").Value)
+        overall = com_call(lambda: workbook.Worksheets("Checks").Range("C12").Value)
         return before, after, cost_before, cost_after, overall
 
 

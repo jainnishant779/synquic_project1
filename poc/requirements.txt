@@ -1,6 +1,6 @@
-torch
-fastapi
-httpx
-pydantic
-pytest
+torch==2.9.1
+fastapi==0.135.2
+httpx==0.28.1
+pydantic==2.12.5
+pytest==8.4.2
 openpyxl

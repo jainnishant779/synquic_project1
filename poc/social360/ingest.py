@@ -1,4 +1,8 @@
-"""Ingestion: approved records only, PII redacted before anything is stored."""
+"""Ingestion: approved records only, PII redacted, and each record tagged for training eligibility.
+
+Platform API data can serve retrieval and reporting but is never eligible for training here.
+See the data rights table in docs/04-social360-architecture.md.
+"""
 import re
 from dataclasses import dataclass
 
@@ -10,6 +14,9 @@ PII_PATTERNS = {
     "PHONE": re.compile(r"\+?\d[\d\s().-]{7,}\d"),
     "HANDLE": re.compile(r"(?<![\w@])@[A-Za-z0-9_]{2,}"),
 }
+
+
+TRAINING_ELIGIBLE_SOURCES = {"first_party", "licensed", "synthetic_open_weight"}
 
 
 @dataclass
@@ -40,7 +47,9 @@ def ingest(ctx: TenantContext, store: TenantStore, records: list[dict]) -> Inges
         text, count = redact(record["text"])
         report.redactions += count
         report.accepted += 1
-        clean.append({"text": text, "label": record["label"], "day": record.get("day", 0)})
+        source = record.get("source", "unknown")
+        clean.append({"text": text, "label": record["label"], "day": record.get("day", 0), "source": source,
+                      "training_eligible": source in TRAINING_ELIGIBLE_SOURCES})
     if clean:
         store.add(ctx, clean)
     return report

@@ -1,7 +1,8 @@
 """Automated QC. Technical checks use ffprobe and ffmpeg filters on the real file.
 
 Semantic checks (does the clip show the right action, is it the same character) are not
-implemented. They report not_evaluated, which is never counted as a pass.
+implemented. They report not_evaluated. A shot is accepted on technical checks alone, and the
+manifest records that semantic quality was not evaluated.
 """
 import json
 import re

@@ -29,9 +29,9 @@ Architecture diagrams are in [diagrams](diagrams).
 
 ## Main findings
 
-1. **Accept rate decides the economics.** A 5-minute video on Runway Gen-4.5 costs about $46 to $147 depending on it, and no reliable figure exists. Run a pilot first.
+1. **Accept rate decides the economics.** A 5-minute video on Runway Gen-4.5 costs about $51 at an 85% accept rate, $258 at 25% and $551 at 10%, and below about 60% it cannot finish without people. None of those rates is a measured first-pass rate. Run a pilot first. `[ESTIMATE]`
 2. **Platform terms limit training.** Plan on no platform API data in the shared base, and train brand adapters on first-party material. `[COUNSEL]`
-3. **Much of the common open-source stack is not commercially clear.** InsightFace, XTTS-v2 and FLUX.1 dev are Blocked, which breaks most lip-sync and identity chains. `[COUNSEL]`
+3. **Much of the usual stack is not commercially clear.** InsightFace, XTTS-v2 and FLUX.1 dev are Blocked, which breaks most lip-sync and identity chains. No paid video API is clear either: Runway's terms allow training on inputs and bar competitive products. `[COUNSEL]`
 4. **Adapters are unproven for brand voice.** RAG is the core. Each adapter must beat a few-shot baseline.
 5. **Shared serving is a security decision.** vLLM v0.31.0 or later, server-side `cache_salt`, immutable adapters.
 

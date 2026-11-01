@@ -4,12 +4,12 @@
 
 ## How the research was done
 
-AI-assisted, checked against primary sources on 2026-11-01. Counsel has not reviewed it. Seven research agents collected 711 facts, each with source URL, verbatim quote and date. Two independent verifiers re-fetched 362 of them: every pricing and licence fact, plus a one-in-five sample of the rest. They added 87 new facts, and 2 came from a direct check of render times, for a ledger of 800.
+AI-assisted, checked against primary sources on 2026-11-01. No human or lawyer has reviewed it. Seven AI research agents collected 711 facts, each with source URL, verbatim quote and date. Two separate AI verifier agents re-fetched 362 of them: every pricing and licence fact, plus a one-in-five sample of the rest. "Verified" means another agent in the same process confirmed the page says it, not that a third party audited it. The verifiers added 87 new facts and marked them verified themselves, and 6 more came from direct checks of render times and Runway's terms, for a ledger of 804.
 
 | Status | Facts |
 |---|---|
-| Verified | 412 |
-| Single source, unchecked | 294, mostly descriptive and outside the sampled set |
+| Verified | 416, of which 93 were created and marked by the checkers |
+| Single source, unchecked | 294, outside the sampled set. Many support design rationale, not just description |
 | Conflict | 50, recorded rather than averaged |
 | Unverifiable | 37, mostly login walls and unread terms |
 | Failed and corrected | 7 |
@@ -32,14 +32,14 @@ AI-assisted, checked against primary sources on 2026-11-01. Counsel has not revi
 | Claim | Label | Evidence |
 |---|---|---|
 | The video pipeline runs end to end with injected faults recovered | [REAL: test_regeneration_recovers_from_fault] | `poc/tests/test_video.py` |
-| A 5-minute mock video assembles in order, watermarked throughout | [REAL: test_five_minute_mock_run] | `poc/tests/test_video.py` |
+| A 5-minute mock video assembles, with final QC, watermark sampled at 3 points | [REAL: test_five_minute_mock_run] | `poc/tests/test_video.py` |
 | Clips are AI generated | No. [MOCK] | Watermark on every frame; `real_generation: false` |
 | The API adapter works against a live provider | Unknown. [MOCK] fake server only | `api_http.py` docstring |
-| Tenant isolation holds at application level | [REAL: test_isolation.py] | 14 test cases, with negative controls |
+| No cross-tenant path found through the current HTTP routes | [REAL: test_isolation.py] | Review found and fixed two code-level paths. See below. Not a penetration test |
 | Tenant isolation holds in cloud or on a shared GPU | [DESIGN] | Not tested |
 | A model was trained | Tiny CPU classifier only. No LLM has been trained | `poc/social360/trainers/tiny.py` |
 | Bad candidates are rejected and rollback works | [REAL: test_day_sequence] | Simulated days |
-| Workbook arithmetic is correct | [REAL: tools/verify_workbook.py] | 21 checks, independent Python recalculation |
+| Workbook key outputs match a separate Python recalculation | [REAL: tools/verify_workbook.py] | 31 checks, including Tiers and Sensitivity. It shares inputs with the build, so it tests formulas, not assumptions |
 | Credits charged match the workbook | [REAL: test_rate_card_matches_the_workbook] | Rate card exported from cached values |
 | Cost of a 5-minute video | [ESTIMATE] | See doc 06. Range depends on accept rate |
 | Accept rate | [ASSUMPTION] | No solid figure exists (R4-059, R4-060, V-042) |
@@ -57,12 +57,39 @@ AI-assisted, checked against primary sources on 2026-11-01. Counsel has not revi
 - **OpenAI policy pages, DPDP Rules, California AB 2013 and the current Anthropic Usage Policy** remain unread (V2 brief).
 - **Coverage.** Facts outside the pricing and licence queue were sampled at one in five. 294 remain unchecked. A few priority legal and vLLM facts missed the queue and were verified separately (V-504, V-505, V-506, V-525, V-526, V-527).
 - **Render times.** They were missed by the verifier queue, then checked directly against source. Vendor-reported, not reproduced.
+- **Citations.** 168 of 343 cited facts were not verified at review time. Doc 02's design rationale rests largely on single-source facts.
+- **Privacy.** Vendor retention, input training, residency and sub-processors are not researched beyond Runway's terms.
+- **Pricing.** No competitor video price survey exists. The tier volumes imply about $5,500 per brand per month, which is unvalidated. [WB:Tiers]
+- **Route limits.** The workbook's clip, resolution and reference limits per route are typed in `tools/build_workbook.py`, not loaded from the ledger, and some are `[ASSUMPTION]`.
+- **Reference guide.** It was pasted into the session and is not filed in this repo, so that audit cannot be re-checked from these files.
 - **Fetch method.** Some blocked pages stayed blocked. Where a page simply would not render, a plain request was used. One licence blocked on Hugging Face was read from the vendor's own repository.
 - **Volatility.** Prices are a one-day snapshot. Trackers report October 2026 GPU rises, unverified.
 
+## Red team
+
+A separate AI reviewer attacked this data room as a diligence reviewer: [research/briefs/red_team.md](../research/briefs/red_team.md). It found 2 blockers, 18 major and 19 minor issues, and confirmed every doc table matched the workbook. Its mutation test killed only 4 of 13 mutations, so the tests were strengthened. Mutations were not re-run after the fixes.
+
+| Finding | Outcome |
+|---|---|
+| Version string reached another tenant's adapter | Fixed. [REAL: test_04b_version_strings_cannot_traverse] |
+| Reused tenant id served the old owner's cached adapter | Fixed. [REAL: test_10b_offboarded_ids_are_never_reused] |
+| Monthly costs hid a self-host decision and a salary | Fixed. All-API baseline, with self-hosting behind a switch |
+| Leakage gate misses learned leakage | Disclosed. [REAL: test_08c_byte_scan_limit_is_real] |
+| Cost range ignored retry limits and labour | Fixed. Rework, review, upscaling and RAG added, with a feasibility column |
+| "Clear commercial terms" for Runway | Fixed. Terms read: verdict moved to Counsel (V-903, V-904) |
+| Router would pick Counsel routes, and the demo never exercised it | Fixed. Counsel needs opt-in; demo dry-runs the real catalog |
+| Privacy gaps in the video pipeline | Partly. Section added to doc 03; the research itself is still open |
+| Data pipeline had no eligibility enforcement | Partly. Tagging and filter built; connectors and TTLs remain `[DESIGN]` |
+| QLoRA table misattributed, flattered Gemma over GPT-OSS | Fixed in doc 04 |
+| Identity evidence was for a method outside the plan | Fixed in docs 02 and 03. No licensed identity check is chosen yet |
+| Demo script failed on rerun | Fixed with `--fresh` |
+| Cache ignored reference images | Fixed. [REAL: test_changed_references_are_not_served_from_cache] |
+| Thin local production, reliability and integration answers | Partly. Design tables added, all `[DESIGN]` |
+| Adapters and metadata plaintext; break-glass lacks a second approver | Disclosed in doc 04 |
+
 ## Earlier reports: audit
 
-Two AI-generated reports were supplied during this work, plus a reference guide: `docs/AI Video and LLM Architecture.pdf` and `docs/AI Video Generation Engine & Social360 Model Research.pdf`. They were treated as input to check. Much of the first report's architecture stands, and its tenant design matches the one chosen here. Its numbers should not be reused.
+Two AI-generated reports were supplied during this work, plus a reference guide pasted into the session: `docs/AI Video and LLM Architecture.pdf` and `docs/AI Video Generation Engine & Social360 Model Research.pdf`. They were treated as input to check. Much of the first report's architecture stands, and its tenant design matches the one chosen here. Its numbers should not be reused.
 
 Most pricing citations in the first report are blogs and aggregators. The second report's citations cannot be resolved.
 

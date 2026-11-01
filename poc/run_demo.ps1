@@ -2,7 +2,7 @@
 $ErrorActionPreference = 'Stop'
 
 Write-Output "`n=== Video flow [MOCK clips, real QC and assembly] ==="
-python -m poc.video.cli --seconds 30 --fault sc01_sh02:1:black --fault sc02_sh01:1:frozen
+python -m poc.video.cli --fresh --seconds 30 --fault sc01_sh02:1:black --fault sc02_sh01:1:frozen
 if ($LASTEXITCODE -ne 0) { throw 'video demo failed' }
 
 Write-Output "`n=== Social 360 flow [SIMULATED days, tiny CPU classifier] ==="

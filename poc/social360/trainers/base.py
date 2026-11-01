@@ -17,8 +17,8 @@ class QloraTrainerSpec:
     Base model and values are finalised in docs/04-social360-architecture.md.
     """
     base_model: str = "see docs/04"
-    rank: int = 16
-    alpha: int = 32
+    rank: int = 8  # Lower rank memorises less (R6-058). Fix one rank across the fleet.
+    alpha: int = 16
     load_in_4bit: bool = True
 
     def train(self, examples, output, previous=None):

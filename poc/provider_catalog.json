@@ -20,8 +20,8 @@
       "max_width": 1280,
       "max_height": 720,
       "supports_references": true,
-      "licence_verdict": "Allowed",
-      "verdict_source": "R1-051"
+      "licence_verdict": "Counsel",
+      "verdict_source": "V-904"
     },
     {
       "name": "gen45",
@@ -32,19 +32,19 @@
       "max_width": 1280,
       "max_height": 720,
       "supports_references": true,
-      "licence_verdict": "Allowed",
-      "verdict_source": "R1-051"
+      "licence_verdict": "Counsel",
+      "verdict_source": "V-904"
     },
     {
       "name": "luma_ray32",
       "display_name": "Luma Ray3.2 SDR",
       "kind": "api",
       "price_per_second_usd": 0.06,
-      "max_clip_seconds": 10,
+      "max_clip_seconds": 5,
       "max_width": 1280,
       "max_height": 720,
       "supports_references": true,
-      "licence_verdict": "Allowed",
+      "licence_verdict": "Counsel",
       "verdict_source": "R1-112"
     },
     {
@@ -190,6 +190,30 @@
       "supports_references": true,
       "licence_verdict": "Counsel",
       "verdict_source": "R2-083"
+    },
+    {
+      "name": "minimax_h3_open_weights",
+      "display_name": "MiniMax H3 open weights",
+      "kind": "self",
+      "price_per_second_usd": null,
+      "max_clip_seconds": 5,
+      "max_width": 1280,
+      "max_height": 720,
+      "supports_references": true,
+      "licence_verdict": "Blocked",
+      "verdict_source": "R2-002"
+    },
+    {
+      "name": "hunyuanvideo_15",
+      "display_name": "HunyuanVideo 1.5",
+      "kind": "self",
+      "price_per_second_usd": null,
+      "max_clip_seconds": 5,
+      "max_width": 1280,
+      "max_height": 720,
+      "supports_references": true,
+      "licence_verdict": "Blocked",
+      "verdict_source": "R2-059"
     }
   ]
 }

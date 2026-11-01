@@ -67,7 +67,9 @@ def main(run_dir: Path = RUN_DIR) -> int:
     client = TestClient(create_app(platform, secret))
     headers = {"Authorization": f"Bearer {issue_token(tenants[0], secret)}"}
     served = client.post("/v1/infer", json={"text": "the sourdough is flaky this week"}, headers=headers)
-    print("\nProduction API response:", json.dumps(served.json())[:200])
+    print("\nIn-process API call [SIMULATED client, no network]")
+    print("X-Model-Version:", served.headers["X-Model-Version"])
+    print("Body:", json.dumps(served.json())[:200])
     write_json(run_dir / "history.json", {"labels": [SIMULATED], "history": history})
     return 0
 

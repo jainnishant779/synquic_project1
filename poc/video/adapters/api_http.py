@@ -76,10 +76,12 @@ class ApiAdapter(Adapter):
 
     def poll(self, job_id: str) -> JobState:
         status = self._status(job_id).get("status", "").lower()
-        return {
-            "queued": JobState.QUEUED, "running": JobState.RUNNING,
-            "succeeded": JobState.SUCCEEDED, "completed": JobState.SUCCEEDED,
-        }.get(status, JobState.FAILED)
+        if status in ("failed", "error", "cancelled", "canceled"):
+            return JobState.FAILED
+        if status in ("succeeded", "completed"):
+            return JobState.SUCCEEDED
+        # An unfamiliar status may be a billed job still running, so keep polling.
+        return JobState.RUNNING
 
     def fetch(self, job_id: str, destination: Path) -> Path:
         url = self._status(job_id)["video_url"]

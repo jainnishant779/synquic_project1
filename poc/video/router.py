@@ -22,11 +22,13 @@ def load_catalog(path: Path = CATALOG) -> list[dict]:
     return json.loads(Path(path).read_text(encoding="utf-8"))["providers"]
 
 
-def rejection_reason(entry: dict, needs: Requirements, available: set[str]) -> str | None:
-    if entry["name"] not in available:
-        return "not available in this run"
+def rejection_reason(entry: dict, needs: Requirements, available: set[str], allow_counsel: bool) -> str | None:
     if entry["licence_verdict"] == "Blocked":
         return "licence blocked"
+    if entry["licence_verdict"] == "Counsel" and not allow_counsel:
+        return "needs counsel"
+    if entry["name"] not in available:
+        return "not available in this run"
     if entry["max_clip_seconds"] < needs.clip_seconds:
         return "clip too long"
     if entry["max_width"] < needs.width or entry["max_height"] < needs.height:
@@ -36,11 +38,15 @@ def rejection_reason(entry: dict, needs: Requirements, available: set[str]) -> s
     return None
 
 
-def route(catalog: list[dict], needs: Requirements, available: set[str]) -> tuple[dict, dict[str, str]]:
-    """Return the cheapest eligible entry, and why every other entry was rejected."""
+def route(catalog: list[dict], needs: Requirements, available: set[str],
+          allow_counsel: bool = False) -> tuple[dict, dict[str, str]]:
+    """Return the cheapest eligible entry, and why every other entry was rejected.
+
+    Counsel routes stay excluded until someone has explicitly accepted that legal position.
+    """
     rejected, eligible = {}, []
     for entry in catalog:
-        reason = rejection_reason(entry, needs, available)
+        reason = rejection_reason(entry, needs, available, allow_counsel)
         if reason:
             rejected[entry["name"]] = reason
         else:

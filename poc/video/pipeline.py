@@ -40,7 +40,7 @@ def _wait(adapter: Adapter, job_id: str) -> JobState:
 
 
 def _cache_key(adapter: Adapter, shot: Shot, brief: Brief) -> str:
-    return sha256_text("|".join([adapter.name, shot.prompt, shot.negative_prompt,
+    return sha256_text("|".join([adapter.name, shot.prompt, shot.negative_prompt, *shot.reference_images,
                                  str(shot.duration_seconds), brief.spec.model_dump_json()]))
 
 
@@ -77,13 +77,14 @@ def generate_shot(adapter: Adapter, shot: Shot, brief: Brief, run_dir: Path, cac
 
 
 def run(brief: Brief, adapter: Adapter, run_dir: Path, cache_dir: Path | None = None,
-        max_attempts: int = MAX_ATTEMPTS) -> dict:
+        max_attempts: int = MAX_ATTEMPTS, dialect: str = "generic") -> dict:
+    """cache_dir must never be shared between tenants: the key does not include a tenant."""
     run_dir = Path(run_dir)
     cache_dir = Path(cache_dir) if cache_dir else run_dir / "cache"
     (run_dir / "clips").mkdir(parents=True, exist_ok=True)
     cache_dir.mkdir(parents=True, exist_ok=True)
 
-    storyboard = build_storyboard(brief)
+    storyboard = build_storyboard(brief, dialect_name=dialect)
     write_json(run_dir / "storyboard.json", storyboard.model_dump())
 
     outcomes = [generate_shot(adapter, shot, brief, run_dir, cache_dir, max_attempts) for shot in storyboard.shots]
