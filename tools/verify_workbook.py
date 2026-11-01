@@ -97,6 +97,10 @@ def expected():
             launch[("Launch_Plan", f"{name}|{key}|total")] = spend + spend / rate_usd * qc + fixed_cost
         launch[("Launch_Plan", f"{name}|maximum")] = fixed_cost + cap * (1 + qc / rate_usd)
 
+    mini_seconds = i["mini_prompts"] * i["mini_attempts"] * i["pilot_clip_seconds"]
+    launch[("Launch_Plan", "mini_two")] = mini_seconds * (price(facts, "V-914") + price(facts, "R1-057"))
+    launch[("Launch_Plan", "mini_three")] = launch[("Launch_Plan", "mini_two")] + mini_seconds * price(facts, "V-003")
+
     return tiers | sensitivity | launch | {
         ("Unit_Costs", "stack"): stack,
         ("Unit_Costs", "gen45_raw"): gen45,
@@ -131,6 +135,9 @@ def actual():
     sensitivity = {row[0]: row for row in book["Sensitivity"].iter_rows(values_only=True) if row[0]}
     tier_values = {}
     plan = list(book["Launch_Plan"].iter_rows(values_only=True))
+    totals = {row[0]: row[1] for row in plan if row[0]}
+    tier_values[("Launch_Plan", "mini_two")] = totals["Mini test total, two models"]
+    tier_values[("Launch_Plan", "mini_three")] = totals["Mini test total, three models"]
     for row in plan[1:]:
         if row[0] and isinstance(row[1], float) and row[7] is not None and not isinstance(row[7], str):
             key = {0.25: "low", 0.85: "high"}.get(row[1])

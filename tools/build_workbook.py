@@ -76,6 +76,8 @@ INPUTS = [
     ("pilot_short_videos", 20, "count", "Full 30-second videos in the pilot"),
     ("pilot_long_videos", 5, "count", "Full 5-minute videos in the pilot"),
     ("pilot_contingency", 0.25, "ratio", "Reserve on pilot spend"),
+    ("mini_prompts", 10, "count", "Prompts in the paid mini test that comes before the full benchmark"),
+    ("mini_attempts", 2, "count", "Attempts per prompt per model in the mini test"),
     ("freshness_price_days", 30, "days", "Pricing and licence facts expire"),
     ("freshness_other_days", 90, "days", "Other facts expire"),
 ]
@@ -567,6 +569,16 @@ def build():
     ws.write_formula(pilot + 4, 1, f"=SUM(B{pilot + 2}:B{pilot + 4})*pilot_contingency", money)
     ws.write(pilot + 5, 0, "Total", bold)
     ws.write_formula(pilot + 5, 1, f"=SUM(B{pilot + 2}:B{pilot + 5})", money)
+    mini = pilot + 9
+    header(ws, mini, ["Mini test", "USD"])
+    mini_seconds = "mini_prompts*mini_attempts*pilot_clip_seconds"
+    for offset, (label, fact_id) in enumerate((("Mini test: Veo Fast", "V-914"), ("Mini test: Kling 4.0", "R1-057"), ("Mini test: Veo Standard, optional", "V-003")), 1):
+        ws.write(mini + offset, 0, label)
+        ws.write_formula(mini + offset, 1, f"={mini_seconds}*{fact(fact_id)}", money)
+    ws.write(mini + 4, 0, "Mini test total, two models", bold)
+    ws.write_formula(mini + 4, 1, f"=B{mini + 2}+B{mini + 3}", money)
+    ws.write(mini + 5, 0, "Mini test total, three models", bold)
+    ws.write_formula(mini + 5, 1, f"=B{mini + 2}+B{mini + 3}+B{mini + 4}", money)
     ws.write(pilot + 7, 0, "All [ESTIMATE]. Accept rates are unmeasured. Cost excludes people, motion graphics engineering, licensed footage and model retirement risk.")
 
     # Checks

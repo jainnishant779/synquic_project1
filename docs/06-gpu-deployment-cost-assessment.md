@@ -13,7 +13,7 @@ Full-AI video at 5 minutes was rejected on cost. The final plan is a hybrid: AI 
 | 5-minute, Veo Fast | $3.50 | 8.8 to 25 s | $4.70 to $5.26 | $19.49 | [WB:Launch_Plan] |
 | 5-minute, Veo Standard | $6.50 | 8.1 to 25 s | $7.64 to $8.26 | $30.60 | [WB:Launch_Plan] |
 
-Ranges run from a 25% to an 85% accept rate. [ESTIMATE] These exclude human review, motion graphics engineering, licensed footage and legal cost. The cap holds cost, but a low accept rate cuts the AI share of the video. Rates are V-914 and V-003; stills use V-919. The pilot is budgeted at about $486. [WB:Launch_Plan]
+Ranges run from a 25% to an 85% accept rate. [ESTIMATE] These exclude human review, motion graphics engineering, licensed footage and legal cost. The cap holds cost, but a low accept rate cuts the AI share of the video. Rates are V-914 and V-003; stills use V-919. A paid mini test of about $40 to $64 comes first. The full pilot, at about $486, follows only if that result is good. [WB:Launch_Plan]
 
 The rest of this document is the full-AI analysis that led to that decision.
 

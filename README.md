@@ -14,7 +14,7 @@ Technical and commercial assessment, architecture and proof of concept, as of 20
 
 ## Task 1 final plan
 
-[docs/Task1-Final-Plan-and-Research.docx](docs/Task1-Final-Plan-and-Research.docx) is the current Task 1 document. Launch a hybrid 30-second video product on Veo 3.1 Fast, with a capped AI spend and animated-image fallback, after a benchmark of about $486. The full-AI 5-minute route was rejected on cost. `docs/Task1-AI-Video-Engine-Research-Summary.docx` predates this decision. `[ESTIMATE]`
+[docs/Task1-Final-Plan-and-Research-v2.docx](docs/Task1-Final-Plan-and-Research-v2.docx) is the current Task 1 document. Launch a hybrid 30-second video product on Veo 3.1 Fast, with a capped AI spend and animated-image fallback, after a paid mini test of about $40 to $64 and, if results are good, a full benchmark of about $486. The full-AI 5-minute route was rejected on cost. `docs/Task1-AI-Video-Engine-Research-Summary.docx` predates this decision. `[ESTIMATE]`
 
 ## Model benchmark notebook
 
