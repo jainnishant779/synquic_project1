@@ -16,6 +16,10 @@ Technical and commercial assessment, architecture and proof of concept, as of 20
 
 [docs/Task1-Final-Plan-and-Research.docx](docs/Task1-Final-Plan-and-Research.docx) is the current Task 1 document. Launch a hybrid 30-second video product on Veo 3.1 Fast, with a capped AI spend and animated-image fallback, after a benchmark of about $486. The full-AI 5-minute route was rejected on cost. `docs/Task1-AI-Video-Engine-Research-Summary.docx` predates this decision. `[ESTIMATE]`
 
+## Model benchmark notebook
+
+[notebooks/synquic_video_benchmark.ipynb](notebooks/synquic_video_benchmark.ipynb) runs every prompt on every model on Kaggle, then does technical QC, cost comparison and a 30-second hybrid reel. Only its flow has been tested, by `tools/test_kaggle_notebook.py` in dry-run mode with test patterns. It has not yet run on a real GPU or a live API. Rebuild it with `tools/build_kaggle_notebook.py`.
+
 ## Deliverables
 
 | Deliverable | Location | Status |
