@@ -81,6 +81,15 @@ The earlier report's stack depends on several of these. Most fail as shipped.
 | Real-ESRGAN | Allowed | BSD-3. Avoid `face_enhance`, which pulls non-commercial parts | V-024 |
 | SyncNet | Code Allowed | Weights Counsel | V-023 |
 
+**Tooling around the models**
+
+| Tool | Verdict | Finding | Facts |
+|---|---|---|---|
+| WanGP | Blocked for paid hosting without an agreement | WanGP Community License, not Apache. Free locally and outputs can be sold, but paid API or SaaS access needs a separate agreement. Running a Blocked model through it does not clear that model | V-907, V-908 |
+| BluShooz text-to-video-generator | Do not reuse as a stack | MIT, but built on XTTS-v2, which is Blocked | V-913, V-011 |
+| DiffSynth-Studio | Unconfirmed | Layer-level disk offload is real. The licence was not confirmed, so read it before use | Not in ledger |
+| LoRAX | Do not use | Archived | R6-046 |
+
 **What this means.** No lip-sync or identity chain in the earlier report is commercially clear as shipped. The default stack is:
 
 - **Voice:** a paid TTS API (R3-112).

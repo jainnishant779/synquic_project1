@@ -7,7 +7,7 @@ import pytest
 
 from poc.video.adapters.api_http import ApiAdapter, ApiProviderConfig
 from poc.video.adapters.base import AdapterError, Capabilities, ClipRequest, JobState, SpendCapExceeded
-from poc.video.adapters.local_http import LocalAdapter
+from poc.video.adapters.local_http import LocalAdapter, wan_frame_count
 from poc.video.adapters.mock import BAND_HEIGHT, MockAdapter
 from poc.video.credits import charge, load_rate_card
 from poc.video.pipeline import run
@@ -74,6 +74,21 @@ def test_adapter_contract(kind, tmp_path, clip_bytes):
     assert probe(output)["streams"][0]["codec_type"] == "video"
 
 
+@pytest.mark.parametrize("seconds,fps,frames", [(5, 16, 81), (5, 24, 121), (1, 24, 25)])
+def test_wan_frame_counts_follow_4n_plus_1(seconds, fps, frames):
+    assert wan_frame_count(seconds, fps) == frames
+    assert (frames - 1) % 4 == 0
+
+
+@pytest.mark.parametrize("status", ["pending", "generating_video", "qc_evaluation", "something_new"])
+def test_api_adapter_keeps_polling_unfamiliar_statuses(status, clip_bytes):
+    def handler(request):
+        return httpx.Response(200, json={"status": status})
+    config = ApiProviderConfig("fake", "https://fake.test/s", "https://fake.test/{job_id}", 0.5, CAPS)
+    adapter = ApiAdapter(config, "key", 10.0, httpx.Client(transport=httpx.MockTransport(handler)))
+    assert adapter.poll("j1") is JobState.RUNNING
+
+
 def test_api_adapter_refuses_without_key(clip_bytes):
     config = ApiProviderConfig("fake", "https://fake.test/s", "https://fake.test/{job_id}", 0.5, CAPS)
     with pytest.raises(AdapterError):
@@ -132,6 +147,9 @@ def test_dialects_render_exclusions_their_own_way():
     brief = make_brief(5)
     veo = build_storyboard(brief, dialect_name="veo").shots[0]
     assert "No " not in veo.prompt and "watermark" in veo.negative_prompt
+
+    local = build_storyboard(brief, dialect_name="wan_local").shots[0]
+    assert "watermark" in local.negative_prompt
 
     wan = build_storyboard(brief, dialect_name="wan").shots[0]
     assert "No watermark." in wan.prompt and wan.negative_prompt == ""

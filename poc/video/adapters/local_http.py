@@ -9,6 +9,11 @@ import httpx
 from .base import Adapter, AdapterError, Capabilities, ClipRequest, JobState
 
 
+def wan_frame_count(seconds: float, fps: int) -> int:
+    """Nearest frame count of the form 4n+1, which Wan's generate.py asks for (V-910)."""
+    return round((seconds * fps - 1) / 4) * 4 + 1
+
+
 class LocalAdapter(Adapter):
     name = "local"
     real_generation = True
@@ -33,6 +38,7 @@ class LocalAdapter(Adapter):
             "prompt": request.prompt,
             "negative_prompt": request.negative_prompt,
             "seconds": request.duration_seconds,
+            "frames": wan_frame_count(request.duration_seconds, request.fps),
             "width": request.width,
             "height": request.height,
             "fps": request.fps,

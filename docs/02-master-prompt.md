@@ -104,6 +104,7 @@ The compiler reads [poc/prompts/dialects.json](../poc/prompts/dialects.json). Ea
 | `omni_flash` | Subject, action, scene, camera, lighting, style, audio | Inline: "No dialogue." | Cuts between shots unless told otherwise, so the compiler adds "Single continuous shot" | R4-016, R4-017 |
 | `wan` | Entity, scene, motion, camera, aesthetics, audio | Inline | Invents dialogue if lines are omitted | R4-023, R4-026 |
 | `wan_i2v` | Motion, camera | Inline | Keyframe carries identity, so no appearance text | R4-024 |
+| `wan_local` | Same as `wan` | Negative prompt parameter | Self-hosted Wan takes a negative prompt. Its upstream default is in Chinese, so keep it unchanged and do not substitute a translation | V-911 |
 | `kling` | Subject, movement, scene, camera, lighting, atmosphere | Parameter | Field order follows Kling's formula | R4-022 |
 
 Exclusions are stored once, as a comma-separated list in the style bible, and rendered per dialect.

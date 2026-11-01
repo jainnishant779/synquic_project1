@@ -60,7 +60,7 @@ QC runs in two stages, cheapest first (R4-049, R4-058).
 
 **Identity and lip-sync licensing.** InsightFace pretrained models are non-commercial research only, and they sit inside the usual identity gate, LivePortrait, LatentSync, Hallo2 and IP-Adapter-FaceID (V-015, V-016, V-018, V-020, V-022). Using them in a paid product needs an InsightFace licence or a replacement that is then re-tested. No licensed replacement has been selected, so the identity check has no named component and stays `not_evaluated`. Choosing one is a 30-day item in [doc 08](08-roadmap.md), because the pilot needs it to measure the main long-form risk. Lip-sync starts on a paid API. MuseTalk 1.5 weights look usable, but its components have not been checked (V-017). `[COUNSEL]`
 
-**Thresholds.** No published threshold is reliable for per-clip gating. VBench and VBench-2.0 do not publish the cut-offs in the earlier report (V-513, V-514, V-515). Thresholds must be calibrated on hand-labelled pilot clips, not copied from a paper or from the earlier reports. Humans disagree too (alpha 0.273, R4-055), so a sampled human review stays in the loop.
+**Thresholds.** No published threshold is reliable for per-clip gating. VBench and VBench-2.0 do not publish the cut-offs in the earlier report (V-513, V-514, V-515). VBench's composite uses a 4:1 quality to semantic weighting (V-912), but that ranks models across a benchmark. It is not a per-clip gate, so it is not used here. Thresholds must be calibrated on hand-labelled pilot clips, not copied from a paper or from the earlier reports. Humans disagree too (alpha 0.273, R4-055), so a sampled human review stays in the loop.
 
 **Repair loop**
 
@@ -95,7 +95,7 @@ Normalise all clips to one resolution, frame rate and pixel format. Match colour
 
 | Part | Design |
 |---|---|
-| Worker | One container per model, pinned weights, one job at a time per GPU. Headless ComfyUI or Diffusers behind a small HTTP service matching `LocalAdapter` |
+| Worker | One container per model, pinned weights, one job at a time per GPU. Headless ComfyUI or Diffusers behind a small HTTP service matching `LocalAdapter`, which asks for 4n+1 frames as Wan expects (V-910) [REAL: test_wan_frame_counts_follow_4n_plus_1] |
 | Queue | Durable job queue, per-tenant fairness, idempotent job ids so a retried job is not billed twice |
 | Scaling | Scale on queue depth. Keep weights on a network volume to cut start time, and measure cold starts (R3-020, R3-021) |
 | Failure | Heartbeat per job, requeue on GPU loss, capped retries, then reroute to an API |
@@ -103,6 +103,8 @@ Normalise all clips to one resolution, frame rate and pixel format. Match colour
 | Capacity | Cap GPUs per engineer. The Scale tier's 222 GPUs is arithmetic, not an operating plan |
 
 `LocalAdapter` speaks this invented contract and has only met a fake server.
+
+**Long-form candidates for the pilot.** Sliding-window generation, RIFLEx, SkyReels Diffusion Forcing, Phantom, VACE reference injection and camera-control models are untested options. Their claims were not verified, so none is part of the design until the pilot measures it.
 
 ## Data handling in the video pipeline
 

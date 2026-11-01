@@ -23,6 +23,13 @@
     "field_order": ["subject", "characters", "products", "setting", "action", "camera", "lighting", "style", "audio"],
     "exclusions": "inline"
   },
+  "wan_local": {
+    "source_facts": ["R4-023", "V-911"],
+    "note": "Self-hosted Wan takes a negative prompt. Keep upstream sample_neg_prompt unless the style bible needs more.",
+    "separator": ". ",
+    "field_order": ["subject", "characters", "products", "setting", "action", "camera", "lighting", "style", "audio"],
+    "exclusions": "parameter"
+  },
   "wan_i2v": {
     "source_facts": ["R4-024"],
     "note": "Motion only. The keyframe carries identity, so canonical descriptions are left out.",

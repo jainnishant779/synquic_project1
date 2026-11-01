@@ -4,11 +4,11 @@
 
 ## How the research was done
 
-AI-assisted, checked against primary sources on 2026-11-01. No human or lawyer has reviewed it. Seven AI research agents collected 711 facts, each with source URL, verbatim quote and date. Two separate AI verifier agents re-fetched 362 of them: every pricing and licence fact, plus a one-in-five sample of the rest. "Verified" means another agent in the same process confirmed the page says it, not that a third party audited it. The verifiers added 87 new facts and marked them verified themselves, and 6 more came from direct checks of render times and Runway's terms, for a ledger of 804.
+AI-assisted, checked against primary sources on 2026-11-01. No human or lawyer has reviewed it. Seven AI research agents collected 711 facts, each with source URL, verbatim quote and date. Two separate AI verifier agents re-fetched 362 of them: every pricing and licence fact, plus a one-in-five sample of the rest. "Verified" means another agent in the same process confirmed the page says it, not that a third party audited it. The verifiers added 87 new facts and marked them verified themselves, and 13 more came from direct checks of render times, Runway's terms and a repository catalog, for a ledger of 811.
 
 | Status | Facts |
 |---|---|
-| Verified | 416, of which 93 were created and marked by the checkers |
+| Verified | 423, of which 100 were created and marked by the checkers |
 | Single source, unchecked | 294, outside the sampled set. Many support design rationale, not just description |
 | Conflict | 50, recorded rather than averaged |
 | Unverifiable | 37, mostly login walls and unread terms |
@@ -152,6 +152,27 @@ None of these should reach a YC application or a diligence room.
 | Train adapters on telemetry from five platforms | X and LinkedIn No; Meta and YouTube Conditional; TikTok unread (R7-005, R7-008, R7-001, R7-016). `[COUNSEL]` |
 | Competitor transcripts and trend data from platform APIs | Barred on X, LinkedIn, YouTube, Pinterest; Meta unclear (R7-006, R7-009, R7-014, R7-021). `[COUNSEL]` |
 | "Learns from aggregate brand experience" (second report) | Contradicts tenant isolation |
+
+### Repository catalog (third input)
+
+A pasted catalog of repositories and methods, also AI-generated, claimed to be grounded in primary documentation. Key claims were checked at source.
+
+| Claim | Finding |
+|---|---|
+| WanGP is Apache 2.0 | Wrong. WanGP Community License; paid SaaS needs an agreement (V-907) |
+| WanGP VAE 28 s to 11 s | Confirmed as a vendor claim (V-908) |
+| WanGP RIFLEx, 8 s on 12 GB | Not on its README |
+| LatentSync, LivePortrait, Hallo2 as open-source options | Blocked as shipped through InsightFace (V-018, V-020, V-022) |
+| XTTS-v2 reference stack | Blocked (V-011) |
+| BluShooz combines MuseTalk, LivePortrait, LTX | README names CogVideoX, XTTS-v2, Wav2Lip, Real-ESRGAN (V-913) |
+| AIBrix Apache 2.0, v0.8.0 | Confirmed (V-909) |
+| AIBrix cuts latency 19.2% and 79% | Not on its README, so not used |
+| LoRAX as an alternative | Archived (R6-046) |
+| VBench evaluates 16 dimensions, including VBench-2.0 | 16 is VBench; VBench-2.0 has 18 (V-513, V-514) |
+| VBench 4:1 weighting | Confirmed (V-912). Not added to `manifest.json`, because an unused score there would imply a check that does not run |
+| Wan 4n+1 frames | Confirmed for Wan only (V-910). Placed in the local adapter, not the shared `Shot` schema |
+| English default negative prompt | Upstream default is Chinese (V-911). The English text was not found at source, so it was not adopted. A `wan_local` dialect sends the style bible's exclusions as a negative prompt, and the upstream default is not embedded |
+| `[REAL: test_video_qc]` label | That test does not exist |
 
 ### Reference guide
 

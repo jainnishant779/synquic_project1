@@ -152,7 +152,7 @@ Training jobs run in ephemeral containers, with no interactive access, loading o
 
 **Capacity.** `max_loras` defaults to 1 per batch, which is a trap (R6-034, V-505). The active working set is the real limit. One 80 GB GPU served 1,000 synthetic rank-16 adapters at 884 tok/s under uniform traffic and 2,167 under skew (R6-038, R6-039), on a smaller model. Measure on the chosen base.
 
-**Do not plan on FastLibra.** The earlier report relies on it to fix latency. Its figures are baseline vLLM averages on NPUs, and no official code was found (V-508, V-510). The "default 0.2 ratio" is not what the paper states, and no such option appears in current docs (V-507, V-509). AIBrix is a real option for adapter lifecycle, though "encrypted weights" is unsupported (V-511, V-512).
+**Do not plan on FastLibra.** The earlier report relies on it to fix latency. Its figures are baseline vLLM averages on NPUs, and no official code was found (V-508, V-510). The "default 0.2 ratio" is not what the paper states, and no such option appears in current docs (V-507, V-509). AIBrix v0.8.0, under Apache 2.0, is a real option for adapter lifecycle (V-909), though "encrypted weights" is unsupported, and its sidecar relies on the runtime loading that vLLM warns about, so the security floor above still applies (V-511, V-512, R6-031). The 19.2% and 79% latency gains quoted for it were not found on its README and are not used.
 
 **Versioning.** The registry owns versions and maps them to served adapter names, as in [doc 05](05-automated-learning-workflow.md).
 
