@@ -5,10 +5,10 @@ flowchart TB
     D --> VS[Video service]
     D --> AU[Voice and music services]
     subgraph P[Adapter layer: vendors can be swapped]
-        IM --> I1[FLUX 3 Klein / Nano Banana]
-        VS --> V1[Veo 3.1 Fast]
-        VS --> V2[Kling 4.0]
-        AU --> A1[ElevenLabs / licensed music]
+        IM --> I1[Nano Banana 2.1]
+        VS --> V1[Hero model: MiniMax H3 or FLUX 3 Video]
+        VS --> V2[Long-shot model: Wan 3.0 or Omni Flash 1.1]
+        AU --> A1[ElevenLabs or Sarvam, Pixabay or Lyria]
     end
     I1 --> S[(Asset store)]
     V1 --> S

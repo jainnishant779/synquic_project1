@@ -1,0 +1,15 @@
+flowchart LR
+    A[1. Brand data from platform backend: approved records only] --> B[2. Redact PII with Presidio, tag source, encrypt per brand]
+    B --> C[3a. Every hour: refresh per-brand retrieval index]
+    B --> D{3b. Daily or on trigger: enough training-eligible data?}
+    D -- No --> K[Keep current version]
+    D -- Yes --> E[4. Scheduler: Prefect or cron starts one temporary GPU on RunPod or SkyPilot]
+    E --> F[5. Train brand adapter with Axolotl or Unsloth core on Gemma 4 31B, Qwen or gpt-oss]
+    F --> G[6. Gates: G1 data, G2 quality with lm-evaluation-harness and promptfoo, G3 canary leakage, G4 latency]
+    G -- Fail --> K
+    G -- Pass --> H[7. Register in MLflow: immutable version, dataset hash, per-brand prod pointer]
+    H --> I[8. Serve with vLLM multi-LoRA on a dedicated GPU, adapter chosen from token]
+    C --> I
+    I --> J[9. Monitor and roll back to previous version if needed]
+    E -. GPU stops when job ends .-> K
+

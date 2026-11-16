@@ -1,0 +1,10 @@
+flowchart LR
+    U[Brand user asks a question in the platform] --> G[Gateway: verify token, tenant comes from token only]
+    G --> R[Retrieve that brand's documents and recent performance]
+    R --> P{Task type}
+    P -- Narrow: classify, extract, templated ad advice --> L[Tuned open-weight model with the brand adapter on vLLM]
+    P -- Hard or customer-facing --> H[Premium API model, with brand context only]
+    L --> O[Answer with sources shown, no content in logs]
+    H --> O
+    L -. adapter fails to load .-> B[Fallback: base model with few-shot examples]
+    B --> O

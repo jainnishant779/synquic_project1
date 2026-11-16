@@ -1,0 +1,10 @@
+flowchart LR
+    A[Free Kaggle tests: older open models] --> B[Result: 3 of 3 clips rated 1 of 5]
+    B --> C[Paid mini test, about 36 USD: 8 models, 8 product prompts, 5 s each, two raters]
+    C --> D{Score each clip usable or not, then price per usable second}
+    D -- Good --> E[Full benchmark, about 486 USD: 50 to 100 shots on the top 3 models]
+    D -- Poor --> F[Use more images and animation, re-pick models]
+    E --> G{Gates: usable rate 60 percent or more, cost within target, render success 99 percent}
+    G -- Pass --> H[Launch 30 s, then 60 s]
+    G -- Fail --> F
+    H --> I[5-minute tier opens only if 60 percent of shots usable]

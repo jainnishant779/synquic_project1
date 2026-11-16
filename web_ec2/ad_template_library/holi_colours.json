@@ -1,0 +1,148 @@
+{
+  "id": "holi_colours",
+  "name": "Holi festival of colours",
+  "best_for": [
+    "holi",
+    "festive",
+    "organic gulal",
+    "sweets",
+    "ethnic wear"
+  ],
+  "description": "Vibrant energetic celebration bursting with colourful organic gulal, sweets and festive joy. For organic colours, ethnic wear, sweets and beverages.",
+  "length_s": 14,
+  "platform": "reels",
+  "look": {
+    "card": "bold",
+    "text": "#FFFFFF",
+    "highlight": "#FFD166",
+    "color": null
+  },
+  "preview_color": "#BE123C",
+  "audio": {
+    "music_volume": 0.2,
+    "captions": false,
+    "voice": true
+  },
+  "scenes": [
+    {
+      "purpose": "hook",
+      "visual": "lifestyle",
+      "weight": 3.0,
+      "direction": "Joyful friends throwing vibrant pink and yellow organic colour powders in slow motion under bright blue skies",
+      "voice": true,
+      "text": [
+        {
+          "role": "hook",
+          "style": "kinetic",
+          "position": "top",
+          "size": "l",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 5,
+          "example": "Rang barse *khushiyon ke saath*",
+          "fixed": false
+        },
+        {
+          "role": "brand",
+          "style": "lower_third",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.35,
+          "end": null,
+          "max_words": 3,
+          "example": "RangUtsav",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "reveal",
+      "visual": "product",
+      "weight": 3.5,
+      "direction": "Eco-friendly bowls of bright gulal colours and festive sweet boxes arranged neatly on clean brass plates",
+      "voice": true,
+      "text": [
+        {
+          "role": "reveal",
+          "style": "slide",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 5,
+          "example": "100% *natural* organic colours",
+          "fixed": false
+        },
+        {
+          "role": "tagline",
+          "style": "plain",
+          "position": "bottom",
+          "size": "s",
+          "color": null,
+          "start": 0.35,
+          "end": null,
+          "max_words": 5,
+          "example": "Safe for *gentle skin*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "benefit",
+      "visual": "lifestyle",
+      "weight": 3.5,
+      "direction": "Smiling people laughing with coloured faces celebrating music and festive thandai",
+      "voice": true,
+      "text": [
+        {
+          "role": "benefit",
+          "style": "wipe",
+          "position": "center",
+          "size": "m",
+          "color": null,
+          "start": 0.15,
+          "end": null,
+          "max_words": 6,
+          "example": "Celebrate with *pure smiles*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "cta",
+      "visual": "card",
+      "weight": 4.0,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "brand",
+          "style": "brand",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.05,
+          "end": null,
+          "max_words": 3,
+          "example": "RangUtsav",
+          "fixed": false
+        },
+        {
+          "role": "cta",
+          "style": "cta",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.25,
+          "end": null,
+          "max_words": 4,
+          "example": "Order festive *box*",
+          "fixed": false
+        }
+      ]
+    }
+  ]
+}

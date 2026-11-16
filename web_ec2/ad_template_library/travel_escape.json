@@ -1,0 +1,148 @@
+{
+  "id": "travel_escape",
+  "name": "Dream travel getaway",
+  "best_for": [
+    "travel",
+    "vacation",
+    "resort",
+    "hotel",
+    "tour package"
+  ],
+  "description": "Inspiring scenic landscapes and warm vacation moments inviting travellers to explore. Tailored for travel agencies, resorts, tour packages and holiday spots.",
+  "length_s": 16,
+  "platform": "reels",
+  "look": {
+    "card": "glow",
+    "text": "#FFFBEB",
+    "highlight": "#F59E0B",
+    "color": null
+  },
+  "preview_color": "#D97706",
+  "audio": {
+    "music_volume": 0.18,
+    "captions": false,
+    "voice": true
+  },
+  "scenes": [
+    {
+      "purpose": "hook",
+      "visual": "lifestyle",
+      "weight": 3.5,
+      "direction": "A traveller standing atop a sunlit mountain ridge gazing at lush green valley views with open arms",
+      "voice": true,
+      "text": [
+        {
+          "role": "hook",
+          "style": "kinetic",
+          "position": "top",
+          "size": "l",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 6,
+          "example": "Ready for your next *escape*?",
+          "fixed": false
+        },
+        {
+          "role": "brand",
+          "style": "lower_third",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.35,
+          "end": null,
+          "max_words": 3,
+          "example": "WanderLust",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "benefit",
+      "visual": "lifestyle",
+      "weight": 4.0,
+      "direction": "A couple relaxing beside a turquoise infinity pool overlooking palm trees and golden beach sands",
+      "voice": true,
+      "text": [
+        {
+          "role": "benefit",
+          "style": "slide",
+          "position": "center",
+          "size": "m",
+          "color": null,
+          "start": 0.15,
+          "end": null,
+          "max_words": 6,
+          "example": "Unwind where the *sea* meets the sky",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "feature",
+      "visual": "card",
+      "weight": 4.0,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "feature",
+          "style": "wipe",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 5,
+          "example": "Curated stays & *easy* travel",
+          "fixed": false
+        },
+        {
+          "role": "tagline",
+          "style": "plain",
+          "position": "bottom",
+          "size": "s",
+          "color": null,
+          "start": 0.35,
+          "end": null,
+          "max_words": 6,
+          "example": "Make memories that *last forever*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "cta",
+      "visual": "card",
+      "weight": 4.5,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "brand",
+          "style": "brand",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.05,
+          "end": null,
+          "max_words": 3,
+          "example": "WanderLust",
+          "fixed": false
+        },
+        {
+          "role": "cta",
+          "style": "cta",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.25,
+          "end": null,
+          "max_words": 4,
+          "example": "Plan your *trip*",
+          "fixed": false
+        }
+      ]
+    }
+  ]
+}

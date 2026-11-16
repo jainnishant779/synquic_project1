@@ -1,0 +1,205 @@
+{
+  "id": "skincare_routine",
+  "name": "3-step morning skincare",
+  "best_for": [
+    "skincare",
+    "beauty",
+    "cosmetics",
+    "routine",
+    "serum"
+  ],
+  "description": "Gentle morning routine in 3 simple steps on clean light cards. Ideal for serums, cleansers, sunscreens and daily wellness rituals.",
+  "length_s": 18,
+  "platform": "reels",
+  "look": {
+    "card": "light",
+    "text": "#1A1A1E",
+    "highlight": "#D35400",
+    "color": null
+  },
+  "preview_color": "#E86F51",
+  "audio": {
+    "music_volume": 0.14,
+    "captions": false,
+    "voice": true
+  },
+  "scenes": [
+    {
+      "purpose": "hook",
+      "visual": "lifestyle",
+      "weight": 3.0,
+      "direction": "A person with glowing skin splashing fresh cool water on their face in a sunlit bathroom",
+      "voice": true,
+      "text": [
+        {
+          "role": "hook",
+          "style": "kinetic",
+          "position": "top",
+          "size": "l",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 6,
+          "example": "Your 3-step *morning glow*",
+          "fixed": false
+        },
+        {
+          "role": "brand",
+          "style": "lower_third",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.35,
+          "end": null,
+          "max_words": 3,
+          "example": "AuraGlow",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "step",
+      "visual": "product",
+      "weight": 3.5,
+      "direction": "An amber dropper bottle of hydrating serum resting on a smooth marble tray beside morning botanicals",
+      "voice": true,
+      "text": [
+        {
+          "role": "label",
+          "style": "plain",
+          "position": "top",
+          "size": "s",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 2,
+          "example": "Step 1",
+          "fixed": true
+        },
+        {
+          "role": "step",
+          "style": "slide",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.2,
+          "end": null,
+          "max_words": 6,
+          "example": "*Cleanse* gently with water",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "step",
+      "visual": "lifestyle",
+      "weight": 3.5,
+      "direction": "Gentle application of a few golden serum droplets smoothly patted onto the cheekbones",
+      "voice": true,
+      "text": [
+        {
+          "role": "label",
+          "style": "plain",
+          "position": "top",
+          "size": "s",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 2,
+          "example": "Step 2",
+          "fixed": true
+        },
+        {
+          "role": "step",
+          "style": "slide",
+          "position": "center",
+          "size": "m",
+          "color": null,
+          "start": 0.2,
+          "end": null,
+          "max_words": 5,
+          "example": "Lock in *hydration*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "step",
+      "visual": "product",
+      "weight": 3.5,
+      "direction": "A sleek sunscreen bottle standing under warm natural sunlight, clean aesthetic",
+      "voice": true,
+      "text": [
+        {
+          "role": "label",
+          "style": "plain",
+          "position": "top",
+          "size": "s",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 2,
+          "example": "Step 3",
+          "fixed": true
+        },
+        {
+          "role": "step",
+          "style": "wipe",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.2,
+          "end": null,
+          "max_words": 5,
+          "example": "Protect your *barrier*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "cta",
+      "visual": "card",
+      "weight": 4.5,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "brand",
+          "style": "brand",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.05,
+          "end": null,
+          "max_words": 3,
+          "example": "AuraGlow",
+          "fixed": false
+        },
+        {
+          "role": "tagline",
+          "style": "plain",
+          "position": "center",
+          "size": "s",
+          "color": null,
+          "start": 0.2,
+          "end": null,
+          "max_words": 5,
+          "example": "Start your *ritual*",
+          "fixed": false
+        },
+        {
+          "role": "cta",
+          "style": "cta",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.3,
+          "end": null,
+          "max_words": 4,
+          "example": "Get yours *today*",
+          "fixed": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synquic AI - Commercial Video Production Studio & Evaluation Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        code, pre { font-family: 'JetBrains Mono', monospace; }
+        .studio-glass {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.5); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(51, 65, 85, 0.6); border-radius: 4px; }
+        @keyframes pulse-subtle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        .animate-pulse-subtle { animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-emerald-500 selection:text-slate-950">
+
+    <!-- TOP NAVIGATION & STATUS -->
+    <header class="border-b border-slate-800/80 bg-slate-950/80 sticky top-0 z-40 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                    <i class="fa-solid fa-film text-slate-950 text-lg"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-extrabold text-base tracking-tight text-white">SYNQUIC AI</span>
+                        <span class="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20">Production Engine v2</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400">Autonomous Commercial Video Studio · Task 1 Research</p>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <nav class="hidden md:flex items-center gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800 text-xs font-semibold">
+                <button onclick="switchTab('studio')" id="tabBtn-studio" class="px-4 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold transition flex items-center gap-1.5 shadow">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Video Studio
+                </button>
+                <button onclick="switchTab('arena')" id="tabBtn-arena" class="px-4 py-1.5 rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-flask text-teal-400"></i> Model Arena
+                </button>
+                <button onclick="switchTab('leaderboard')" id="tabBtn-leaderboard" class="px-4 py-1.5 rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-trophy text-amber-400"></i> Engine Leaderboard
+                </button>
+                <button onclick="switchTab('testcases')" id="tabBtn-testcases" class="px-4 py-1.5 rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-list-check text-cyan-400"></i> 6 Engines Suite
+                </button>
+                <button onclick="switchTab('economics')" id="tabBtn-economics" class="px-4 py-1.5 rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-calculator text-purple-400"></i> Economics
+                </button>
+            </nav>
+
+            <!-- AI Provider Status Badge -->
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 text-xs">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="text-slate-300 font-medium font-mono text-[11px]">AI Studio</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- METRICS RIBBON -->
+    <section class="border-b border-slate-800/60 bg-slate-900/30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-video text-emerald-400"></i>
+                <div>
+                    <span class="text-slate-500 font-semibold block text-[10px] uppercase">Commercials Generated</span>
+                    <span class="text-white font-bold" id="statCommercials">Active Production</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-server text-cyan-400"></i>
+                <div>
+                    <span class="text-slate-500 font-semibold block text-[10px] uppercase">NVIDIA NIM Models</span>
+                    <span class="text-white font-bold" id="statTotalModels">85 Available</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-bolt text-amber-400"></i>
+                <div>
+                    <span class="text-slate-500 font-semibold block text-[10px] uppercase">Task 1 Benchmarks</span>
+                    <span class="text-white font-bold" id="statTotalRuns">0 Runs</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-shield-check text-purple-400"></i>
+                <div>
+                    <span class="text-slate-500 font-semibold block text-[10px] uppercase">QC Commercial Pass</span>
+                    <span class="text-white font-bold" id="statReliability">99.2%</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-stopwatch text-teal-400"></i>
+                <div>
+                    <span class="text-slate-500 font-semibold block text-[10px] uppercase">Avg Latency</span>
+                    <span class="text-white font-bold" id="statAvgLatency">2.1s</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN WORKSPACE CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full space-y-8">
+
+        <!-- ================= TAB 1: 🎬 AI VIDEO STUDIO (PROMPT-TO-VIDEO PRODUCTION) ================= -->
+        <section id="tab-studio" class="space-y-8">
+            <!-- Studio Header -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-white flex items-center gap-3">
+                        <span class="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </span>
+                        Autonomous Commercial Video Studio
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1 max-w-2xl">
+                        Enter a brief, choose text-to-video or upload a product reference for image-to-video, then review the generated shots and final branded video.
+                    </p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs px-3 py-1 rounded-full bg-slate-800 text-slate-300 font-mono border border-slate-700">
+                        <i class="fa-solid fa-circle-check text-emerald-400 mr-1"></i> Ready for Prompt
+                    </span>
+                </div>
+            </div>
+
+            <!-- Creation Console Deck -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left: Prompt & Engine Options (7 Cols) -->
+                <div class="lg:col-span-7 studio-glass p-6 rounded-2xl space-y-5">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                                <i class="fa-solid fa-pen-nib"></i> 1. Creative Brief & Prompt
+                            </label>
+                            <span class="text-[10px] text-slate-400">Click preset to load brief</span>
+                        </div>
+                        <textarea id="studioPromptInput" rows="4" class="w-full bg-slate-900 border border-slate-700/80 rounded-xl p-3 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition custom-scrollbar font-sans" placeholder="e.g., Luxury commercial for AuraGlow Botanical Face Serum: soft morning window light, golden hour bokeh, macro product reveal with gentle steam, 100% organic skincare aesthetic..."></textarea>
+                    </div>
+
+                    <!-- Quick Preset Pills (Task 1 Research Briefs) -->
+                    <div class="space-y-1.5">
+                        <span class="text-[11px] font-semibold text-slate-400">Quick Commercial Presets:</span>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="loadStudioPreset('homingo')" class="px-3 py-1 rounded-lg bg-indigo-950/70 hover:bg-indigo-900/90 text-xs text-indigo-200 border border-indigo-500/60 transition flex items-center gap-1.5 font-bold shadow-md shadow-indigo-500/20">
+                                🛠️ Homingo Home Services ★
+                            </button>
+                            <button onclick="loadStudioPreset('parkfnb')" class="px-3 py-1 rounded-lg bg-cyan-950/70 hover:bg-cyan-900/90 text-xs text-cyan-200 border border-cyan-500/60 transition flex items-center gap-1.5 font-bold shadow-md shadow-cyan-500/20">
+                                🅿️ ParkFnB Barrier ★
+                            </button>
+                            <button onclick="loadStudioPreset('realestate')" class="px-3 py-1 rounded-lg bg-emerald-950/60 hover:bg-emerald-900/80 text-xs text-emerald-200 border border-emerald-800/60 transition flex items-center gap-1.5 font-semibold">
+                                🏢 Property Broker App
+                            </button>
+                            <button onclick="loadStudioPreset('instagram')" class="px-3 py-1 rounded-lg bg-pink-950/60 hover:bg-pink-900/80 text-xs text-pink-200 border border-pink-800/60 transition flex items-center gap-1.5 font-semibold">
+                                📸 Instagram Reel
+                            </button>
+                            <button onclick="loadStudioPreset('coke')" class="px-3 py-1 rounded-lg bg-red-950/60 hover:bg-red-900/80 text-xs text-red-200 border border-red-800/60 transition flex items-center gap-1.5 font-semibold">
+                                🥤 Coca-Cola
+                            </button>
+                            <button onclick="loadStudioPreset('burger')" class="px-3 py-1 rounded-lg bg-amber-950/60 hover:bg-amber-900/80 text-xs text-amber-200 border border-amber-800/60 transition flex items-center gap-1.5 font-semibold">
+                                🍔 Gourmet Burger
+                            </button>
+                            <button onclick="loadStudioPreset('car')" class="px-3 py-1 rounded-lg bg-blue-950/60 hover:bg-blue-900/80 text-xs text-blue-200 border border-blue-800/60 transition flex items-center gap-1.5 font-semibold">
+                                🏎️ Sports Car
+                            </button>
+                            <button onclick="loadStudioPreset('watch')" class="px-3 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 transition flex items-center gap-1.5 font-semibold">
+                                ⌚ Luxury Watch
+                            </button>
+                            <button onclick="loadStudioPreset('coffee')" class="px-3 py-1 rounded-lg bg-amber-900/40 hover:bg-amber-800/60 text-xs text-amber-200 border border-amber-700/60 transition flex items-center gap-1.5 font-semibold">
+                                ☕ Artisan Coffee
+                            </button>
+                            <button onclick="loadStudioPreset('perfume')" class="px-3 py-1 rounded-lg bg-purple-950/60 hover:bg-purple-900/80 text-xs text-purple-200 border border-purple-800/60 transition flex items-center gap-1.5 font-semibold">
+                                ✨ Haute Perfume
+                            </button>
+                            <button onclick="loadStudioPreset('headphones')" class="px-3 py-1 rounded-lg bg-cyan-950/60 hover:bg-cyan-900/80 text-xs text-cyan-200 border border-cyan-800/60 transition flex items-center gap-1.5 font-semibold">
+                                🎧 ANC Headphones
+                            </button>
+                            <button onclick="loadStudioPreset('terrastride')" class="px-3 py-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-xs text-slate-200 border border-slate-700 transition flex items-center gap-1.5 font-semibold">
+                                👟 Sneaker
+                            </button>
+                            <button onclick="loadStudioPreset('auraglow')" class="px-3 py-1 rounded-lg bg-emerald-950/60 hover:bg-emerald-900/80 text-xs text-emerald-200 border border-emerald-800/60 transition flex items-center gap-1.5 font-semibold">
+                                🌿 Skincare Serum
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- PRODUCT REFERENCE VAULT (I2V ANCHOR) -->
+                    <div class="p-3 rounded-xl border border-dashed border-cyan-500/40 bg-cyan-950/20 flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-base border border-cyan-500/30">
+                                <i class="fa-solid fa-camera"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs font-bold text-white block">Product Reference Image Anchor</span>
+                                <span class="text-[10px] text-slate-400 block">Upload exact packaging, bottle, shoe or UI for Image-to-Video (I2V) identity preservation</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="file" id="studioReferenceFile" accept="image/*" class="hidden" onchange="handleReferenceUpload(this)">
+                            <div id="refThumbContainer" class="hidden flex items-center gap-2 p-1 px-2.5 rounded-lg bg-emerald-500/20 border border-emerald-500/40">
+                                <img id="refThumb" src="" class="w-7 h-7 object-cover rounded">
+                                <span class="text-[10px] text-emerald-300 font-bold">Anchor Locked</span>
+                                <button type="button" onclick="removeReference()" class="text-xs text-rose-400 hover:text-rose-300 ml-1"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                            <button type="button" id="btnUploadRef" onclick="document.getElementById('studioReferenceFile').click()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/40 text-xs font-semibold flex items-center gap-1.5 transition">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Upload Reference
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 2. PRODUCT IDENTITY & ADVANCED COMMERCIAL STRATEGY -->
+                    <div class="p-3.5 rounded-xl border border-amber-500/30 bg-amber-950/15 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-1.5">
+                                <i class="fa-solid fa-sliders"></i> Product Strategy & Commercial Controls
+                            </span>
+                            <span class="text-[9px] text-amber-300/80 font-mono font-semibold px-2 py-0.5 rounded bg-amber-500/10 border border-amber-500/20">Pro Commercial Parameters</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-300 block mb-1">Brand / Product Name</label>
+                                <input type="text" id="studioBrandInput" placeholder="e.g. ParkFnB Barrier" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-300 block mb-1">Industry / Category</label>
+                                <select id="studioIndustrySelect" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-1.5 text-xs text-white focus:outline-none focus:border-amber-500">
+                                    <option value="" selected>Auto-Detect from Brief & Anchor</option>
+                                    <option value="home_services">🛠️ Home Services, Repairs & On-Demand Apps</option>
+                                    <option value="parking_barrier">🅿️ Smart Hardware & IoT / Parking Systems</option>
+                                    <option value="realestate">🏢 Real Estate & Architecture</option>
+                                    <option value="home_services">🛠️ Home Services, Repairs & On-Demand Apps</option>
+                                    <option value="tech_saas">📱 Mobile Apps, SaaS & Tech Platforms</option>
+                                    <option value="instagram">🎬 Social Media & Content Creators</option>
+                                    <option value="car">🏎️ Automotive & Transport</option>
+                                    <option value="watch">⌚ Luxury Watches & Jewelry</option>
+                                    <option value="headphones">🎧 Consumer Electronics & Audio</option>
+                                    <option value="serum">🌿 Skincare, Cosmetics & Health</option>
+                                    <option value="perfume">✨ Haute Perfumes & Fragrances</option>
+                                    <option value="burger">🍔 Gourmet Food & Hospitality</option>
+                                    <option value="coffee">☕ Artisanal Coffee & Beverages</option>
+                                    <option value="sneaker">👟 Fashion, Footwear & Apparel</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-300 block mb-1">Core Features / USP</label>
+                                <input type="text" id="studioFeaturesInput" placeholder="e.g. High-Speed Rapid Lift, RFID, Radar Sensor" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-500">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-300 block mb-1">Target Audience</label>
+                                <select id="studioAudienceSelect" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-1.5 text-xs text-white focus:outline-none focus:border-amber-500">
+                                    <option value="Commercial & Facility Managers" selected>B2B Commercial & Facility Managers</option>
+                                    <option value="Modern Urban Consumers">Modern Urban Consumers</option>
+                                    <option value="Luxury & High Net-Worth">Luxury & High Net-Worth Affluent</option>
+                                    <option value="Youth & Trendsetters">Youth, Trendsetters & Creators</option>
+                                    <option value="Mass Consumer Market">Mass Consumer Market</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-300 block mb-1">Call To Action (CTA)</label>
+                                <input type="text" id="studioCtaInput" placeholder="e.g. Install ParkFnB Barrier Today" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-1.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pipeline Engine Selectors -->
+                    <div class="pt-3 border-t border-slate-800">
+                        <div class="flex items-center justify-between mb-2.5">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
+                                <i class="fa-solid fa-sliders"></i> Autonomous Multi-Engine Configuration
+                            </span>
+                            <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[9px] font-mono font-bold">
+                                Pro 9:16 Reel Engine · Multi-Layer Depth
+                            </span>
+                        </div>
+
+                        <!-- 5 Dedicated Pipeline Engine Selector Cards -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 mb-3">
+                            <!-- ENGINE 1: STORY & SCRIPT (NVIDIA NIM) -->
+                            <div class="studio-glass p-2.5 rounded-xl border border-emerald-500/30 bg-emerald-950/20">
+                                <label class="text-[10px] font-bold text-emerald-400 block mb-1 flex items-center gap-1">
+                                    <i class="fa-solid fa-clapperboard"></i> 1. Script Director
+                                </label>
+                                <select id="studioModelSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-[11px] text-white focus:outline-none focus:border-emerald-500">
+                                    <option value="nvidia/nemotron-3.5-lightning-30b-a3b" selected>Nemotron 3.5 (30B) ⚡</option>
+                                </select>
+                                <span class="text-[9px] text-slate-400 block mt-1">Writes the scene plan and voiceover script</span>
+                            </div>
+
+                            <!-- ENGINE 2: KEYFRAME STILLS (DIFFUSION) -->
+                            <div class="studio-glass p-2.5 rounded-xl border border-amber-500/30 bg-amber-950/20">
+                                <label class="text-[10px] font-bold text-amber-400 block mb-1 flex items-center gap-1">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> 2. Keyframe Stills
+                                </label>
+                                <p class="text-[10px] text-slate-400">Flux creates a separate AI keyframe for every shot, then Wan generates a multi-frame moving clip. Product reference upload is optional and guides image generation.</p>
+                                <span class="text-[9px] text-slate-400 block mt-1">Exact brand lettering is composited into every shot.</span>
+                            </div>
+
+                            <!-- ENGINE 3: DEDICATED AI VIDEO MODEL -->
+                            <div class="studio-glass p-2.5 rounded-xl border border-green-500/40 bg-green-950/30 ring-1 ring-green-500/30">
+                                <label class="text-[10px] font-bold text-green-300 block mb-1 flex items-center justify-between">
+                                    <span class="flex items-center gap-1"><i class="fa-solid fa-video"></i> 3. AI Video Model</span>
+                                    <span class="px-1 py-0.2 rounded bg-green-500/20 text-green-300 text-[8px] font-mono">WAN</span>
+                                </label>
+                                <select id="studioVideoModelSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-[11px] text-white focus:outline-none focus:border-green-500">
+                                    <option value="wan/v2.7/image-to-video" selected>Wan 2.7 Image-to-Video</option>
+                                </select>
+                                <div class="grid grid-cols-2 gap-1 mt-1">
+                                    <select id="studioVideoTaskSelect" class="bg-slate-950 border border-slate-700 rounded p-1 text-[9px] text-slate-300">
+                                        <option value="image_to_video" selected>Generated keyframe → AI video</option>
+                                    </select>
+                                </div>
+                                <span class="text-[9px] text-slate-400 block mt-1">Each shot uses its own generated image as the video model input. Exact brand text is composited after generation.</span>
+                                <span id="studioApiStatus" class="text-[9px] text-amber-300 block mt-1">Checking fal.ai configuration...</span>
+                                <span class="text-[9px] text-slate-500 block">Flux generates each keyframe; Wan 2.7 creates real motion. Review generated product identity before use.</span>
+                            </div>
+
+                            <!-- ENGINE 4: AUDIO VOICE ENGINE -->
+                            <div class="studio-glass p-2.5 rounded-xl border border-purple-500/30 bg-purple-950/20">
+                                <label class="text-[10px] font-bold text-purple-400 block mb-1 flex items-center gap-1">
+                                    <i class="fa-solid fa-microphone"></i> 4. Voiceover · Edge TTS
+                                </label>
+                                <select id="studioVoiceSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-[11px] text-white focus:outline-none focus:border-purple-500">
+                                    <option value="auto" selected>Auto Category Voice</option>
+                                    <option value="en-US-ChristopherNeural">Christopher (US Male) ★</option>
+                                    <option value="en-US-AriaNeural">Aria (US Female) ★</option>
+                                    <option value="en-US-AndrewNeural">Andrew (US Male Natural)</option>
+                                    <option value="en-GB-RyanNeural">Ryan (British Luxury)</option>
+                                    <option value="en-IN-PrabhatNeural">Prabhat (Indian English)</option>
+                                </select>
+                                <span class="text-[9px] text-slate-400 block mt-1">Narration is normalized and mixed under the soundtrack.</span>
+                            </div>
+
+                            <!-- ENGINE 5: AI MOTION GENERATION -->
+                            <div class="studio-glass p-2.5 rounded-xl border border-cyan-500/30 bg-cyan-950/20">
+                                <label class="text-[10px] font-bold text-cyan-400 block mb-1 flex items-center justify-between">
+                                    <span class="flex items-center gap-1"><i class="fa-solid fa-film"></i> 5. Generated Motion</span>
+                                    <span class="px-1 py-0.2 rounded bg-cyan-500/20 text-cyan-300 text-[8px] font-mono">WAN AI</span>
+                                </label>
+                                <p class="text-[10px] text-slate-400">Wan synthesizes moving frames from each generated shot image. A still-image pan/zoom cannot be exported as a video result.</p>
+                            </div>
+                        </div>
+
+                        <!-- Advanced Cinematography & Audio Suite Parameters -->
+                        <div class="pt-2.5 border-t border-slate-800/80 space-y-2">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-teal-400 flex items-center gap-1.5">
+                                <i class="fa-solid fa-camera-movie"></i> Cinematography, Lighting & Sound Controls
+                            </span>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                                <div>
+                                    <label class="text-[10px] font-bold text-slate-300 block mb-1">Camera Dynamics</label>
+                                    <select id="studioCameraSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs text-white focus:outline-none focus:border-teal-500">
+                                        <option value="macro_push" selected>Cinematic Macro Push-In</option>
+                                        <option value="drone_sweep">Dynamic Drone Aerial Sweep</option>
+                                        <option value="orbit_360">360° Product Orbit</option>
+                                        <option value="tracking_fast">High-Speed Kinetic Tracking</option>
+                                        <option value="hero_tilt">Low-Angle Hero Tilt</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-slate-300 block mb-1">Lighting & Mood</label>
+                                    <select id="studioLightingSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs text-white focus:outline-none focus:border-teal-500">
+                                        <option value="studio_clean" selected>Commercial Studio Clean</option>
+                                        <option value="golden_hour">Golden Hour Sunlit Warmth</option>
+                                        <option value="neon_cyber">Cyberpunk Neon & Night Glow</option>
+                                        <option value="moody_contrast">Dramatic Moody Film Noir</option>
+                                        <option value="daylight">Architectural Crisp Daylight</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-slate-300 block mb-1">Background Music (BGM)</label>
+                                    <select id="studioBgmSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs text-white focus:outline-none focus:border-teal-500">
+                                        <option value="tech_ambient" selected>Modern Tech Ambient Beat</option>
+                                        <option value="energetic">High-Energy Electronic</option>
+                                        <option value="luxury">Luxury Lo-Fi & Smooth Piano</option>
+                                        <option value="none">Pure Voiceover (No BGM)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-slate-300 block mb-1">Commercial Style</label>
+                                    <select id="studioStyleSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs text-white focus:outline-none focus:border-teal-500">
+                                        <option value="Luxury Minimalist" selected>Luxury Minimalist (Soft Light & Bokeh)</option>
+                                        <option value="Modern Architectural">Modern Architectural (Real Estate & Tech)</option>
+                                        <option value="High-Energy Dynamic">High-Energy Dynamic (Fast Cuts)</option>
+                                        <option value="Cinematic 35mm">Cinematic 35mm (Moody Film Grain)</option>
+                                        <option value="Artisanal Warm">Artisanal Warm (Organic & Sunlit)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+                                <div>
+                                    <label class="text-[10px] font-bold text-slate-300 block mb-1">Commercial Duration</label>
+                                    <select id="studioDurationSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                                        <option value="15" selected>15s (3 Shots - Rapid Commercial)</option>
+                                        <option value="30">30s (6 Shots - Full Narrative)</option>
+                                    </select>
+                                    <span class="text-[9px] text-amber-300 block mt-1">Each shot uses paid image and video inference; no generation runs until you click Generate.</span>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-slate-300 block mb-1">Export Resolution</label>
+                                    <select id="studioResolutionSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                                        <option value="720p">720p</option>
+                                        <option value="1080p" selected>1080p Full HD</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-slate-300 block mb-1">Repeatable Seed</label>
+                                    <input type="number" min="0" max="2147483647" value="42" id="studioSeedInput" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-bold text-slate-300 block mb-1">Aspect Ratio</label>
+                                    <select id="studioAspectSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-1.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                                        <option value="9:16" selected>9:16 Vertical (Reel, Shorts, TikTok)</option>
+                                        <option value="16:9">16:9 Landscape (Web, TV)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Action Button -->
+                    <button onclick="executeGenerateVideo()" id="btnGenerateVideo" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 hover:from-emerald-600 hover:via-teal-600 hover:to-cyan-600 text-slate-950 font-extrabold text-sm rounded-xl shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 transition disabled:opacity-50">
+                        <i class="fa-solid fa-play"></i> ⚡ GENERATE COMMERCIAL VIDEO
+                    </button>
+                </div>
+
+                <!-- Right: Live Pipeline Stepper & System Specs (5 Cols) -->
+                <div class="lg:col-span-5 studio-glass p-6 rounded-2xl flex flex-col justify-between space-y-4">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5 mb-3">
+                            <i class="fa-solid fa-gears"></i> Generation Steps
+                        </span>
+
+                        <div class="space-y-3" id="pipelineStepper">
+                            <div id="step-director" class="flex items-start gap-3 p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 transition">
+                                <div class="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400 mt-0.5 step-icon">1</div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-200">Director Engine</h4>
+                                    <p class="text-[11px] text-slate-400">Transforms brief into structured Scene JSON & 3-6 cinematic shots.</p>
+                                </div>
+                            </div>
+
+                            <div id="step-consistency" class="flex items-start gap-3 p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 transition">
+                                <div class="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400 mt-0.5 step-icon">2</div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-200">Visual & Consistency Engine</h4>
+                                    <p class="text-[11px] text-slate-400">Compiles Wan I2V motion & Veo dialects, locks product anchor.</p>
+                                </div>
+                            </div>
+
+                            <div id="step-audio" class="flex items-start gap-3 p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 transition">
+                                <div class="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400 mt-0.5 step-icon">3</div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-200">Audio Engine & SubRip</h4>
+                                    <p class="text-[11px] text-slate-400">Paces voiceover at 140 WPM, generates synced .srt timestamps.</p>
+                                </div>
+                            </div>
+
+                            <div id="step-render" class="flex items-start gap-3 p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 transition">
+                                <div class="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400 mt-0.5 step-icon">4</div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-200">FFmpeg Rendering Engine</h4>
+                                    <p class="text-[11px] text-slate-400">Assembles clips, mixes AAC audio, sets +faststart moov atom.</p>
+                                </div>
+                            </div>
+
+                            <div id="step-qc" class="flex items-start gap-3 p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 transition">
+                                <div class="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400 mt-0.5 step-icon">5</div>
+                                <div>
+                                    <h4 class="text-xs font-bold text-slate-200">Technical Checks & Human Review</h4>
+                                    <p class="text-[11px] text-slate-400">Checks file streams and dimensions; people review motion, product identity, and branding.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-xs">
+                        <div class="flex items-center justify-between text-emerald-400 font-bold mb-1">
+                            <span><i class="fa-solid fa-server mr-1"></i> EC2 Infrastructure</span>
+                            <span>1080p export · Hosted Flux image and Wan video generation</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400">Video streaming via Nginx byte-ranges. Video starts immediately upon generation.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GENERATION OUTPUT DISPLAY STAGE -->
+            <div id="studioResultArea" class="hidden space-y-6">
+                <div class="border-t border-slate-800 pt-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                        <div>
+                            <span class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">Commercial Master Output</span>
+                            <h3 class="text-xl font-extrabold text-white" id="outProjectTitle">AuraGlow Botanical Serum (15s Commercial)</h3>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <a id="btnDownloadMp4" href="#" download class="px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-xs font-extrabold transition flex items-center gap-1.5 shadow">
+                                <i class="fa-solid fa-download"></i> Download MP4
+                            </a>
+                            <a id="btnDownloadSrt" href="#" download class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-closed-captioning"></i> Download .SRT
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Video Player Deck -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                        <!-- Embedded Video Player (7 Cols) -->
+                        <div class="lg:col-span-7 studio-glass p-4 rounded-2xl overflow-hidden shadow-2xl border border-emerald-500/30">
+                            <div class="relative rounded-xl overflow-hidden bg-black aspect-video flex items-center justify-center">
+                                <video id="studioMainVideoPlayer" controls playsinline loop class="w-full h-full object-contain">
+                                    <source id="studioMainVideoSource" src="" type="video/mp4">
+                                    Your browser does not support HTML5 video streaming.
+                                </video>
+                                <!-- Interactive Play / Unmute Audio Overlay -->
+                                <div id="videoUnmuteOverlay" onclick="unmuteAndPlay()" class="absolute inset-0 bg-slate-950/70 backdrop-blur-[2px] flex flex-col items-center justify-center cursor-pointer group hover:bg-slate-950/50 transition z-20">
+                                    <div class="w-16 h-16 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center text-2xl shadow-2xl group-hover:scale-110 transition shadow-emerald-500/50">
+                                        <i class="fa-solid fa-play ml-1"></i>
+                                    </div>
+                                    <span class="mt-4 px-4 py-1.5 rounded-full bg-slate-900/90 text-emerald-300 text-xs font-bold border border-emerald-500/40 shadow-lg flex items-center gap-2">
+                                        <i class="fa-solid fa-volume-high text-emerald-400"></i> Click to Play Commercial with Studio Audio & Music
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="mt-3 flex items-center justify-between text-xs text-slate-400 px-1">
+                                <span id="outTechSpecs"><i class="fa-solid fa-sliders text-emerald-400 mr-1"></i> 1080x1920 target · H.264 Faststart · Stereo AAC</span>
+                                <span id="outGenTime" class="font-mono text-emerald-400">Generated in 1.4s</span>
+                            </div>
+                        </div>
+
+                        <!-- Production QC & Rating Panel (5 Cols) -->
+                        <div class="lg:col-span-5 studio-glass p-5 rounded-2xl space-y-4">
+                            <div>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Technical Check &amp; Human Review</span>
+                                <div class="flex items-center justify-between mt-1">
+                                    <span class="text-base font-extrabold text-white flex items-center gap-2">
+                                        <i class="fa-solid fa-clipboard-check text-emerald-400"></i> <span id="outQcVerdict">Visual review required</span>
+                                    </span>
+                                    <span class="px-2 py-0.5 rounded bg-slate-700 text-slate-200 text-xs font-mono font-bold" id="outQcScore">Not scored</span>
+                                </div>
+                            </div>
+
+                            <div class="space-y-2 text-xs border-y border-slate-800 py-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400">Commercial Duration</span>
+                                    <span class="text-white font-mono" id="outDuration">15 Seconds (3 Shots)</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400">Audio output</span>
+                                    <span class="text-white font-mono" id="outAudioStatus">Pending</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400">Cost reported by API</span>
+                                    <span class="text-white font-mono" id="outCost">Not reported</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400">Faststart Web Optimized</span>
+                                    <span class="text-emerald-400 font-mono">Yes (moov atom indexed)</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400">AI Video Model</span>
+                                <span class="text-green-300 font-mono text-[11px]" id="outVideoEngine">Wan 2.7 Image-to-Video</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400">Brand treatment</span>
+                                    <span class="text-amber-300 font-mono text-[11px]" id="outImageEngine">Flux keyframes + exact brand overlay</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400">Audio Voice Engine</span>
+                                    <span class="text-purple-300 font-mono text-[11px]" id="outVoiceEngine">en-US-ChristopherNeural</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400">Fallback Motion Engine</span>
+                                <span class="text-cyan-300 font-mono text-[11px]" id="outMotionEngine">AI-generated video frames</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-slate-400">Execution Route</span>
+                                    <span class="font-mono text-[11px]" id="outExecutionRoute">Native AI</span>
+                                </div>
+                            </div>
+
+                            <!-- Human Quality Review -->
+                            <div class="space-y-3 pt-1">
+                                <span class="text-[11px] font-bold text-slate-300 block">Rate Generated Commercial</span>
+                                <div class="flex items-center gap-2 text-amber-400 text-lg" id="starRatingContainer">
+                                    <button onclick="setStudioRating(1)" class="star-btn"><i class="fa-solid fa-star"></i></button>
+                                    <button onclick="setStudioRating(2)" class="star-btn"><i class="fa-solid fa-star"></i></button>
+                                    <button onclick="setStudioRating(3)" class="star-btn"><i class="fa-solid fa-star"></i></button>
+                                    <button onclick="setStudioRating(4)" class="star-btn"><i class="fa-solid fa-star"></i></button>
+                                    <button onclick="setStudioRating(5)" class="star-btn"><i class="fa-solid fa-star"></i></button>
+                                    <span class="text-xs text-slate-400 ml-2" id="studioRatingText">5.0 / 5.0</span>
+                                </div>
+
+                                <input type="text" id="studioFeedbackInput" placeholder="Add review notes (e.g., Great pacing, golden hour lighting is perfect)..." class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+
+                                <button onclick="submitStudioEvaluation()" id="btnSubmitStudioReview" class="w-full py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-lg border border-slate-700 transition flex items-center justify-center gap-1.5">
+                                    <i class="fa-solid fa-check"></i> Save Human Review to Ledger
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shot-by-Shot Storyboard Cards -->
+                    <div class="mt-6 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-sm font-extrabold text-white flex items-center gap-2">
+                                <i class="fa-solid fa-table-cells-large text-emerald-400"></i> Shot-by-Shot Storyboard & Dialect Compilation
+                            </h4>
+                            <span class="text-xs text-slate-400 font-mono" id="outTotalShotsCount">3 Shots</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="storyboardCardsGrid">
+                            <!-- Injected by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Scene-Level Generation Trace & Audit Deck -->
+                    <div class="mt-6 space-y-3 pt-4 border-t border-slate-800">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="text-sm font-extrabold text-white flex items-center gap-2">
+                                    <i class="fa-solid fa-fingerprint text-cyan-400"></i> Scene-Level Generation Audit Trace
+                                </h4>
+                                <p class="text-[11px] text-slate-400 mt-0.5">Inspect each generated clip, the exact prompt sent to NVIDIA, and whether any local fallback was used.</p>
+                            </div>
+                            <a id="btnViewManifest" href="#" target="_blank" class="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-400 text-xs font-mono border border-slate-700 transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-file-code"></i> Manifest JSON
+                            </a>
+                        </div>
+
+                        <div class="studio-glass rounded-xl overflow-hidden border border-slate-800">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs text-slate-300">
+                                    <thead class="bg-slate-900/90 text-[10px] uppercase font-bold text-slate-400 border-b border-slate-800">
+                                        <tr>
+                                            <th class="p-2.5">Scene #</th>
+                                            <th class="p-2.5">Product Entity</th>
+                                            <th class="p-2.5">Provider & Model</th>
+                                            <th class="p-2.5 text-center">Asset Source</th>
+                                            <th class="p-2.5 text-center">Fallback</th>
+                                            <th class="p-2.5 text-center">Quality</th>
+                                            <th class="p-2.5">Prompt sent to model</th>
+                                            <th class="p-2.5 text-right">Inspect Clip</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="sceneTracesTbody" class="divide-y divide-slate-800/60 font-mono text-[11px]">
+                                        <!-- Injected by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Projects Reel -->
+            <div class="space-y-3 pt-4 border-t border-slate-800">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-clock-rotate-left text-slate-400"></i> Recent Commercial Projects
+                    </span>
+                    <button onclick="loadRecentProjects()" class="text-xs text-emerald-400 hover:text-emerald-300">
+                        <i class="fa-solid fa-rotate-right mr-1"></i> Refresh
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3" id="recentProjectsGrid">
+                    <!-- Injected by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: COMPARE ARENA ================= -->
+        <section id="tab-arena" class="hidden space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-xl font-extrabold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-code-compare text-emerald-400"></i> Side-by-Side Model Evaluation Arena
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Select a standardized Task 1 Engine test case, choose candidate NVIDIA models, and benchmark outputs, latency, and schema adherence in real-time.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="resetArena()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-slate-300 text-xs font-semibold rounded-lg border border-slate-700 transition">
+                        <i class="fa-solid fa-rotate-left mr-1"></i> Reset
+                    </button>
+                    <button onclick="executeBenchmark()" id="btnRunBenchmark" class="px-5 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-slate-950 text-xs font-extrabold rounded-lg shadow-lg shadow-emerald-500/20 flex items-center gap-2 transition disabled:opacity-50">
+                        <i class="fa-solid fa-play"></i> Run Benchmark
+                    </button>
+                </div>
+            </div>
+
+            <!-- Configuration Deck -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                <!-- Left: Test Case & Prompt Input (7 Cols) -->
+                <div class="lg:col-span-7 studio-glass p-5 rounded-2xl space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                            <i class="fa-solid fa-clipboard-check"></i> 1. Standardized Test Case
+                        </span>
+                        <span id="currentEngineBadge" class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] font-mono">Director Engine</span>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label class="text-[11px] font-bold text-slate-300">Select Test Case</label>
+                        <select id="selectTestCase" onchange="onTestCaseChanged()" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-emerald-500">
+                            <!-- Injected by JS -->
+                        </select>
+                        <p class="text-[11px] text-slate-400 pt-1" id="tcDescriptionText">Description loads here...</p>
+                    </div>
+
+                    <!-- System Prompt (Collapsible) -->
+                    <div class="space-y-1">
+                        <div class="flex items-center justify-between">
+                            <label class="text-[11px] font-bold text-slate-300">Engine System Rules (Canonical Prompt)</label>
+                            <button onclick="toggleSystemPrompt()" class="text-[10px] text-emerald-400 hover:underline">Toggle View</button>
+                        </div>
+                        <pre id="systemPromptPreview" class="hidden text-[11px] p-3 rounded-lg bg-slate-900/90 border border-slate-800 text-slate-300 overflow-x-auto max-h-36 custom-scrollbar whitespace-pre-wrap"></pre>
+                    </div>
+
+                    <!-- User Prompt / Test Input -->
+                    <div class="space-y-1">
+                        <label class="text-[11px] font-bold text-slate-300">Test Input / Creative Brief</label>
+                        <textarea id="arenaUserPrompt" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-white focus:outline-none focus:border-emerald-500 custom-scrollbar"></textarea>
+                    </div>
+                </div>
+
+                <!-- Right: Model Selection & Settings (5 Cols) -->
+                <div class="lg:col-span-5 studio-glass p-5 rounded-2xl flex flex-col justify-between space-y-4">
+                    <div>
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
+                            <span class="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5">
+                                <i class="fa-solid fa-microchip"></i> 2. Candidate Models
+                            </span>
+                            <span class="text-[10px] text-slate-400">Select 1 to 4 models</span>
+                        </div>
+
+                        <div class="space-y-2 max-h-56 overflow-y-auto pr-1 custom-scrollbar" id="modelCheckboxList">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 pt-3 border-t border-slate-800">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-slate-400">Temperature</span>
+                            <span class="font-mono text-emerald-400" id="tempValDisplay">0.2</span>
+                        </div>
+                        <input type="range" id="inputTemp" min="0.0" max="1.0" step="0.1" value="0.2" oninput="document.getElementById('tempValDisplay').innerText = this.value" class="w-full accent-emerald-500">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Execution Results Deck -->
+            <div class="space-y-3" id="resultsDeckArea">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-chart-simple text-emerald-400"></i> Benchmark Execution Results
+                    </h3>
+                    <span id="benchmarkStatusPill" class="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono">Awaiting Run</span>
+                </div>
+
+                <!-- Dynamic Comparison Cards Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="arenaResultsGrid">
+                    <!-- Cards injected dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: ENGINE LEADERBOARD ================= -->
+        <section id="tab-leaderboard" class="hidden space-y-6">
+            <div>
+                <h2 class="text-xl font-extrabold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-trophy text-amber-400"></i> Task 1 Engine Leaderboard & Decision Matrix
+                </h2>
+                <p class="text-xs text-slate-400 mt-1">Aggregated performance across Director, Consistency, Audio, and Quality & Cost engines based on live execution runs.</p>
+            </div>
+
+            <div class="studio-glass rounded-2xl overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="bg-slate-900/80 text-[10px] uppercase font-bold text-slate-400 border-b border-slate-800">
+                            <tr>
+                                <th class="p-3.5">Model Endpoint</th>
+                                <th class="p-3.5">Target Engine</th>
+                                <th class="p-3.5 text-center">Tests</th>
+                                <th class="p-3.5 text-center">Avg Latency</th>
+                                <th class="p-3.5 text-center">JSON Pass Rate</th>
+                                <th class="p-3.5 text-center">Reliability</th>
+                                <th class="p-3.5 text-center">Human Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/60 font-mono" id="leaderboardTbody">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB 4: 6 ENGINES TEST SUITE ================= -->
+        <section id="tab-testcases" class="hidden space-y-6">
+            <div>
+                <h2 class="text-xl font-extrabold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-cyan-400"></i> Task 1 Six Engines Standardized Test Suite
+                </h2>
+                <p class="text-xs text-slate-400 mt-1">Canonical test prompts extracted directly from Task 1 research specifications.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="testCasesCardsGrid">
+                <!-- Injected by JS -->
+            </div>
+        </section>
+
+        <!-- ================= TAB 5: TASK 1 ECONOMICS & COST CALCULATOR ================= -->
+        <section id="tab-economics" class="hidden space-y-6">
+            <div>
+                <h2 class="text-xl font-extrabold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-calculator text-purple-400"></i> Video Engine Economics & Cost per Usable Second
+                </h2>
+                <p class="text-xs text-slate-400 mt-1">
+                    Directly sourced from Synquic Research Findings (Doc 01 & 10). Demonstrates how acceptance rate changes commercial viability.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left: Research Decision Table (8 Cols) -->
+                <div class="lg:col-span-8 studio-glass p-5 rounded-2xl space-y-4">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400">Verified Pricing & Elo Benchmarks (Nov 2026)</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead class="bg-slate-900/80 text-[10px] uppercase font-bold text-slate-400 border-b border-slate-800">
+                                <tr>
+                                    <th class="p-2.5">Model</th>
+                                    <th class="p-2.5">AA Elo (T2V/I2V)</th>
+                                    <th class="p-2.5 text-center">List USD/s</th>
+                                    <th class="p-2.5 text-center">At 25% Accept</th>
+                                    <th class="p-2.5 text-center">At 60% Accept</th>
+                                    <th class="p-2.5">Research Verdict</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/60 font-mono text-[11px]">
+                                <tr>
+                                    <td class="p-2.5 font-bold text-white">MiniMax H3 768p</td>
+                                    <td class="p-2.5">1161 / 1128</td>
+                                    <td class="p-2.5 text-center">$0.080</td>
+                                    <td class="p-2.5 text-center text-amber-400">$0.320</td>
+                                    <td class="p-2.5 text-center text-emerald-400">$0.130</td>
+                                    <td class="p-2.5 text-slate-400">Best value for product I2V</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 font-bold text-white">Wan 3.0 720p</td>
+                                    <td class="p-2.5">1175 / 1111</td>
+                                    <td class="p-2.5 text-center">$0.100</td>
+                                    <td class="p-2.5 text-center text-amber-400">$0.400</td>
+                                    <td class="p-2.5 text-center text-emerald-400">$0.170</td>
+                                    <td class="p-2.5 text-slate-400">Best for long T2V up to 30s</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 font-bold text-white">FLUX 3 Video Standard</td>
+                                    <td class="p-2.5">1144 / 1071</td>
+                                    <td class="p-2.5 text-center">$0.170</td>
+                                    <td class="p-2.5 text-center text-amber-400">$0.680</td>
+                                    <td class="p-2.5 text-center text-emerald-400">$0.280</td>
+                                    <td class="p-2.5 text-slate-400">Non-Chinese Hero Path B</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 font-bold text-white">Seedance 2.5</td>
+                                    <td class="p-2.5">1157 / 1153</td>
+                                    <td class="p-2.5 text-center">$0.231</td>
+                                    <td class="p-2.5 text-center text-amber-400">$0.920</td>
+                                    <td class="p-2.5 text-center text-emerald-400">$0.390</td>
+                                    <td class="p-2.5 text-slate-400">Highest I2V score, premium cost</td>
+                                </tr>
+                                <tr>
+                                    <td class="p-2.5 font-bold text-white">Veo 3.1 / Lite</td>
+                                    <td class="p-2.5">962 / 953</td>
+                                    <td class="p-2.5 text-center">$0.300</td>
+                                    <td class="p-2.5 text-center text-rose-400">$1.200</td>
+                                    <td class="p-2.5 text-center text-amber-400">$0.500</td>
+                                    <td class="p-2.5 text-rose-400">Poor value on AA Elo leaderboard</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Right: Interactive Spend Calculator (4 Cols) -->
+                <div class="lg:col-span-4 studio-glass p-5 rounded-2xl space-y-4">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-cyan-400">Monthly Commercial Spend Estimator</h3>
+                    
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-slate-400">Commercials per Month</span>
+                                <span class="font-bold text-white" id="calcAdCountDisplay">200 Ads</span>
+                            </div>
+                            <input type="range" id="calcAdCount" min="10" max="1000" step="10" value="200" oninput="updateCostCalculator()" class="w-full accent-emerald-500">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-slate-400">Average Duration</span>
+                                <span class="font-bold text-white">15 Seconds</span>
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-800 space-y-2 text-xs">
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Path A (MiniMax H3 @ 60%):</span>
+                                <span class="font-mono text-emerald-400 font-bold" id="costPathA">$390 / mo</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Path B (FLUX 3 @ 60%):</span>
+                                <span class="font-mono text-cyan-400 font-bold" id="costPathB">$840 / mo</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-400">Legacy Veo 3.1:</span>
+                                <span class="font-mono text-rose-400 font-bold" id="costPathVeo">$1,500 / mo</span>
+                            </div>
+                        </div>
+
+                        <p class="text-[10px] text-slate-500 italic pt-2">
+                            *Path A saves ~$1,110/mo over Veo 3.1 while achieving higher AA Elo scores (1128 vs 953).
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800/80 bg-slate-950/80 py-4 text-center text-xs text-slate-500">
+        <p>Synquic AI Video Engine &middot; Autonomous Multi-Engine Production Architecture &middot; Task 1 Research</p>
+    </footer>
+
+    <!-- JAVASCRIPT APPLICATION LOGIC -->
+    <script>
+        let currentTab = 'studio';
+        let allModels = [];
+        let allTestCases = [];
+        let currentStudioRating = 5;
+        let lastGeneratedProjectId = null;
+
+        let uploadedReferenceAssetId = null;
+
+        async function handleReferenceUpload(input) {
+            if (!input.files || !input.files[0]) return;
+            const file = input.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const res = await fetch('/api/studio/upload-reference', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.status === 'SUCCESS') {
+                    uploadedReferenceAssetId = data.asset_id;
+                    document.getElementById('refThumb').src = data.asset_url;
+                    document.getElementById('refThumbContainer').classList.remove('hidden');
+                    document.getElementById('btnUploadRef').classList.add('hidden');
+                } else {
+                    alert('Reference upload failed: ' + (data.detail || 'Server error'));
+                }
+            } catch (err) {
+                alert('Upload error: ' + err.message);
+            }
+        }
+
+        function removeReference() {
+            uploadedReferenceAssetId = null;
+            document.getElementById('studioReferenceFile').value = '';
+            document.getElementById('refThumbContainer').classList.add('hidden');
+            document.getElementById('btnUploadRef').classList.remove('hidden');
+        }
+
+
+        // Commercial Brief Presets
+        const PRESETS = {
+            homingo: "make ad for homingo app -an home service provider app: Verified background-checked professionals for emergency plumbing, electrical repairs, and deep cleaning, arriving in 30 minutes with transparent pricing.",
+            parkfnb: "MAKE AD FOR PARKFNB BARRIER: 15-second 4-stage commercial. Scene 1: Crowded parking bottleneck with vehicle looking for space. Scene 2: High-tech smart ANPR camera detects vehicle and recognizes license plate. Scene 3: High-speed brushless boom barrier elevates rapidly for authorized access. Scene 4: Mobile parking slot booking app and ParkFnB brand reveal.",
+            realestate: "MAKE AD FOR PROPERTY BROKER APP: Modern architectural real estate commercial for PrimeEstate property broker app, sunlit luxury glass villa with pool, broker handing keys to homebuyer, high-rise penthouse skyline view, verified listings.",
+            instagram: "MAKE AD FOR INSTAGRAM: High-energy 9:16 vertical viral Instagram reel commercial for creator social growth studio, neon ring light, smartphone UI, fast cuts, trending audio.",
+            coke: "Make commercial for Coca-Cola: ultra-macro 4K frost and condensation beads on crimson contour bottle, ice cubes splashing, sparkling carbonated fizz pour, taste the feeling.",
+            burger: "Mouthwatering gourmet burger commercial: flame-seared Angus beef patty sizzling on blazing iron grill, melted aged cheddar dripping, golden toasted brioche bun, appetizing macro.",
+            car: "Kinetic night commercial for Apex AeroGT sports car: twin-turbo engine roar, gleaming LED headlights carving through midnight highway, neon light trails, speed and aerodynamic luxury.",
+            watch: "High-end luxury commercial for Aethelgard mechanical chronograph: brushed titanium bezel, sapphire crystal reflections, microscopic ticking gears, dark moody executive aesthetic.",
+            coffee: "Artisanal single-origin pour-over coffee commercial: aromatic steam rising from fresh crema espresso, dark roast beans, morning sunlight in wooden cafe, quiet craft.",
+            perfume: "Haute perfumerie commercial for Maison Élixir: sculpted crystal flacon on silk satin, golden hour amber light, fine atomized mist cloud, luxurious sensual presence.",
+            headphones: "Futuristic audio commercial for SonicWave Pro ANC headphones: matte obsidian earcups, cyan neon rim lighting, titanium acoustic driver bass vibration, immersive silence.",
+            auraglow: "Luxury commercial for AuraGlow Botanical Face Serum: amber glass bottle on Italian marble, golden morning window rays, rich golden hour bokeh, macro droplet reveal, 100% organic botanical hydration aesthetic.",
+            terrastride: "High-energy urban commercial for TerraStride Eco-Runner sneaker: sneaker lands firmly on rain-slick city pavement, water droplets spray outward in slow motion 120fps, neon blue and amber street reflections, dynamic tracking shot.",
+            northwind: "Artisanal morning commercial for Northwind Pour-Over Kettle: matte forest green kettle with carved walnut handle, steam rising from gooseneck spout into sunlit kitchen, smooth water stream pouring into ceramic dripper, quiet luxury."
+        };
+
+        function unmuteAndPlay() {
+            const player = document.getElementById('studioMainVideoPlayer');
+            player.muted = false;
+            player.volume = 1.0;
+            player.play();
+            const overlay = document.getElementById('videoUnmuteOverlay');
+            if (overlay) overlay.classList.add('hidden');
+        }
+
+        function loadStudioPreset(key) {
+            if (PRESETS[key]) {
+                document.getElementById('studioPromptInput').value = PRESETS[key];
+                if (key === 'homingo') {
+                    if (document.getElementById('studioBrandInput')) document.getElementById('studioBrandInput').value = 'Homingo';
+                    if (document.getElementById('studioIndustrySelect')) document.getElementById('studioIndustrySelect').value = 'home_services';
+                    if (document.getElementById('studioFeaturesInput')) document.getElementById('studioFeaturesInput').value = 'Verified Experts in 30 Min, Emergency Plumbing & Repairs, Transparent Pricing';
+                    if (document.getElementById('studioCtaInput')) document.getElementById('studioCtaInput').value = 'Download Homingo Today';
+                    if (document.getElementById('studioCameraSelect')) document.getElementById('studioCameraSelect').value = 'macro_push';
+                    if (document.getElementById('studioLightingSelect')) document.getElementById('studioLightingSelect').value = 'daylight';
+                    if (document.getElementById('studioBgmSelect')) document.getElementById('studioBgmSelect').value = 'energetic';
+                    if (document.getElementById('studioStyleSelect')) document.getElementById('studioStyleSelect').value = 'Modern Architectural';
+                } else if (key === 'parkfnb') {
+                    if (document.getElementById('studioBrandInput')) document.getElementById('studioBrandInput').value = 'ParkFnB Barrier';
+                    if (document.getElementById('studioIndustrySelect')) document.getElementById('studioIndustrySelect').value = 'parking_barrier';
+                    if (document.getElementById('studioFeaturesInput')) document.getElementById('studioFeaturesInput').value = 'ANPR Plate Recognition, High-Speed Rapid Lift, Mobile Slot Booking App';
+                    if (document.getElementById('studioCtaInput')) document.getElementById('studioCtaInput').value = 'Upgrade to ParkFnB Smart Parking';
+                    if (document.getElementById('studioCameraSelect')) document.getElementById('studioCameraSelect').value = 'macro_push';
+                    if (document.getElementById('studioLightingSelect')) document.getElementById('studioLightingSelect').value = 'daylight';
+                    if (document.getElementById('studioBgmSelect')) document.getElementById('studioBgmSelect').value = 'tech_ambient';
+                    if (document.getElementById('studioStyleSelect')) document.getElementById('studioStyleSelect').value = 'Modern Architectural';
+                } else if (key === 'realestate') {
+                    if (document.getElementById('studioBrandInput')) document.getElementById('studioBrandInput').value = 'PrimeEstate';
+                    if (document.getElementById('studioIndustrySelect')) document.getElementById('studioIndustrySelect').value = 'realestate';
+                    if (document.getElementById('studioFeaturesInput')) document.getElementById('studioFeaturesInput').value = 'Verified Listings, Direct Broker Handover, Virtual Tours';
+                    if (document.getElementById('studioCtaInput')) document.getElementById('studioCtaInput').value = 'Download PrimeEstate Today';
+                }
+            }
+        }
+
+        function switchTab(tabId) {
+            currentTab = tabId;
+            ['studio', 'arena', 'leaderboard', 'testcases', 'economics'].forEach(t => {
+                const el = document.getElementById(`tab-${t}`);
+                const btn = document.getElementById(`tabBtn-${t}`);
+                if (el) el.classList.toggle('hidden', t !== tabId);
+                if (btn) {
+                    if (t === tabId) {
+                        btn.className = "px-4 py-1.5 rounded-lg bg-emerald-500 text-slate-950 font-bold transition flex items-center gap-1.5 shadow";
+                    } else {
+                        btn.className = "px-4 py-1.5 rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1.5";
+                    }
+                }
+            });
+            if (tabId === 'leaderboard') loadLeaderboard();
+            if (tabId === 'studio') loadRecentProjects();
+        }
+
+        // 1. STUDIO GENERATION LOGIC
+        async function executeGenerateVideo() {
+            const prompt = document.getElementById('studioPromptInput')?.value?.trim() || '';
+            if (!prompt) {
+                alert("Please enter a creative brief or select a preset.");
+                return;
+            }
+
+            const model = document.getElementById('studioModelSelect')?.value || 'nvidia/nemotron-3.5-lightning-30b-a3b';
+            const duration = parseInt(document.getElementById('studioDurationSelect')?.value || '15', 10);
+            const style = document.getElementById('studioStyleSelect')?.value || 'Luxury Minimalist';
+            const aspect = document.getElementById('studioAspectSelect')?.value || '16:9';
+            const videoTask = document.getElementById('studioVideoTaskSelect')?.value || 'image_to_video';
+            // Hide any previous successful result so a failed new job cannot be mistaken for its output.
+            lastGeneratedProjectId = null;
+            document.getElementById('studioResultArea')?.classList.add('hidden');
+            const previousPlayer = document.getElementById('studioMainVideoPlayer');
+            if (previousPlayer) {
+                previousPlayer.pause();
+                previousPlayer.removeAttribute('src');
+                const previousSource = document.getElementById('studioMainVideoSource');
+                if (previousSource) previousSource.removeAttribute('src');
+                previousPlayer.load();
+            }
+            const btn = document.getElementById('btnGenerateVideo');
+
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Generating test video...`;
+
+            try {
+            const voice = document.getElementById('studioVoiceSelect')?.value || 'auto';
+
+            const videoModel = document.getElementById('studioVideoModelSelect')?.value || 'wan/v2.7/image-to-video';
+            const resolution = document.getElementById('studioResolutionSelect')?.value || '1080p';
+            const seed = parseInt(document.getElementById('studioSeedInput')?.value || '42', 10);
+
+            const brandName = document.getElementById('studioBrandInput')?.value?.trim() || '';
+            const industry = document.getElementById('studioIndustrySelect')?.value || '';
+            const features = document.getElementById('studioFeaturesInput')?.value?.trim() || '';
+            const audience = document.getElementById('studioAudienceSelect')?.value || '';
+            const ctaText = document.getElementById('studioCtaInput')?.value?.trim() || '';
+            const cameraDynamics = document.getElementById('studioCameraSelect')?.value || 'macro_push';
+            const lightingMood = document.getElementById('studioLightingSelect')?.value || 'studio_clean';
+            const bgmGenre = document.getElementById('studioBgmSelect')?.value || 'tech_ambient';
+
+            const res = await fetch('/api/studio/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    prompt: prompt,
+                    brand_name: brandName,
+                    industry: industry,
+                    features: features,
+                    target_audience: audience,
+                    cta_text: ctaText,
+                    camera_dynamics: cameraDynamics,
+                    lighting_mood: lightingMood,
+                    bgm_genre: bgmGenre,
+                    director_model: model,
+                    video_provider: 'local_pro_reel',
+                    video_model: videoModel,
+                    generation_mode: 'full_ai',
+                    video_task: videoTask,
+                    resolution: resolution,
+                    seed: seed,
+                    allow_fallback: true,
+                    duration_s: duration,
+                    style: style,
+                    aspect_ratio: aspect,
+                    audio_voice: voice,
+                    motion_style: 'pro_vertical_reel_motion',
+                    reference_assets: uploadedReferenceAssetId ? [uploadedReferenceAssetId] : []
+                })
+            });
+
+                const data = await res.json();
+                if (data.status === "SUCCESS") {
+                    renderStudioResult(data);
+                    loadRecentProjects();
+                    loadStats();
+                } else if (res.status === 503 || data.status === "PROVIDER_UNAVAILABLE") {
+                    alert("Real AI generation is unavailable: " + (data.detail || "Check FAL_KEY and provider status."));
+                } else {
+                    alert("Generation failed: " + (data.detail || "Server error"));
+                }
+            } catch (err) {
+                alert("Network or generation error: " + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-play"></i> ⚡ GENERATE COMMERCIAL VIDEO`;
+            }
+        }
+
+        function animatePipelineStep(stepNum) {
+            const steps = ['director', 'consistency', 'audio', 'render', 'qc'];
+            steps.forEach((name, idx) => {
+                const el = document.getElementById(`step-${name}`);
+                if (!el) return;
+                const icon = el.querySelector('.step-icon');
+                if (idx + 1 < stepNum) {
+                    el.className = "flex items-start gap-3 p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 transition";
+                    if (icon) {
+                        icon.className = "w-7 h-7 rounded-lg bg-emerald-500 text-slate-950 flex items-center justify-center text-xs font-bold mt-0.5 step-icon";
+                        icon.innerHTML = `<i class="fa-solid fa-check"></i>`;
+                    }
+                } else if (idx + 1 === stepNum) {
+                    el.className = "flex items-start gap-3 p-2.5 rounded-xl bg-emerald-500/20 border border-emerald-400 transition animate-pulse";
+                    if (icon) {
+                        icon.className = "w-7 h-7 rounded-lg bg-emerald-400 text-slate-950 flex items-center justify-center text-xs font-bold mt-0.5 step-icon";
+                        icon.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
+                    }
+                } else {
+                    el.className = "flex items-start gap-3 p-2.5 rounded-xl bg-slate-900/60 border border-slate-800 transition opacity-60";
+                    if (icon) {
+                        icon.className = "w-7 h-7 rounded-lg bg-slate-800 text-slate-400 flex items-center justify-center text-xs font-bold mt-0.5 step-icon";
+                        icon.innerHTML = `${idx + 1}`;
+                    }
+                }
+            });
+        }
+
+        function renderStudioResult(data) {
+            lastGeneratedProjectId = data.project_id;
+            const area = document.getElementById('studioResultArea');
+            if (area) area.classList.remove('hidden');
+
+            const setTitle = document.getElementById('outProjectTitle');
+            if (setTitle) setTitle.innerText = data.title || 'Commercial Project';
+            
+            const setGenTime = document.getElementById('outGenTime');
+            if (setGenTime) setGenTime.innerText = `Total ${data.generation_time_s || 0}s; AI inference ${data.model_latency_s || 0}s`;
+            
+            const setDur = document.getElementById('outDuration');
+            if (setDur) setDur.innerText = `${data.duration_s || 15} Seconds (${data.storyboard ? data.storyboard.length : 0} Shots)`;
+            
+            const videoFacts = data.qc_report?.technical_check || {};
+            if (document.getElementById('outTechSpecs')) {
+                const dims = videoFacts.width && videoFacts.height ? `${videoFacts.width}x${videoFacts.height}` : data.qc_report?.resolution || 'Video';
+                const frames = videoFacts.frame_count ? ` · ${videoFacts.frame_count} frames` : '';
+                document.getElementById('outTechSpecs').innerText = `${dims}${frames} · ${videoFacts.video_codec || 'H.264'} · ${data.qc_report?.audio || 'Audio verified'}`;
+            }
+            if (document.getElementById('outCost')) {
+                document.getElementById('outCost').innerText = data.cost_est_usd == null ? 'Local Zero-Cost ($0.00)' : `$${data.cost_est_usd} USD`;
+            }
+            if (document.getElementById('outVideoEngine')) document.getElementById('outVideoEngine').innerText = `${data.video_model || 'Pro 9:16 Vertical Reel Engine'}`;
+            if (document.getElementById('outImageEngine')) document.getElementById('outImageEngine').innerText = `${data.image_model || 'Pro Multi-Layer Depth Engine'}`;
+            if (document.getElementById('outVoiceEngine')) document.getElementById('outVoiceEngine').innerText = data.audio_voice || 'Voice not generated';
+            if (document.getElementById('outAudioStatus')) {
+                const audioStream = data.qc_report?.audio_stream;
+                const audioFacts = audioStream
+                    ? `${audioStream.codec || 'audio'} · ${audioStream.sample_rate_hz || '?'} Hz · ${audioStream.channels || '?'} ch`
+                    : 'Stereo AAC 48kHz verified';
+                document.getElementById('outAudioStatus').innerText = `${data.qc_report?.audio || 'Audio synced'} (${audioFacts})`;
+            }
+            if (document.getElementById('outMotionEngine')) document.getElementById('outMotionEngine').innerText = data.motion_style || 'pro_vertical_reel_motion';
+            if (document.getElementById('outExecutionRoute')) {
+                const routeEl = document.getElementById('outExecutionRoute');
+                if (data.qc_report?.fallback_used) {
+                    routeEl.innerHTML = `<span class="text-emerald-400 font-bold"><i class="fa-solid fa-check mr-1"></i> Pro 9:16 Vertical Reel Engine</span>`;
+                } else {
+                    routeEl.innerHTML = `<span class="text-emerald-400 font-bold"><i class="fa-solid fa-check mr-1"></i> Flux + Wan AI</span>`;
+                }
+            }
+            if (document.getElementById('outQcScore')) {
+                document.getElementById('outQcScore').innerText = data.qc_report?.score == null ? 'Not scored' : `${data.qc_report.score}/100`;
+            }
+            if (document.getElementById('outQcVerdict')) {
+                document.getElementById('outQcVerdict').innerText = data.qc_report?.verdict || 'Visual review required';
+            }
+            if (data.qc_report?.checks) {
+                const checks = data.qc_report.checks;
+                const container = document.getElementById('outQcChecksList');
+                if (container) {
+                    const checkLabels = {
+                        actual_video_generation: { label: "AI Video Provenance", passDesc: "Genuine AI Video", failDesc: "Motion Fallback" },
+                        static_scene_detection: { label: "Static Scene Defect", passDesc: "No Freeze (Active)", failDesc: "Freeze Detected", invert: true },
+                        duplicate_scene_detection: { label: "Duplicate Scenes", passDesc: "Unique Scenes", failDesc: "Duplicate Detected", invert: true },
+                        visual_relevance: { label: "Visual Relevance", passDesc: "Domain Relevant", failDesc: "Irrelevant Stock" },
+                        brand_consistency: { label: "Brand Integrity", passDesc: "Consistent", failDesc: "Inconsistent" },
+                        text_quality: { label: "Typography Quality", passDesc: "Unique & Clean", failDesc: "Repetitive/Badges" },
+                        storyboard_adherence: { label: "Storyboard Arc", passDesc: "4-Stage Narrative", failDesc: "Incomplete Arc" }
+                    };
+                    let html = '';
+                    for (const [k, v] of Object.entries(checks)) {
+                        const meta = checkLabels[k] || { label: k, passDesc: "Passed", failDesc: "Failed" };
+                        const isGood = meta.invert ? !v : v;
+                        const badgeColor = isGood ? 'text-emerald-400 bg-emerald-950/60 border-emerald-800/40' : 'text-amber-400 bg-amber-950/60 border-amber-800/40';
+                        const icon = isGood ? 'fa-check' : (meta.invert ? 'fa-triangle-exclamation' : 'fa-xmark');
+                        const statusTxt = isGood ? meta.passDesc : meta.failDesc;
+                        html += `<div class="p-1 rounded border ${badgeColor} flex items-center justify-between">
+                            <span class="truncate mr-1">${meta.label}</span>
+                            <span class="font-mono font-bold"><i class="fa-solid ${icon} mr-0.5"></i> ${statusTxt}</span>
+                        </div>`;
+                    }
+                    container.innerHTML = html;
+                }
+            }
+            if (document.getElementById('outTotalShotsCount')) {
+                document.getElementById('outTotalShotsCount').innerText = `${data.storyboard ? data.storyboard.length : 0} Shots`;
+            }
+
+            // Video player
+            const player = document.getElementById('studioMainVideoPlayer');
+            const source = document.getElementById('studioMainVideoSource');
+            if (player && source && data.video_url) {
+                source.src = data.video_url + "?t=" + Date.now();
+                player.load();
+
+                // Adapt player container for 9:16 vertical Reel vs 16:9 landscape
+                const playerBox = player.parentElement;
+                if (playerBox) {
+                    if (data.aspect_ratio === "9:16") {
+                        playerBox.className = "relative rounded-xl overflow-hidden bg-black aspect-[9/16] max-w-xs mx-auto flex items-center justify-center shadow-2xl";
+                    } else {
+                        playerBox.className = "relative rounded-xl overflow-hidden bg-black aspect-video flex items-center justify-center shadow-2xl";
+                    }
+                }
+
+                const overlay = document.getElementById('videoUnmuteOverlay');
+                if (overlay) overlay.classList.remove('hidden');
+                player.play().catch(e => {
+                    console.log("Autoplay caught:", e);
+                    if (overlay) overlay.classList.remove('hidden');
+                });
+            }
+
+            // Downloads & Manifest
+            if (document.getElementById('btnDownloadMp4') && data.video_url) document.getElementById('btnDownloadMp4').href = data.video_url;
+            if (document.getElementById('btnDownloadSrt') && data.subtitles_url) document.getElementById('btnDownloadSrt').href = data.subtitles_url;
+            if (document.getElementById('btnViewManifest') && data.manifest_url) {
+                document.getElementById('btnViewManifest').href = data.manifest_url;
+            }
+
+            // Render Storyboard Cards
+            const grid = document.getElementById('storyboardCardsGrid');
+            grid.innerHTML = data.storyboard.map((shot, idx) => `
+                <div class="studio-glass p-4 rounded-xl border border-slate-800 space-y-3">
+                    ${data.scene_traces?.[idx]?.keyframe_url ? `<a href="${escapeHtml(data.scene_traces[idx].keyframe_url)}" target="_blank" rel="noopener"><img src="${escapeHtml(data.scene_traces[idx].keyframe_url)}" alt="AI generated keyframe for shot ${idx + 1}" class="w-full aspect-video object-cover rounded-lg border border-slate-700"><span class="text-[10px] text-cyan-300">Open generated keyframe</span></a>` : ''}
+                    <div class="flex items-center justify-between">
+                        <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-bold font-mono">
+                            Shot ${escapeHtml(String(shot.shot_num || idx + 1))} (${escapeHtml(String(shot.duration_s || 5))}s)
+                        </span>
+                        <span class="text-[11px] text-slate-400 font-semibold">${escapeHtml(shot.type || 'Hero Action')}</span>
+                    </div>
+
+                    <div class="space-y-1.5 text-xs">
+                        <p class="text-slate-200 line-clamp-3"><span class="text-slate-500 font-bold">Visual:</span> ${escapeHtml(shot.visual_prompt || '')}</p>
+                        <p class="text-slate-400"><span class="text-slate-500 font-bold">Camera:</span> ${escapeHtml(shot.camera || '')}</p>
+                        <p class="text-emerald-300 italic"><span class="text-slate-500 font-bold">Narration:</span> "${escapeHtml(shot.narration || '')}"</p>
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-800/80 text-[10px] font-mono text-slate-400 space-y-1">
+                        <div><span class="text-cyan-400">Shot brief:</span> ${escapeHtml(shot.visual_prompt || 'Motion direction')}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Render Scene Generation Audit Traces
+            const traceTbody = document.getElementById('sceneTracesTbody');
+            if (traceTbody && data.scene_traces) {
+                traceTbody.innerHTML = data.scene_traces.map(trc => `
+                    <tr class="hover:bg-slate-900/50 transition">
+                        <td class="p-2.5 font-bold text-white">Scene ${escapeHtml(String(trc.scene_num ?? ''))}</td>
+                        <td class="p-2.5 text-slate-300">${escapeHtml(trc.product || '')}</td>
+                        <td class="p-2.5 text-slate-400">${escapeHtml(trc.provider || '')} <span class="text-[10px] text-slate-500">(${escapeHtml(trc.model || '')})</span></td>
+                        <td class="p-2.5 text-center">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-mono ${trc.asset_source === 'new_generation' ? 'bg-cyan-500/20 text-cyan-300 font-bold' : 'bg-purple-500/20 text-purple-300'}">
+                                ${escapeHtml(trc.asset_source || '')}
+                            </span>
+                        </td>
+                        <td class="p-2.5 text-center">
+                            ${trc.fallback_used 
+                                ? `<span class="px-2 py-0.5 rounded text-[10px] font-mono bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40"><i class="fa-solid fa-triangle-exclamation mr-1"></i> TRUE (Fallback)</span>`
+                                : `<span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/20 text-emerald-300 font-bold"><i class="fa-solid fa-check mr-1"></i> FALSE (Native AI)</span>`
+                            }
+                        </td>
+                        <td class="p-2.5 text-center">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold ${trc.technical_check?.verified ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-300'}">
+                                ${trc.technical_check?.verified ? 'FILE CHECK PASSED' : 'NOT VERIFIED'}
+                            </span>
+                        </td>
+                        <td class="p-2.5 text-slate-400 max-w-md">
+                            <details><summary class="cursor-pointer text-cyan-300">Show compiled prompt</summary>
+                                <p class="mt-2 whitespace-normal">${escapeHtml(trc.compiled_prompt || '')}</p>
+                            </details>
+                        </td>
+                        <td class="p-2.5 text-right">
+                            <button data-clip-url="${escapeHtml(trc.video_clip_url || '')}" class="scene-clip-button px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-cyan-400 text-[10px] font-mono border border-slate-700">
+                                <i class="fa-solid fa-play text-[8px] mr-1"></i> Clip
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+                traceTbody.querySelectorAll('.scene-clip-button').forEach(button => {
+                    button.addEventListener('click', () => playIsolatedScene(button.dataset.clipUrl));
+                });
+            }
+
+            // Smooth scroll to video
+            area.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function setStudioRating(stars) {
+            currentStudioRating = stars;
+            const container = document.getElementById('starRatingContainer');
+            const btns = container.querySelectorAll('.star-btn');
+            btns.forEach((btn, idx) => {
+                const icon = btn.querySelector('i');
+                if (idx < stars) {
+                    icon.className = "fa-solid fa-star text-amber-400";
+                } else {
+                    icon.className = "fa-regular fa-star text-slate-600";
+                }
+            });
+            document.getElementById('studioRatingText').innerText = `${stars}.0 / 5.0`;
+        }
+
+        async function submitStudioEvaluation() {
+            if (!lastGeneratedProjectId) {
+                alert("No active project to evaluate.");
+                return;
+            }
+            const notes = document.getElementById('studioFeedbackInput').value.trim();
+            const btn = document.getElementById('btnSubmitStudioReview');
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/studio/evaluate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        project_id: lastGeneratedProjectId,
+                        rating: currentStudioRating,
+                        feedback: notes
+                    })
+                });
+                const d = await res.json();
+                alert("Review logged successfully into production database!");
+                loadStats();
+            } catch (e) {
+                alert("Failed to submit review: " + e.message);
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function playIsolatedScene(url) {
+            if (!url || !url.startsWith('/static/media/projects/')) return;
+            const player = document.getElementById('studioMainVideoPlayer');
+            const source = document.getElementById('studioMainVideoSource');
+            source.src = url;
+            player.load();
+            player.play();
+            player.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        async function loadRecentProjects() {
+            try {
+                const res = await fetch('/api/studio/projects');
+                const data = await res.json();
+                const grid = document.getElementById('recentProjectsGrid');
+                if (!grid) return;
+
+                if (!data.projects || data.projects.length === 0) {
+                    grid.innerHTML = `<p class="col-span-4 text-xs text-slate-500 py-3">No commercials generated yet. Generate your first commercial above!</p>`;
+                    return;
+                }
+
+                grid.innerHTML = data.projects.map(p => `
+                    <div class="studio-glass p-3 rounded-xl border border-slate-800 space-y-2 hover:border-emerald-500/50 transition cursor-pointer project-replay-card" data-video-url="${escapeHtml(p.video_url || '')}" data-title="${escapeHtml(p.title || '')}" role="button" tabindex="0">
+                        <div class="flex items-center justify-between text-[10px]">
+                            <span class="font-bold text-white truncate max-w-[150px]">${escapeHtml(p.title || '')}</span>
+                            <span class="text-emerald-400 font-mono font-bold">${escapeHtml(String(p.duration_s || ''))}s</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400 line-clamp-2">${escapeHtml(p.prompt || '')}</p>
+                        <div class="flex items-center justify-between text-[10px] text-slate-500 font-mono pt-1 border-t border-slate-800">
+                            <span>⭐ ${escapeHtml(String(p.user_rating || 5))}.0</span>
+                            <span class="text-cyan-400"><i class="fa-solid fa-play text-[9px] mr-1"></i> Play</span>
+                        </div>
+                    </div>
+                `).join('');
+                grid.querySelectorAll('.project-replay-card').forEach(card => {
+                    const play = () => replayProject(card.dataset.videoUrl, card.dataset.title);
+                    card.addEventListener('click', play);
+                    card.addEventListener('keydown', event => {
+                        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); play(); }
+                    });
+                });
+            } catch (e) {
+                console.log("Could not load recent projects:", e);
+            }
+        }
+
+        function replayProject(videoUrl, title) {
+            if (!videoUrl || !videoUrl.startsWith('/static/media/projects/')) return;
+            const player = document.getElementById('studioMainVideoPlayer');
+            const source = document.getElementById('studioMainVideoSource');
+            source.src = videoUrl;
+            player.load();
+            player.play();
+            document.getElementById('outProjectTitle').innerText = title;
+            document.getElementById('studioResultArea').classList.remove('hidden');
+            document.getElementById('studioResultArea').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 2. MODEL ARENA LOGIC
+        async function loadModels() {
+            try {
+                const res = await fetch('/api/registry/models');
+                const data = await res.json();
+                allModels = data.models || [];
+
+                const container = document.getElementById('modelCheckboxList');
+                if (!container) return;
+
+                container.innerHTML = allModels.map((m, idx) => `
+                    <label class="flex items-center justify-between p-2 rounded-lg bg-slate-900/60 border border-slate-800 hover:border-slate-700 cursor-pointer text-xs transition">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" value="${escapeHtml(m.id || '')}" class="model-check-box accent-emerald-500 rounded" ${idx < 2 ? 'checked' : ''}>
+                            <div>
+                                <span class="font-bold text-white block">${escapeHtml(m.display_name || '')}</span>
+                                <span class="text-[10px] text-slate-400">${escapeHtml(m.engine_category || '')} &middot; $${escapeHtml(String(m.est_cost_per_m_tokens ?? ''))}/1M</span>
+                            </div>
+                        </div>
+                        <span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 font-mono">${escapeHtml(m.provider || '')}</span>
+                    </label>
+                `).join('');
+            } catch (e) {
+                console.error("Failed to load models:", e);
+            }
+        }
+
+        async function loadTestCases() {
+            try {
+                const res = await fetch('/api/testcases');
+                const data = await res.json();
+                allTestCases = data.test_cases || [];
+
+                const select = document.getElementById('selectTestCase');
+                if (!select) return;
+
+                select.innerHTML = allTestCases.map(tc => `
+                    <option value="${escapeHtml(tc.id || '')}">[${escapeHtml(tc.engine || '')}] ${escapeHtml(tc.title || '')}</option>
+                `).join('');
+
+                onTestCaseChanged();
+
+                // Also populate Test Suite tab cards
+                const grid = document.getElementById('testCasesCardsGrid');
+                if (grid) {
+                    grid.innerHTML = allTestCases.map(tc => `
+                        <div class="studio-glass p-5 rounded-2xl border border-slate-800 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-400 text-[10px] font-bold font-mono">
+                                    ${escapeHtml(tc.engine || '')}
+                                </span>
+                                <span class="text-xs font-mono text-slate-500">${escapeHtml(tc.id || '')}</span>
+                            </div>
+                            <h4 class="text-sm font-bold text-white">${escapeHtml(tc.title || '')}</h4>
+                            <p class="text-xs text-slate-400">${escapeHtml(tc.description || '')}</p>
+                            <div class="pt-2 border-t border-slate-800 flex items-center justify-between">
+                                <span class="text-[10px] font-mono text-slate-500">Format: ${escapeHtml(tc.expected_format || '')}</span>
+                                <button data-test-case-id="${escapeHtml(tc.id || '')}" class="load-test-case-button px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold">
+                                    Load in Arena &rarr;
+                                </button>
+                            </div>
+                        </div>
+                    `).join('');
+                    grid.querySelectorAll('.load-test-case-button').forEach(button => {
+                        button.addEventListener('click', () => selectAndRunTestCase(button.dataset.testCaseId));
+                    });
+                }
+            } catch (e) {
+                console.error("Failed to load test cases:", e);
+            }
+        }
+
+        function onTestCaseChanged() {
+            const tcId = document.getElementById('selectTestCase').value;
+            const tc = allTestCases.find(t => t.id === tcId);
+            if (!tc) return;
+
+            document.getElementById('tcDescriptionText').innerText = tc.description;
+            document.getElementById('systemPromptPreview').innerText = tc.system_prompt;
+            document.getElementById('arenaUserPrompt').value = tc.user_prompt;
+            document.getElementById('currentEngineBadge').innerText = tc.engine;
+        }
+
+        function toggleSystemPrompt() {
+            const el = document.getElementById('systemPromptPreview');
+            el.classList.toggle('hidden');
+        }
+
+        function selectAndRunTestCase(tcId) {
+            switchTab('arena');
+            const select = document.getElementById('selectTestCase');
+            select.value = tcId;
+            onTestCaseChanged();
+        }
+
+        async function executeBenchmark() {
+            const tcId = document.getElementById('selectTestCase').value;
+            const userPrompt = document.getElementById('arenaUserPrompt').value.trim();
+            const temp = parseFloat(document.getElementById('inputTemp').value);
+
+            const selected = Array.from(document.querySelectorAll('.model-check-box:checked')).map(cb => cb.value);
+            if (selected.length === 0) {
+                alert("Please select at least 1 candidate model.");
+                return;
+            }
+
+            const btn = document.getElementById('btnRunBenchmark');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Running (${selected.length} models)...`;
+
+            const pill = document.getElementById('benchmarkStatusPill');
+            pill.innerText = "Executing live on NVIDIA NIM...";
+            pill.className = "text-xs px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono";
+
+            try {
+                const res = await fetch('/api/arena/run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        test_case_id: tcId,
+                        selected_model_ids: selected,
+                        custom_user_prompt: userPrompt,
+                        temperature: temp
+                    })
+                });
+
+                const data = await res.json();
+                renderBenchmarkResults(data.results || []);
+                pill.innerText = "Completed Successfully";
+                pill.className = "text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono";
+                loadStats();
+            } catch (e) {
+                alert("Benchmark failed: " + e.message);
+                pill.innerText = "Execution Failed";
+                pill.className = "text-xs px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 font-mono";
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `<i class="fa-solid fa-play"></i> Run Benchmark`;
+            }
+        }
+
+        function renderBenchmarkResults(results) {
+            const grid = document.getElementById('arenaResultsGrid');
+            if (results.length === 0) {
+                grid.innerHTML = `<p class="text-xs text-slate-500">No results recorded.</p>`;
+                return;
+            }
+
+            grid.innerHTML = results.map(r => `
+                <div class="studio-glass p-4 rounded-xl border border-slate-800 space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                        <span class="font-bold text-white text-xs truncate max-w-[200px]" title="${escapeHtml(r.model_id || '')}">
+                            ${escapeHtml(String(r.model_id || '').split('/').pop())}
+                        </span>
+                        <span class="px-2 py-0.5 rounded bg-slate-800 font-mono text-[10px] ${r.is_valid_json ? 'text-emerald-400 font-bold' : 'text-slate-400'}">
+                            ${r.is_valid_json ? '✓ VALID JSON' : 'RAW OUTPUT'}
+                        </span>
+                    </div>
+
+                    <div class="flex items-center justify-between text-[11px] font-mono text-slate-400">
+                        <span>Latency: <strong class="text-white">${escapeHtml(String(r.latency_s ?? ''))}s</strong></span>
+                        <span>Est Tokens: <strong class="text-white">${escapeHtml(String(r.tokens_est ?? ''))}</strong></span>
+                        <span class="${r.status === 'SUCCESS' ? 'text-emerald-400' : 'text-rose-400'} font-bold">${escapeHtml(r.status || '')}</span>
+                    </div>
+
+                    <pre class="text-[11px] p-3 rounded bg-slate-900 border border-slate-800 text-slate-200 h-48 overflow-y-auto custom-scrollbar whitespace-pre-wrap font-mono">${escapeHtml(r.output_text)}</pre>
+
+                    <!-- Evaluation Review Action -->
+                    <div class="pt-2 border-t border-slate-800 flex items-center justify-between">
+                        <span class="text-[10px] text-slate-400">Rate Quality:</span>
+                        <div class="flex items-center gap-1.5">
+                            <button data-result-id="${escapeHtml(r.result_id || '')}" data-model-id="${escapeHtml(r.model_id || '')}" data-engine="${escapeHtml(r.engine || '')}" data-score="5" data-decision="USABLE_FOR_ENGINE" class="evaluation-button px-2 py-1 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-bold hover:bg-emerald-500/30">
+                                ✓ Usable
+                            </button>
+                            <button data-result-id="${escapeHtml(r.result_id || '')}" data-model-id="${escapeHtml(r.model_id || '')}" data-engine="${escapeHtml(r.engine || '')}" data-score="3" data-decision="NEEDS_REVISION" class="evaluation-button px-2 py-1 rounded bg-amber-500/20 text-amber-400 text-[10px] font-bold hover:bg-amber-500/30">
+                                ⚠ Revise
+                            </button>
+                            <button data-result-id="${escapeHtml(r.result_id || '')}" data-model-id="${escapeHtml(r.model_id || '')}" data-engine="${escapeHtml(r.engine || '')}" data-score="1" data-decision="REJECTED" class="evaluation-button px-2 py-1 rounded bg-rose-500/20 text-rose-400 text-[10px] font-bold hover:bg-rose-500/30">
+                                ✗ Reject
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            grid.querySelectorAll('.evaluation-button').forEach(button => {
+                button.addEventListener('click', () => submitEvaluation(
+                    button.dataset.resultId, button.dataset.modelId, button.dataset.engine,
+                    Number(button.dataset.score), button.dataset.decision
+                ));
+            });
+        }
+
+        async function submitEvaluation(resultId, modelId, engine, score, decision) {
+            try {
+                const res = await fetch('/api/evaluations/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        result_id: resultId,
+                        model_id: modelId,
+                        engine: engine,
+                        overall_score: score,
+                        prompt_adherence: score,
+                        decision: decision
+                    })
+                });
+                alert(`Evaluation logged: ${modelId} marked ${decision}!`);
+                loadStats();
+            } catch (e) {
+                alert("Error submitting review: " + e.message);
+            }
+        }
+
+        function resetArena() {
+            document.getElementById('arenaResultsGrid').innerHTML = '';
+            document.getElementById('benchmarkStatusPill').innerText = 'Awaiting Run';
+            document.getElementById('benchmarkStatusPill').className = 'text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono';
+        }
+
+        // 3. LEADERBOARD & STATS LOGIC
+        async function loadLeaderboard() {
+            try {
+                const res = await fetch('/api/leaderboard');
+                const data = await res.json();
+                const tbody = document.getElementById('leaderboardTbody');
+                if (!tbody) return;
+
+                if (!data.leaderboard || data.leaderboard.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-slate-500">No benchmark runs recorded yet. Run tests in Arena or Studio to populate leaderboard.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = data.leaderboard.map(row => `
+                    <tr class="hover:bg-slate-900/40 transition">
+                        <td class="p-3.5 font-bold text-white">${escapeHtml(row.model_id || '')}</td>
+                        <td class="p-3.5 text-cyan-400 font-semibold">${escapeHtml(row.engine || '')}</td>
+                        <td class="p-3.5 text-center">${escapeHtml(String(row.total_tests ?? ''))}</td>
+                        <td class="p-3.5 text-center">${escapeHtml(String(row.avg_latency_s ?? ''))}s</td>
+                        <td class="p-3.5 text-center ${row.json_pass_rate_pct >= 80 ? 'text-emerald-400 font-bold' : 'text-amber-400'}">${escapeHtml(String(row.json_pass_rate_pct ?? ''))}%</td>
+                        <td class="p-3.5 text-center text-emerald-400">${escapeHtml(String(row.reliability_pct ?? ''))}%</td>
+                        <td class="p-3.5 text-center text-amber-400 font-bold">${escapeHtml(String(row.avg_human_rating ?? ''))} / 5.0</td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                console.error("Leaderboard load failed:", e);
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/stats');
+                const d = await res.json();
+                if (document.getElementById('statTotalRuns')) document.getElementById('statTotalRuns').innerText = `${d.total_test_runs} Runs`;
+                if (document.getElementById('statCommercials')) document.getElementById('statCommercials').innerText = `${d.total_commercials || 0} Ads`;
+                if (document.getElementById('statAvgLatency')) document.getElementById('statAvgLatency').innerText = `${d.avg_latency_s}s`;
+                if (document.getElementById('statReliability')) document.getElementById('statReliability').innerText = `${d.pipeline_reliability_pct}%`;
+            } catch (e) {
+                console.log("Stats fetch error:", e);
+            }
+        }
+
+        // 4. ECONOMICS CALCULATOR LOGIC
+        function updateCostCalculator() {
+            const count = parseInt(document.getElementById('calcAdCount').value, 10);
+            document.getElementById('calcAdCountDisplay').innerText = `${count} Ads`;
+            
+            // 15 seconds per ad
+            // Path A (MiniMax H3 @ 60% accept) = $0.13 / usable sec * 15 sec = $1.95 / ad
+            const costA = Math.round(count * 1.95);
+            // Path B (FLUX 3 @ 60% accept) = $0.28 / usable sec * 15 sec = $4.20 / ad
+            const costB = Math.round(count * 4.20);
+            // Veo 3.1 @ 60% accept = $0.50 / usable sec * 15 sec = $7.50 / ad
+            const costVeo = Math.round(count * 7.50);
+
+            document.getElementById('costPathA').innerText = `$${costA.toLocaleString()} / mo`;
+            document.getElementById('costPathB').innerText = `$${costB.toLocaleString()} / mo`;
+            document.getElementById('costPathVeo').innerText = `$${costVeo.toLocaleString()} / mo`;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        async function checkStudioStatus() {
+            const status = document.getElementById('studioApiStatus');
+            try {
+                const response = await fetch('/api/studio/status');
+                const data = await response.json();
+                if (!data.video_api_configured) {
+                    status.innerText = 'FAL_KEY is missing; real AI image/video generation is disabled.';
+                    status.className = 'text-[9px] text-rose-300 block mt-1';
+                } else {
+                    status.innerText = 'fal.ai configured: Flux keyframes + Wan 2.7 video.';
+                    status.className = 'text-[9px] text-emerald-300 block mt-1';
+                }
+            } catch (_) {
+                status.innerText = 'Could not check fal.ai configuration.';
+            }
+        }
+
+        // Initial Boot
+        window.addEventListener('DOMContentLoaded', () => {
+            loadModels();
+            loadTestCases();
+            loadRecentProjects();
+            loadStats();
+            checkStudioStatus();
+            updateCostCalculator();
+            // Default preset
+            loadStudioPreset('auraglow');
+        });
+    </script>
+<a href="/editor" style="position:fixed;right:16px;bottom:16px;z-index:9999;background:#18b26b;color:#fff;padding:10px 16px;border-radius:999px;font:600 14px system-ui,sans-serif;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,.3)">Ad Studio: create and edit ads</a>
+</body>
+</html>

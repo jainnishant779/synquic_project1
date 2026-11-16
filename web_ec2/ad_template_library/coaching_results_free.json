@@ -1,0 +1,148 @@
+{
+  "id": "coaching_results_free",
+  "name": "Learning journey coaching",
+  "best_for": [
+    "coaching",
+    "education",
+    "courses",
+    "skills",
+    "mentorship"
+  ],
+  "description": "Inspiring education and mentorship journey focusing on clarity, skills and personal growth without marks or score claims. For tutors, academies and mentors.",
+  "length_s": 16,
+  "platform": "reels",
+  "look": {
+    "card": "light",
+    "text": "#111827",
+    "highlight": "#2563EB",
+    "color": null
+  },
+  "preview_color": "#1D4ED8",
+  "audio": {
+    "music_volume": 0.14,
+    "captions": false,
+    "voice": true
+  },
+  "scenes": [
+    {
+      "purpose": "hook",
+      "visual": "lifestyle",
+      "weight": 3.5,
+      "direction": "A curious student staring at open notebooks and a glowing laptop screen with quiet determination",
+      "voice": true,
+      "text": [
+        {
+          "role": "hook",
+          "style": "kinetic",
+          "position": "top",
+          "size": "l",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 6,
+          "example": "Confused where to *begin* learning?",
+          "fixed": false
+        },
+        {
+          "role": "brand",
+          "style": "lower_third",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.35,
+          "end": null,
+          "max_words": 3,
+          "example": "VidyaBridge",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "solution",
+      "visual": "lifestyle",
+      "weight": 4.0,
+      "direction": "A friendly mentor explaining a concept on a clean modern whiteboard, smiling and encouraging",
+      "voice": true,
+      "text": [
+        {
+          "role": "solution",
+          "style": "slide",
+          "position": "center",
+          "size": "m",
+          "color": null,
+          "start": 0.15,
+          "end": null,
+          "max_words": 6,
+          "example": "Learn with *clarity* and structure",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "benefit",
+      "visual": "card",
+      "weight": 4.0,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "benefit",
+          "style": "wipe",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 6,
+          "example": "Step-by-step *guided* practice",
+          "fixed": false
+        },
+        {
+          "role": "tagline",
+          "style": "plain",
+          "position": "bottom",
+          "size": "s",
+          "color": null,
+          "start": 0.35,
+          "end": null,
+          "max_words": 6,
+          "example": "Build confidence in *every* topic",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "cta",
+      "visual": "card",
+      "weight": 4.5,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "brand",
+          "style": "brand",
+          "position": "top",
+          "size": "l",
+          "color": null,
+          "start": 0.05,
+          "end": null,
+          "max_words": 3,
+          "example": "VidyaBridge",
+          "fixed": false
+        },
+        {
+          "role": "cta",
+          "style": "cta",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.25,
+          "end": null,
+          "max_words": 4,
+          "example": "Book free *session*",
+          "fixed": false
+        }
+      ]
+    }
+  ]
+}

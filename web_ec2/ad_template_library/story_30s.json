@@ -1,0 +1,202 @@
+{
+  "id": "story_30s",
+  "name": "30-second brand story arc",
+  "best_for": [
+    "brand story",
+    "d2c",
+    "wellness",
+    "lifestyle",
+    "storytelling"
+  ],
+  "description": "Full narrative emotional arc in 6 scenes: relatable character, daily struggle, unexpected discovery, positive shift, brand home and call to action.",
+  "length_s": 30,
+  "platform": "reels",
+  "look": {
+    "card": "glow",
+    "text": "#F8FAFC",
+    "highlight": "#38BDF8",
+    "color": null
+  },
+  "preview_color": "#0891B2",
+  "audio": {
+    "music_volume": 0.16,
+    "captions": false,
+    "voice": true
+  },
+  "scenes": [
+    {
+      "purpose": "hook",
+      "visual": "lifestyle",
+      "weight": 4.5,
+      "direction": "A weary professional sitting in evening traffic looking tiredly out the car window, warm golden sunset glow",
+      "voice": true,
+      "text": [
+        {
+          "role": "hook",
+          "style": "kinetic",
+          "position": "top",
+          "size": "l",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 6,
+          "example": "Every evening felt *completely draining*",
+          "fixed": false
+        },
+        {
+          "role": "brand",
+          "style": "lower_third",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.35,
+          "end": null,
+          "max_words": 3,
+          "example": "RestEasy",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "problem",
+      "visual": "lifestyle",
+      "weight": 4.5,
+      "direction": "Tossing and turning in bed in dim room lighting, looking at clock with restless thoughts",
+      "voice": true,
+      "text": [
+        {
+          "role": "problem",
+          "style": "slide",
+          "position": "center",
+          "size": "m",
+          "color": null,
+          "start": 0.15,
+          "end": null,
+          "max_words": 6,
+          "example": "Minds running *a mile a minute*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "solution",
+      "visual": "product",
+      "weight": 5.0,
+      "direction": "A calming herbal sleep infusion bottle on a nightstand beside a warm ceramic mug and book",
+      "voice": true,
+      "text": [
+        {
+          "role": "solution",
+          "style": "slide",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 5,
+          "example": "Until finding *RestEasy*",
+          "fixed": false
+        },
+        {
+          "role": "tagline",
+          "style": "plain",
+          "position": "bottom",
+          "size": "s",
+          "color": null,
+          "start": 0.35,
+          "end": null,
+          "max_words": 5,
+          "example": "Natural herbs for *restful nights*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "benefit",
+      "visual": "lifestyle",
+      "weight": 5.0,
+      "direction": "Waking up smiling to soft morning daylight filtering through bedroom curtains, feeling fully refreshed",
+      "voice": true,
+      "text": [
+        {
+          "role": "benefit",
+          "style": "wipe",
+          "position": "center",
+          "size": "m",
+          "color": null,
+          "start": 0.15,
+          "end": null,
+          "max_words": 6,
+          "example": "Waking up with *calm energy*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "proof",
+      "visual": "card",
+      "weight": 5.0,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "proof",
+          "style": "kinetic",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 6,
+          "example": "A simple *nightly ritual*",
+          "fixed": false
+        },
+        {
+          "role": "tagline",
+          "style": "plain",
+          "position": "bottom",
+          "size": "s",
+          "color": null,
+          "start": 0.35,
+          "end": null,
+          "max_words": 6,
+          "example": "Made for *restful minds*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "cta",
+      "visual": "card",
+      "weight": 6.0,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "brand",
+          "style": "brand",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.05,
+          "end": null,
+          "max_words": 3,
+          "example": "RestEasy",
+          "fixed": false
+        },
+        {
+          "role": "cta",
+          "style": "cta",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.25,
+          "end": null,
+          "max_words": 4,
+          "example": "Begin your *calm*",
+          "fixed": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Synquic Ad Studio</title>
+<link rel="icon" href="data:,">
+<style>
+  :root { --bg:#f5f6f8; --card:#ffffff; --ink:#15181d; --muted:#5d6672; --line:#dde2e8; --brand:#18b26b; --brand-ink:#fff; --accent:#2457d6;
+          --warn:#8a5a00; --warn-bg:#fff4d6; --bad:#a3261b; --bad-bg:#fde8e6; --ok-bg:#e6f6ee; --track:#eef1f5; --lane:#c9d6ff; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#0f1114; --card:#181b20; --ink:#eceff3; --muted:#9aa4b1; --line:#2a2f36;
+          --warn:#f0c768; --warn-bg:#352a0e; --bad:#ff8f84; --bad-bg:#3a1a17; --ok-bg:#12301f; --track:#20242b; --lane:#33406b; } }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,"Nirmala UI",sans-serif; }
+  .wrap { max-width:1240px; margin:0 auto; padding:16px; }
+  h1 { font-size:22px; margin:4px 0 2px; } h2 { font-size:16px; margin:0 0 10px; } h3 { font-size:14px; margin:12px 0 6px; }
+  .sub { color:var(--muted); margin:0 0 14px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:14px; }
+  .grid { display:grid; gap:14px; grid-template-columns:1fr; }
+  @media (min-width:980px) { .grid { grid-template-columns: minmax(0,1.15fr) minmax(0,1fr); align-items:start; } }
+  label { display:block; font-size:13px; color:var(--muted); margin:10px 0 4px; }
+  input[type=text], input[type=number], select, textarea { width:100%; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:var(--card); color:var(--ink); font:inherit; }
+  textarea { resize:vertical; }
+  input[type=color] { width:44px; height:34px; padding:2px; border:1px solid var(--line); border-radius:8px; background:var(--card); }
+  .row { display:flex; gap:10px; flex-wrap:wrap; } .row > * { flex:1; min-width:120px; }
+  button { font:inherit; cursor:pointer; border:1px solid var(--line); background:var(--card); color:var(--ink); padding:7px 12px; border-radius:8px; }
+  button.primary { background:var(--brand); border-color:var(--brand); color:var(--brand-ink); font-weight:600; }
+  button.small { padding:4px 9px; font-size:13px; }
+  button:disabled { opacity:.5; cursor:not-allowed; }
+  .banner { border-radius:10px; padding:9px 12px; margin-bottom:10px; font-size:14px; }
+  .warn { background:var(--warn-bg); color:var(--warn); } .bad { background:var(--bad-bg); color:var(--bad); } .ok { background:var(--ok-bg); }
+  .muted { color:var(--muted); font-size:13px; }
+  .player { position:relative; background:#000; border-radius:10px; overflow:hidden; display:flex; justify-content:center; }
+  video { max-width:100%; max-height:62vh; display:block; }
+  .timeline { position:relative; margin-top:10px; user-select:none; cursor:pointer; }
+  .scenes { position:relative; height:58px; background:var(--track); border-radius:8px; overflow:hidden; }
+  .sblock { position:absolute; top:0; bottom:0; border-right:2px solid var(--card); background-size:cover; background-position:center; }
+  .sblock span { position:absolute; left:4px; bottom:3px; font-size:11px; color:#fff; background:rgba(0,0,0,.55); padding:0 5px; border-radius:4px; white-space:nowrap; }
+  .sblock.sel { outline:3px solid var(--accent); outline-offset:-3px; }
+  .lanes { position:relative; margin-top:4px; }
+  .tbar { position:absolute; height:16px; border-radius:4px; background:var(--lane); font-size:10.5px; line-height:16px; padding:0 5px; overflow:hidden; white-space:nowrap; color:var(--ink); }
+  .tbar.vis { background:var(--accent); color:#fff; }
+  .playhead { position:absolute; top:-4px; bottom:-4px; width:2px; background:#e5484d; pointer-events:none; }
+  .ticks { display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-top:2px; }
+  .layer { border:1px solid var(--line); border-radius:10px; padding:8px 10px; margin-bottom:8px; }
+  .layer.hidden-now { opacity:.6; }
+  .tag { display:inline-block; font-size:12px; padding:1px 8px; border-radius:99px; background:var(--ok-bg); }
+  .tag.card { background:var(--warn-bg); color:var(--warn); }
+  .actions { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+  ul.list { margin:6px 0 0; padding-left:18px; font-size:13px; }
+  .diff { background:var(--track); border-radius:8px; padding:8px 10px; margin-top:8px; font-size:13px; }
+  progress { width:100%; height:10px; }
+  details summary { cursor:pointer; font-weight:600; }
+  .tpls { display:grid; grid-auto-flow:column; grid-auto-columns:200px; gap:10px; overflow-x:auto; padding:2px 2px 8px; }
+  .tpl { border:2px solid var(--line); border-radius:10px; padding:6px; cursor:pointer; background:var(--card); position:relative; }
+  .tpl:hover { border-color:var(--muted); }
+  .tpl.sel { border-color:var(--brand); box-shadow:0 0 0 2px var(--brand) inset; }
+  .tpl img, .tpl .ph { width:100%; aspect-ratio:736/426; object-fit:cover; border-radius:6px; background:var(--track); display:block; }
+  .tpl .ph { display:flex; align-items:center; justify-content:center; font-size:30px; color:var(--muted); }
+  .tpl b { display:block; font-size:13.5px; margin-top:5px; }
+  .tpl small { color:var(--muted); font-size:12px; display:block; }
+  .tpl .x { position:absolute; top:8px; right:8px; padding:0 7px; font-size:12px; background:rgba(0,0,0,.6); color:#fff; border:0; }
+  .tplhead { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-top:12px; }
+  .tplhead h3 { margin:0; }
+  #tplInfo { margin:2px 0 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Synquic Ad Studio</h1>
+  <p class="sub">Write one line about your product. Then pause the ad anywhere and change exactly what is on screen there, by hand or by typing what you want.</p>
+  <div id="banner"></div>
+
+  <div class="card" id="createCard">
+    <h2>1. Your ad in one line</h2>
+    <textarea id="prompt" rows="3" maxlength="1500" placeholder="e.g. BeePure organic honey ka 15 second Instagram ad, kachcha shahad, no sugar, farm se seedha ghar"></textarea>
+    <div class="tplhead"><h3>Template</h3><span class="muted">Pick a ready style, or let the AI decide. The AI always writes new lines for your product.</span></div>
+    <div class="tpls" id="tpls"></div>
+    <p class="muted" id="tplInfo"></p>
+    <div class="row">
+      <div><label for="platform">Where it runs</label><select id="platform"></select></div>
+      <div><label for="length">Length</label><select id="length"><option>6</option><option>10</option><option selected>15</option><option>20</option><option>30</option><option>45</option><option>60</option></select></div>
+      <div><label for="level">Quality</label><select id="level"></select></div>
+      <div><label for="voice">Voice-over</label><select id="voice"></select></div>
+    </div>
+    <div class="row">
+      <div><label for="photo">Product photo (recommended, keeps your real product exact)</label><input type="file" id="photo" accept="image/png,image/jpeg,image/webp"></div>
+      <div><label for="logo">Logo (optional)</label><input type="file" id="logo" accept="image/png,image/jpeg,image/webp"></div>
+    </div>
+    <p class="muted" id="estimate"></p>
+    <label id="confirmWrap" style="display:none;color:var(--ink)"><input type="checkbox" id="confirm"> I confirm this spend</label>
+    <div class="actions"><button class="primary" id="create">Make the ad</button></div>
+  </div>
+
+  <div class="grid" id="studio" style="display:none">
+    <div>
+      <div class="card">
+        <div id="progressBox" style="display:none"><progress id="progress" max="100" value="0"></progress></div>
+        <p id="status" class="muted" style="margin-top:0"></p>
+        <div class="player"><video id="player" controls playsinline></video></div>
+        <div class="timeline" id="timeline">
+          <div class="scenes" id="scenes"></div>
+          <div class="lanes" id="lanes"></div>
+          <div class="playhead" id="playhead"></div>
+        </div>
+        <div class="ticks"><span>0:00</span><span id="totalTime"></span></div>
+        <div class="actions">
+          <button class="small" id="undo">Undo</button><button class="small" id="redo">Redo</button>
+          <span class="muted" id="versionInfo" style="align-self:center"></span>
+          <button class="small" id="saveTpl" style="margin-left:auto">Save as template</button>
+          <a id="download" href="#" download style="align-self:center;display:none">Download MP4</a>
+        </div>
+        <div id="saveTplBox" class="diff" style="display:none">
+          <div class="row">
+            <div><label for="tplName">Template name</label><input type="text" id="tplName" maxlength="40" placeholder="e.g. My honey launch style"></div>
+            <div style="flex:2"><label for="tplDesc">Note (optional)</label><input type="text" id="tplDesc" maxlength="220" placeholder="When to use it"></div>
+          </div>
+          <label style="color:var(--ink)"><input type="checkbox" id="tplBrand"> Same brand: keep my brand name, colour and logo in the template</label>
+          <p class="muted" style="margin:4px 0 0">The template keeps the scenes, timing, text animation, look and your music. Pictures are made new for each ad.</p>
+          <div class="actions"><button class="primary small" id="tplSave">Save template</button><button class="small" id="tplCancel">Cancel</button></div>
+        </div>
+        <p class="muted" id="honest"></p>
+        <ul class="list" id="notes"></ul>
+      </div>
+      <div class="card">
+        <details>
+          <summary>Ad settings</summary>
+          <div class="row">
+            <div><label for="sBrand">Brand name</label><input type="text" id="sBrand" maxlength="60"></div>
+            <div style="flex:0 0 70px;min-width:70px"><label for="sColor">Colour</label><input type="color" id="sColor"></div>
+            <div><label for="sPlatform">Where it runs</label><select id="sPlatform"></select></div>
+          </div>
+          <div class="row">
+            <div><label for="sCard">Look of text cards</label><select id="sCard"></select></div>
+            <div style="flex:0 0 110px;min-width:110px"><label for="sText">Card text colour</label><input type="color" id="sText"></div>
+            <div style="flex:0 0 110px;min-width:110px"><label for="sHigh">Highlight colour</label><input type="color" id="sHigh"></div>
+          </div>
+          <div class="row">
+            <div><label><input type="checkbox" id="sCaptions"> Captions of the voice-over</label></div>
+            <div><label><input type="checkbox" id="sVoice"> Voice-over on</label></div>
+          </div>
+          <div class="row">
+            <div><label for="sLogo">Replace logo</label><input type="file" id="sLogo" accept="image/png,image/jpeg,image/webp"></div>
+            <div><label for="sMusic">Music (your own track)</label><input type="file" id="sMusic" accept="audio/mpeg,audio/wav,audio/mp4,.m4a"></div>
+            <div><label for="sVolume">Music volume</label><input type="number" id="sVolume" min="0" max="0.6" step="0.02"></div>
+          </div>
+          <div class="actions"><button class="small" id="addCardEnd">+ Text card at the end</button></div>
+        </details>
+      </div>
+    </div>
+
+    <div>
+      <div class="card" id="inspector">
+        <h2 id="momentTitle">Pause the video anywhere</h2>
+        <p class="muted" id="momentSub"></p>
+        <label for="instruction">Is moment par kya badlu? (type it in any language)</label>
+        <textarea id="instruction" rows="2" maxlength="400" placeholder="e.g. 'Free delivery' likho, peele rang mein / make this text bigger / split here / show the jar on a kitchen table"></textarea>
+        <div class="actions"><button class="small" id="suggest">Suggest the change</button></div>
+        <div id="proposal"></div>
+
+        <h3>Text on screen now</h3>
+        <div id="layers"></div>
+        <div class="actions"><button class="small" id="addText">+ Add text here</button><label style="margin:0;align-self:center"><input type="checkbox" id="showAll"> show all text in this scene</label></div>
+
+        <h3>This scene</h3>
+        <div class="row">
+          <div><label for="dur">Length (s)</label><input type="number" id="dur" min="1" max="15" step="0.5"></div>
+          <div style="flex:2"><label for="narr">Voice-over line</label><input type="text" id="narr" maxlength="110"></div>
+        </div>
+        <div class="actions">
+          <button class="small" id="split">Split here</button><button class="small" id="dup">Duplicate</button>
+          <button class="small" id="left">Move left</button><button class="small" id="right">Move right</button><button class="small" id="del">Delete</button>
+        </div>
+        <label for="visual">Picture description</label>
+        <textarea id="visual" rows="2" maxlength="600"></textarea>
+        <div class="actions" id="paidActions">
+          <button class="small" id="newImage">New AI picture</button><button class="small" id="newVideo">New AI video</button>
+        </div>
+        <label for="scenePhoto">Use my photo for this scene</label><input type="file" id="scenePhoto" accept="image/png,image/jpeg,image/webp">
+
+        <div class="actions" style="margin-top:14px"><button class="primary" id="apply" disabled>Apply edits</button><span class="muted" id="dirtyNote" style="align-self:center"></span></div>
+        <ul class="list" id="lint"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var cfg = null, pid = null, st = null, tl = null, dirty = false, poll = null, lastRender = -1, showAll = false;
+  var BUSY = ["queued", "planning", "generating", "rendering"];
+
+  function el(tag, props) {
+    var node = document.createElement(tag);
+    Object.keys(props || {}).forEach(function (k) {
+      if (k === "text") node.textContent = props[k]; else if (k === "class") node.className = props[k];
+      else if (k.slice(0, 2) === "on") node.addEventListener(k.slice(2), props[k]); else node.setAttribute(k, props[k]);
+    });
+    for (var i = 2; i < arguments.length; i++) { if (arguments[i]) node.appendChild(arguments[i]); }
+    return node;
+  }
+  function api(path, options) {
+    options = options || {};
+    if (options.json) { options.method = options.method || "POST"; options.headers = { "Content-Type": "application/json" }; options.body = JSON.stringify(options.json); }
+    return fetch(path, options).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (data) {
+        if (!r.ok) { var e = new Error(typeof data.detail === "string" ? data.detail : "Request failed (" + r.status + ")"); e.status = r.status; throw e; }
+        return data;
+      });
+    });
+  }
+  function upload(path, file) { var f = new FormData(); f.append("file", file); return api(path, { method: "POST", body: f }); }
+  function say(message, kind) { var b = $("banner"); b.innerHTML = ""; if (message) b.appendChild(el("div", { "class": "banner " + (kind || "warn"), text: message })); }
+  function fmt(t) { t = Math.max(0, t); var m = Math.floor(t / 60), s = (t - m * 60).toFixed(1); return m + ":" + (s < 10 ? "0" : "") + s; }
+  function options(select, map, selected) { select.innerHTML = ""; Object.keys(map).forEach(function (k) { var o = el("option", { value: k, text: map[k] }); if (k === selected) o.selected = true; select.appendChild(o); }); }
+  function clone(x) { return JSON.parse(JSON.stringify(x)); }
+
+  // ---------------------------------------------------------- templates
+  var tplId = null;
+  function setLength(seconds) {
+    var sel = $("length"), v = String(seconds);
+    if (![].some.call(sel.options, function (o) { return o.value === v; })) {
+      var o = el("option", { value: v, text: v }), after = [].find.call(sel.options, function (x) { return parseInt(x.value, 10) > seconds; });
+      sel.insertBefore(o, after || null);
+    }
+    sel.value = v;
+  }
+  function pickTemplate(t, card) {
+    tplId = t ? t.id : null;
+    [].forEach.call($("tpls").children, function (c) { c.classList.toggle("sel", c === card); });
+    if (card) { var box = $("tpls"); box.scrollLeft = Math.max(0, card.offsetLeft - box.offsetLeft - 8); }   // keep the chosen card in view, without moving the page
+    if (t) {
+      $("tplInfo").textContent = t.name + ": " + t.description + (t.best_for.length ? " Good for: " + t.best_for.join(", ") + "." : "") +
+        (t.brand ? " Brand: " + t.brand + (t.has_logo ? " (with logo)" : "") + "." : "") + (t.has_music ? " Includes your music." : "");
+      setLength(t.length_s);
+      if (cfg && cfg.platforms[t.platform]) $("platform").value = t.platform;
+    } else {
+      $("tplInfo").textContent = "The AI plans the scenes and style from your prompt.";
+    }
+    refreshEstimate();
+  }
+  function templateCard(t) {
+    var card = el("div", { "class": "tpl", tabindex: "0", role: "button", title: t.description });
+    card.appendChild(el("img", { src: t.preview_url, alt: t.name + " preview", loading: "lazy" }));
+    card.appendChild(el("b", { text: t.name + (t.kind === "saved" ? " (saved)" : "") }));
+    card.appendChild(el("small", { text: t.length_s + "s · " + t.scenes + " scenes · " + t.look.card + " look" }));
+    if (t.kind === "saved") {
+      card.appendChild(el("button", { "class": "x", text: "Delete", title: "Delete this saved template", onclick: function (ev) {
+        ev.stopPropagation();
+        if (!window.confirm("Delete the template '" + t.name + "'?")) return;
+        api("/api/ad-templates/" + t.id, { method: "DELETE" }).then(function () { if (tplId === t.id) tplId = null; loadTemplates(); }).catch(function (e) { say(e.message, "bad"); });
+      } }));
+    }
+    var choose = function () { pickTemplate(t, card); };
+    card.addEventListener("click", choose);
+    card.addEventListener("keydown", function (ev) { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); choose(); } });
+    return card;
+  }
+  function loadTemplates() {
+    return api("/api/ad-templates").then(function (r) {
+      var box = $("tpls"); box.innerHTML = "";
+      var auto = el("div", { "class": "tpl", tabindex: "0", role: "button" }, el("div", { "class": "ph", text: "AI" }), el("b", { text: "AI decides" }),
+        el("small", { text: "Scenes and style from your prompt" }));
+      auto.addEventListener("click", function () { pickTemplate(null, auto); });
+      box.appendChild(auto);
+      var all = r.saved.concat(r.library), selected = null;
+      all.forEach(function (t) { var c = templateCard(t); box.appendChild(c); if (t.id === tplId) selected = [t, c]; });
+      if (selected) pickTemplate(selected[0], selected[1]); else pickTemplate(null, auto);
+    }).catch(function (e) { $("tplInfo").textContent = "Templates could not be loaded: " + e.message; });
+  }
+  $("saveTpl").addEventListener("click", function () {
+    var box = $("saveTplBox"); box.style.display = box.style.display === "none" ? "" : "none";
+    if (!$("tplName").value && tl) $("tplName").value = (tl.brand.name + " style").slice(0, 40);
+  });
+  $("tplCancel").addEventListener("click", function () { $("saveTplBox").style.display = "none"; });
+  $("tplSave").addEventListener("click", function () {
+    var name = $("tplName").value.trim(); if (name.length < 2) { say("Give the template a name.", "warn"); return; }
+    $("tplSave").disabled = true;
+    saveFirst().then(function () {
+      return api("/api/ads/" + pid + "/save-template", { json: { name: name, description: $("tplDesc").value.trim(), keep_brand: $("tplBrand").checked } });
+    }).then(function (t) {
+      $("saveTplBox").style.display = "none"; tplId = t.id;
+      say("Saved the template '" + t.name + "'. It is selected for your next ad at the top of the page.", "ok");
+      loadTemplates();
+    }).catch(function (e) { say(e.message, "bad"); }).then(function () { $("tplSave").disabled = false; });
+  });
+
+  // ---------------------------------------------------------- create
+  var estTimer = null;
+  function refreshEstimate() {
+    clearTimeout(estTimer);
+    estTimer = setTimeout(function () {
+      var paid = $("level").value !== "free";
+      $("confirmWrap").style.display = paid ? "block" : "none";
+      api("/api/ads/estimate", { json: { level: $("level").value, length_s: parseInt($("length").value, 10), has_photo: !!$("photo").files[0], template_id: tplId } }).then(function (q) {
+        $("estimate").textContent = q.usd ? "About $" + q.usd.toFixed(2) + " for this ad (cap $" + q.cap_usd.toFixed(2) + "): " + q.items.map(function (i) { return i.what; }).join(", ") + ". " + q.note : "Free: no paid call.";
+      }).catch(function (e) { $("estimate").textContent = e.message; });
+    }, 200);
+  }
+  function create() {
+    var prompt = $("prompt").value.trim();
+    if (prompt.length < 3) { say("Write a line about your product first.", "warn"); return; }
+    $("create").disabled = true; say("");
+    var body = { prompt: prompt, platform: $("platform").value, length_s: parseInt($("length").value, 10), level: $("level").value, voice: $("voice").value, confirm_spend: $("confirm").checked, template_id: tplId };
+    var steps = Promise.resolve();
+    if ($("photo").files[0]) steps = steps.then(function () { return upload("/api/ads/upload-reference", $("photo").files[0]).then(function (r) { body.reference_asset_id = r.asset_id; }); });
+    if ($("logo").files[0]) steps = steps.then(function () { return upload("/api/ads/upload-reference", $("logo").files[0]).then(function (r) { body.logo_asset_id = r.asset_id; }); });
+    steps.then(function () { return api("/api/ads/create", { json: body }); })
+      .then(function (r) { pid = r.id; lastRender = -1; dirty = false; $("studio").style.display = ""; watch(); })
+      .catch(function (e) { say(e.message, e.status === 402 ? "warn" : "bad"); $("create").disabled = false; });
+  }
+  function watch() {
+    clearInterval(poll);
+    var tick = function () {
+      api("/api/ads/" + pid).then(function (s) {
+        show(s);
+        if (BUSY.indexOf(s.status) === -1) { clearInterval(poll); $("create").disabled = false; }
+      }).catch(function (e) { say(e.message, "bad"); clearInterval(poll); $("create").disabled = false; });
+    };
+    tick(); poll = setInterval(tick, 2000);
+  }
+
+  // ---------------------------------------------------------- state
+  function show(s) {
+    st = s;
+    var busy = BUSY.indexOf(s.status) !== -1;
+    $("status").textContent = (s.status === "failed" ? "Failed: " : "") + (s.message || s.status) + (s.spent_usd ? " | spent about $" + s.spent_usd.toFixed(2) + " of $" + s.cap_usd.toFixed(2) : "") +
+      (s.brief && s.brief.template ? " | template: " + s.brief.template.name : "");
+    $("saveTpl").disabled = busy || !s.timeline;
+    $("progressBox").style.display = busy ? "block" : "none";
+    var p = s.progress || {}; $("progress").value = p.total ? Math.round(100 * p.done / p.total) : (busy ? 10 : 0);
+    $("notes").innerHTML = ""; (s.notes || []).forEach(function (n) { $("notes").appendChild(el("li", { text: n })); });
+    $("lint").innerHTML = ""; ((s.report && s.report.lint) || []).forEach(function (n) { $("lint").appendChild(el("li", { text: "Tip: " + n })); });
+    $("honest").textContent = s.report ? s.report.honest_label + " " + s.report.facts.width + "x" + s.report.facts.height + ", " + s.report.facts.duration + " s." : "";
+    $("undo").disabled = busy || !s.can_undo; $("redo").disabled = busy || !s.can_redo;
+    $("versionInfo").textContent = s.versions ? "Version " + s.version + " of " + s.versions : "";
+    if (s.video_url && s.render_no !== lastRender) {
+      lastRender = s.render_no;
+      var v = $("player"), t = v.currentTime || 0;
+      v.src = s.video_url + "?r=" + s.render_no;
+      v.addEventListener("loadedmetadata", function once() { v.currentTime = Math.min(t, v.duration - 0.05); v.removeEventListener("loadedmetadata", once); });
+      var d = $("download"); d.href = s.video_url; d.style.display = ""; d.setAttribute("download", ((s.timeline && s.timeline.title) || "ad").replace(/[^\w\- ]/g, "") + ".mp4");
+    }
+    if (s.timeline && !busy && !dirty) { tl = clone(s.timeline); fillSettings(); }
+    drawTimeline(); inspect();
+  }
+  function total() { return tl ? tl.scenes.reduce(function (a, s) { return a + s.duration; }, 0) : 0; }
+  function starts() { var out = [], at = 0; tl.scenes.forEach(function (s) { out.push(at); at += s.duration; }); return out; }
+  function elementsAt(t) {
+    var ss = starts(), T = total(); t = Math.max(0, Math.min(t, T - 0.001));
+    for (var i = 0; i < tl.scenes.length; i++) {
+      var s = tl.scenes[i];
+      if (t >= ss[i] && t < ss[i] + s.duration) {
+        var local = t - ss[i];
+        return { index: i, scene: s, start: ss[i], local: local, visible: s.text.filter(function (l) { return l.start <= local && local < (l.end == null ? s.duration : l.end); }) };
+      }
+    }
+    return null;
+  }
+
+  // ---------------------------------------------------------- timeline
+  function drawTimeline() {
+    if (!tl) return;
+    var T = total(), ss = starts(), now = elementsAt($("player").currentTime || 0);
+    $("totalTime").textContent = fmt(T);
+    var box = $("scenes"); box.innerHTML = "";
+    tl.scenes.forEach(function (s, i) {
+      var b = el("div", { "class": "sblock" + (now && now.index === i ? " sel" : ""), style: "left:" + (100 * ss[i] / T) + "%;width:" + (100 * s.duration / T) + "%" });
+      var poster = st && st.posters && st.posters[s.id];
+      if (poster) b.style.backgroundImage = "url('" + poster + "?r=" + st.render_no + "')";
+      b.appendChild(el("span", { text: (i + 1) + " · " + s.duration + "s" }));
+      box.appendChild(b);
+    });
+    var lanes = [], bars = [];
+    tl.scenes.forEach(function (s, i) {
+      s.text.forEach(function (l) {
+        var a = ss[i] + l.start, z = ss[i] + (l.end == null ? s.duration : l.end), lane = 0;
+        while (lanes[lane] !== undefined && lanes[lane] > a + 0.01) lane++;
+        lanes[lane] = z; bars.push({ a: a, z: z, lane: lane, layer: l });
+      });
+    });
+    var lb = $("lanes"); lb.innerHTML = ""; lb.style.height = (Math.max(1, lanes.length) * 19) + "px";
+    var t = $("player").currentTime || 0;
+    bars.forEach(function (b) {
+      lb.appendChild(el("div", { "class": "tbar" + (b.a <= t && t < b.z ? " vis" : ""), title: b.layer.text, text: b.layer.text.replace(/\*/g, ""),
+        style: "left:" + (100 * b.a / T) + "%;width:" + Math.max(0.6, 100 * (b.z - b.a) / T) + "%;top:" + (b.lane * 19) + "px" }));
+    });
+    movePlayhead();
+  }
+  function movePlayhead() { var T = total(); if (!T) return; $("playhead").style.left = (100 * Math.min(1, ($("player").currentTime || 0) / T)) + "%"; }
+  $("timeline").addEventListener("click", function (ev) {
+    if (!tl) return;
+    var r = $("scenes").getBoundingClientRect(), t = (ev.clientX - r.left) / r.width * total();
+    $("player").pause(); $("player").currentTime = Math.max(0, Math.min(total() - 0.05, t)); drawTimeline(); inspect();
+  });
+  var lastIndex = -1;
+  $("player").addEventListener("timeupdate", function () { movePlayhead(); var now = elementsAt($("player").currentTime || 0); if (now && now.index !== lastIndex) drawTimeline(); });
+  $("player").addEventListener("pause", function () { drawTimeline(); inspect(); });
+  $("player").addEventListener("seeked", function () { drawTimeline(); inspect(); });
+
+  // ---------------------------------------------------------- inspector
+  function markDirty() { dirty = true; $("apply").disabled = false; $("dirtyNote").textContent = "Unsaved edits: Apply to render them."; drawTimeline(); }
+  function field(label, input) { return el("div", {}, el("label", { text: label }), input); }
+  function inspect() {
+    if (!tl) return;
+    var now = elementsAt($("player").currentTime || 0); if (!now) return;
+    lastIndex = now.index;
+    var s = now.scene;
+    $("momentTitle").textContent = "At " + fmt(now.start + now.local) + " · scene " + (now.index + 1) + " of " + tl.scenes.length;
+    $("momentSub").innerHTML = "";
+    $("momentSub").appendChild(el("span", { "class": "tag" + (s.kind === "card" ? " card" : ""), text: cfg.kinds[s.kind] || s.kind }));
+    $("momentSub").appendChild(document.createTextNode(" " + now.local.toFixed(1) + "s into this " + s.duration + "s scene"));
+    var box = $("layers"); box.innerHTML = "";
+    var list = showAll ? s.text : now.visible;
+    if (!list.length) box.appendChild(el("p", { "class": "muted", text: showAll ? "This scene has no text." : "No text on screen at this moment." }));
+    list.forEach(function (l) {
+      var t = el("textarea", { rows: "2", maxlength: "120" }); t.value = l.text; t.addEventListener("input", function () { l.text = t.value; markDirty(); });
+      var style = el("select"); options(style, cfg.styles.reduce(function (m, k) { m[k] = k.replace("_", " "); return m; }, {}), l.style);
+      style.addEventListener("change", function () { l.style = style.value; markDirty(); });
+      var pos = el("select"); options(pos, { top: "top", center: "centre", bottom: "bottom" }, l.position); pos.addEventListener("change", function () { l.position = pos.value; markDirty(); });
+      var size = el("select"); options(size, { s: "small", m: "normal", l: "large", xl: "extra large" }, l.size || "m"); size.addEventListener("change", function () { l.size = size.value; markDirty(); });
+      var color = el("input", { type: "color", value: l.color || "#ffffff" }); color.addEventListener("input", function () { l.color = color.value.toUpperCase(); markDirty(); });
+      var from = el("input", { type: "number", step: "0.1", min: "0", value: l.start }); from.addEventListener("input", function () { l.start = parseFloat(from.value) || 0; markDirty(); });
+      var to = el("input", { type: "number", step: "0.1", min: "0", value: l.end == null ? s.duration : l.end }); to.addEventListener("input", function () { l.end = parseFloat(to.value); markDirty(); });
+      var visible = now.visible.indexOf(l) !== -1;
+      box.appendChild(el("div", { "class": "layer" + (visible ? "" : " hidden-now") }, field("Text (*stars* highlight words)", t),
+        el("div", { "class": "row" }, field("Animation", style), field("Position", pos), field("Size", size), field("Colour", color)),
+        el("div", { "class": "row" }, field("From (s)", from), field("To (s)", to)),
+        el("div", { "class": "actions" }, el("button", { "class": "small", text: "Remove", onclick: function () { s.text = s.text.filter(function (x) { return x !== l; }); markDirty(); inspect(); } }),
+          el("button", { "class": "small", text: "Default colour", onclick: function () { l.color = null; markDirty(); inspect(); } }))));
+    });
+    $("dur").value = s.duration; $("narr").value = s.narration || ""; $("visual").value = s.visual_prompt || "";
+    var paid = cfg.fal_configured && cfg.paid_allowed_here;
+    $("paidActions").style.display = paid ? "" : "none";
+    $("newVideo").style.display = s.kind === "product" ? "none" : "";
+  }
+  $("showAll").addEventListener("change", function () { showAll = $("showAll").checked; inspect(); });
+  $("dur").addEventListener("input", function () { var s = current(); if (!s) return; s.duration = Math.max(1, Math.min(15, parseFloat($("dur").value) || 3)); s.text.forEach(function (l) { if (l.end != null && l.end > s.duration) l.end = null; }); markDirty(); });
+  $("narr").addEventListener("input", function () { var s = current(); if (s) { s.narration = $("narr").value; markDirty(); } });
+  $("visual").addEventListener("input", function () { var s = current(); if (s) { s.visual_prompt = $("visual").value; markDirty(); } });
+  function current() { var now = tl && elementsAt($("player").currentTime || 0); return now ? now.scene : null; }
+  function nextId(ids, prefix) { var n = 1; while (ids.indexOf(prefix + n) !== -1) n++; return prefix + n; }
+  $("addText").addEventListener("click", function () {
+    var now = elementsAt($("player").currentTime || 0); if (!now) return;
+    var s = now.scene, at = Math.min(Math.max(0, now.local), s.duration - 0.5);
+    s.text.push({ id: nextId(s.text.map(function (l) { return l.id; }), "t"), text: "New text", style: "slide", position: "bottom", color: null, size: "m", start: Math.round(at * 10) / 10, end: null });
+    markDirty(); inspect();
+  });
+
+  // ---------------------------------------------------------- server edits
+  function setBusy(b) { ["apply", "suggest", "split", "dup", "left", "right", "del", "newImage", "newVideo", "undo", "redo", "saveTpl"].forEach(function (id) { $(id).disabled = b || (id === "apply" && !dirty); }); }
+  function saveFirst() { return dirty ? api("/api/ads/" + pid + "/timeline", { method: "PUT", json: tl }).then(function (s) { dirty = false; $("dirtyNote").textContent = ""; show(s); }) : Promise.resolve(); }
+  function runOps(ops) {
+    setBusy(true); say("");
+    return saveFirst().then(function () { return api("/api/ads/" + pid + "/edit", { json: { ops: ops } }); })
+      .then(function (s) { dirty = false; show(s); }).catch(function (e) { say(e.message, "bad"); }).then(function () { setBusy(false); });
+  }
+  $("apply").addEventListener("click", function () {
+    setBusy(true); say("");
+    tl.brand.name = $("sBrand").value.trim() || tl.brand.name;
+    api("/api/ads/" + pid + "/timeline", { method: "PUT", json: tl }).then(function (s) { dirty = false; $("dirtyNote").textContent = ""; show(s); })
+      .catch(function (e) { say(e.message, "bad"); }).then(function () { setBusy(false); });
+  });
+  $("split").addEventListener("click", function () { var now = elementsAt($("player").currentTime || 0); if (now) runOps([{ op: "split_scene", scene: now.scene.id, at: Math.round(now.local * 10) / 10 }]); });
+  $("dup").addEventListener("click", function () { var s = current(); if (s) runOps([{ op: "duplicate_scene", scene: s.id }]); });
+  $("del").addEventListener("click", function () { var s = current(); if (s && window.confirm("Delete this scene?")) runOps([{ op: "delete_scene", scene: s.id }]); });
+  $("left").addEventListener("click", function () { var now = elementsAt($("player").currentTime || 0); if (now && now.index > 0) runOps([{ op: "move_scene", scene: now.scene.id, to: now.index - 1 }]); });
+  $("right").addEventListener("click", function () { var now = elementsAt($("player").currentTime || 0); if (now && now.index < tl.scenes.length - 1) runOps([{ op: "move_scene", scene: now.scene.id, to: now.index + 1 }]); });
+  $("addCardEnd").addEventListener("click", function () { runOps([{ op: "add_card", text: "Your message" }]); });
+  $("undo").addEventListener("click", function () { if (dirty && !window.confirm("Drop your unsaved edits and undo?")) return; dirty = false; setBusy(true); api("/api/ads/" + pid + "/undo", { method: "POST" }).then(show).catch(function (e) { say(e.message, "bad"); }).then(function () { setBusy(false); }); });
+  $("redo").addEventListener("click", function () { if (dirty && !window.confirm("Drop your unsaved edits and redo?")) return; dirty = false; setBusy(true); api("/api/ads/" + pid + "/redo", { method: "POST" }).then(show).catch(function (e) { say(e.message, "bad"); }).then(function () { setBusy(false); }); });
+
+  // instruction at this moment
+  $("suggest").addEventListener("click", function () {
+    var text = $("instruction").value.trim(); if (!text) return;
+    var box = $("proposal"); box.innerHTML = ""; setBusy(true); say("");
+    saveFirst().then(function () { return api("/api/ads/" + pid + "/instruct", { json: { at: $("player").currentTime || 0, instruction: text } }); }).then(function (r) {
+      var d = el("div", { "class": "diff" });
+      if (r.explain) d.appendChild(el("div", { text: r.explain }));
+      if (r.diff.length) { var ul = el("ul", { "class": "list" }); r.diff.forEach(function (x) { ul.appendChild(el("li", { text: x })); }); d.appendChild(ul); }
+      (r.rejected || []).forEach(function (x) { d.appendChild(el("div", { "class": "muted", text: "Skipped: " + x })); });
+      var acts = el("div", { "class": "actions" });
+      if (r.ops.length) acts.appendChild(el("button", { "class": "primary small", text: "Apply this change", onclick: function () { box.innerHTML = ""; $("instruction").value = ""; runOps(r.ops); } }));
+      r.paid.forEach(function (p) {
+        acts.appendChild(el("button", { "class": "small", text: "New AI " + p.kind + " for this scene (about $" + p.estimated_usd.toFixed(2) + ")", onclick: function () { regenerate(p.scene, p.kind, p.prompt); } }));
+      });
+      acts.appendChild(el("button", { "class": "small", text: "Cancel", onclick: function () { box.innerHTML = ""; } }));
+      d.appendChild(acts); box.appendChild(d);
+      if (!r.ops.length && !r.paid.length) d.appendChild(el("div", { "class": "muted", text: "Nothing to apply. Try saying exactly what should change." }));
+    }).catch(function (e) { say(e.message, "bad"); }).then(function () { setBusy(false); });
+  });
+
+  // paid picture changes
+  function regenerate(sceneId, kind, prompt) {
+    var body = { kind: kind, visual_prompt: prompt || $("visual").value, confirm_spend: false };
+    saveFirst().then(function () { return api("/api/ads/" + pid + "/scenes/" + sceneId + "/regenerate", { json: body }); }).catch(function (e) {
+      if (e.status !== 402) throw e;
+      if (!window.confirm(e.message + "\n\nGo ahead?")) return null;
+      body.confirm_spend = true;
+      return api("/api/ads/" + pid + "/scenes/" + sceneId + "/regenerate", { json: body });
+    }).then(function (r) { if (r) { $("proposal").innerHTML = ""; setBusy(true); watch(); } }).catch(function (e) { say(e.message, "bad"); });
+  }
+  $("newImage").addEventListener("click", function () { var s = current(); if (s) regenerate(s.id, "image"); });
+  $("newVideo").addEventListener("click", function () { var s = current(); if (s) regenerate(s.id, "video"); });
+  $("scenePhoto").addEventListener("change", function () {
+    var s = current(), f = $("scenePhoto").files[0]; if (!s || !f) return;
+    setBusy(true); saveFirst().then(function () { return upload("/api/ads/" + pid + "/scenes/" + s.id + "/photo", f); }).then(show).catch(function (e) { say(e.message, "bad"); })
+      .then(function () { setBusy(false); $("scenePhoto").value = ""; });
+  });
+
+  // ---------------------------------------------------------- settings
+  function fillSettings() {
+    $("sBrand").value = tl.brand.name; $("sColor").value = tl.brand.color; options($("sPlatform"), cfg.platforms, tl.platform);
+    $("sCaptions").checked = !!tl.audio.captions; $("sVoice").checked = !!tl.audio.voice; $("sVolume").value = tl.audio.music_volume;
+    tl.look = tl.look || { card: "glow", text: "#FFFFFF", highlight: "#FFD84D" };
+    options($("sCard"), cfg.card_styles.reduce(function (m, k) { m[k] = k; return m; }, {}), tl.look.card);
+    $("sText").value = tl.look.text.toLowerCase(); $("sHigh").value = tl.look.highlight.toLowerCase();
+  }
+  $("sCard").addEventListener("change", function () {
+    tl.look.card = $("sCard").value;
+    if (tl.look.card === "light" && tl.look.text.toUpperCase() === "#FFFFFF") { tl.look.text = "#1B1B1F"; $("sText").value = "#1b1b1f"; }   // white text on a light card is unreadable
+    else if (tl.look.card !== "light" && tl.look.text.toUpperCase() === "#1B1B1F") { tl.look.text = "#FFFFFF"; $("sText").value = "#ffffff"; }
+    markDirty();
+  });
+  $("sText").addEventListener("input", function () { tl.look.text = $("sText").value.toUpperCase(); markDirty(); });
+  $("sHigh").addEventListener("input", function () { tl.look.highlight = $("sHigh").value.toUpperCase(); markDirty(); });
+  $("sBrand").addEventListener("input", function () { tl.brand.name = $("sBrand").value; markDirty(); });
+  $("sColor").addEventListener("input", function () { tl.brand.color = $("sColor").value.toUpperCase(); markDirty(); });
+  $("sPlatform").addEventListener("change", function () { tl.platform = $("sPlatform").value; markDirty(); });
+  $("sCaptions").addEventListener("change", function () { tl.audio.captions = $("sCaptions").checked; markDirty(); });
+  $("sVoice").addEventListener("change", function () {
+    var lang = (st && st.brief && st.brief.language) || "en";
+    tl.audio.voice = $("sVoice").checked ? "auto-" + lang : null; markDirty();
+  });
+  $("sVolume").addEventListener("input", function () { tl.audio.music_volume = Math.max(0, Math.min(0.6, parseFloat($("sVolume").value) || 0)); markDirty(); });
+  [["sLogo", "logo"], ["sMusic", "music"]].forEach(function (pair) {
+    $(pair[0]).addEventListener("change", function () {
+      var f = $(pair[0]).files[0]; if (!f) return;
+      setBusy(true); saveFirst().then(function () { return upload("/api/ads/" + pid + "/" + pair[1], f); }).then(show).catch(function (e) { say(e.message, "bad"); })
+        .then(function () { setBusy(false); $(pair[0]).value = ""; });
+    });
+  });
+
+  // ---------------------------------------------------------- start
+  api("/api/ads/config").then(function (c) {
+    cfg = c;
+    options($("platform"), c.platforms, "reels"); options($("level"), c.levels, "images"); options($("voice"), c.voices, "auto");
+    var notes = [];
+    if (!c.protected) notes.push("No studio password is set, so anyone with this link can use the studio.");
+    if (!c.fal_configured) notes.push("AI pictures are off (FAL_KEY not set on the server). The Free level works.");
+    else if (!c.paid_allowed_here) notes.push("AI pictures are locked until a studio password is set. The Free level works.");
+    if (!c.director) notes.push("No AI director is set, so plans come from simple rules.");
+    say(notes.join(" "), "warn");
+    if (!c.fal_configured || !c.paid_allowed_here) { $("level").value = "free"; Array.prototype.forEach.call($("level").options, function (o) { if (o.value !== "free") o.disabled = true; }); }
+    ["level", "length", "photo"].forEach(function (id) { $(id).addEventListener("change", refreshEstimate); });
+    loadTemplates();
+  }).catch(function (e) { say(e.message, "bad"); });
+  $("create").addEventListener("click", create);
+})();
+</script>
+</body>
+</html>

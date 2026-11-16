@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+openai
+edge-tts
+python-multipart
+jinja2
+pillow
+numpy

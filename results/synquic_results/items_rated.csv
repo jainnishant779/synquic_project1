@@ -1,0 +1,25 @@
+clip,task,prompt_id,model,seed,kind,licence,status,render_seconds,clip_seconds,api_cost_usd,peak_vram_gb,note,qc,rating,accepted,cost_usd
+img__kettle__flux2_klein_4b__seed42,image,kettle,flux2_klein_4b,42,local,Allowed,ok,33.2,0,0,8.4,,pass,,False,0.008207777777777779
+img__tshirt__flux2_klein_4b__seed42,image,tshirt,flux2_klein_4b,42,local,Allowed,ok,28.2,0,0,8.4,,pass,,False,0.006971666666666667
+img__sneaker__flux2_klein_4b__seed42,image,sneaker,flux2_klein_4b,42,local,Allowed,ok,28.4,0,0,8.4,,pass,,False,0.007021111111111111
+img__serum__flux2_klein_4b__seed42,image,serum,flux2_klein_4b,42,local,Allowed,ok,28.6,0,0,8.4,,pass,,False,0.007070555555555556
+img__kettle__z_image_turbo__seed42,image,kettle,z_image_turbo,42,local,Allowed,ok,55.0,0,0,12.8,,fail,,False,0.013597222222222222
+img__tshirt__z_image_turbo__seed42,image,tshirt,z_image_turbo,42,local,Allowed,ok,49.3,0,0,12.8,,fail,,False,0.012188055555555554
+img__sneaker__z_image_turbo__seed42,image,sneaker,z_image_turbo,42,local,Allowed,ok,47.3,0,0,12.8,,fail,,False,0.011693611111111111
+img__serum__z_image_turbo__seed42,image,serum,z_image_turbo,42,local,Allowed,ok,48.3,0,0,12.8,,fail,,False,0.011940833333333331
+img__kettle__sana_1600m__seed42,image,kettle,sana_1600m,42,local,Allowed,ok,32.2,0,0,5.3,,pass,,False,0.007960555555555556
+img__tshirt__sana_1600m__seed42,image,tshirt,sana_1600m,42,local,Allowed,ok,19.6,0,0,5.3,,pass,,False,0.004845555555555556
+img__sneaker__sana_1600m__seed42,image,sneaker,sana_1600m,42,local,Allowed,ok,18.3,0,0,5.3,,pass,,False,0.004524166666666668
+img__serum__sana_1600m__seed42,image,serum,sana_1600m,42,local,Allowed,ok,18.3,0,0,5.3,,pass,,False,0.004524166666666668
+vid__kettle__wan22_5b_i2v__seed42,video,kettle,wan22_5b_i2v,42,local,Allowed,out_of_memory,16.6,0,0,15.4,"OutOfMemoryError: CUDA out of memory. Tried to allocate 108.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 34.81 MiB is free. Including non-PyTorch memory, this process has 14.53 GiB memory in use. Of the allocated memory 14.38 ",no_file,,False,0.0041038888888888896
+vid__tshirt__wan22_5b_i2v__seed42,video,tshirt,wan22_5b_i2v,42,local,Allowed,out_of_memory,0.4,0,0,15.5,"OutOfMemoryError: CUDA out of memory. Tried to allocate 32.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 34.81 MiB is free. Including non-PyTorch memory, this process has 14.53 GiB memory in use. Of the allocated memory 14.39 G",no_file,,False,9.88888888888889e-05
+vid__sneaker__wan22_5b_i2v__seed42,video,sneaker,wan22_5b_i2v,42,local,Allowed,out_of_memory,0.4,0,0,15.5,"OutOfMemoryError: CUDA out of memory. Tried to allocate 32.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 34.81 MiB is free. Including non-PyTorch memory, this process has 14.53 GiB memory in use. Of the allocated memory 14.39 G",no_file,,False,9.88888888888889e-05
+vid__serum__wan22_5b_i2v__seed42,video,serum,wan22_5b_i2v,42,local,Allowed,out_of_memory,0.4,0,0,15.5,"OutOfMemoryError: CUDA out of memory. Tried to allocate 32.00 MiB. GPU 0 has a total capacity of 14.56 GiB of which 34.81 MiB is free. Including non-PyTorch memory, this process has 14.53 GiB memory in use. Of the allocated memory 14.39 G",no_file,,False,9.88888888888889e-05
+vid__kettle__kandinsky6_lite__seed42,video,kettle,kandinsky6_lite,42,local,Counsel,failed,0.0,0,0,,worker exit code 1,no_file,,False,0.0
+vid__tshirt__kandinsky6_lite__seed42,video,tshirt,kandinsky6_lite,42,local,Counsel,failed,0.0,0,0,,worker exit code 1,no_file,,False,0.0
+vid__sneaker__kandinsky6_lite__seed42,video,sneaker,kandinsky6_lite,42,local,Counsel,failed,0.0,0,0,,worker exit code 1,no_file,,False,0.0
+vid__serum__kandinsky6_lite__seed42,video,serum,kandinsky6_lite,42,local,Counsel,failed,0.0,0,0,,worker exit code 1,no_file,,False,0.0
+vid__kettle__wan21_480p_t2v__seed42,video,kettle,wan21_480p_t2v,42,local,Allowed,failed,0.0,0,0,,worker exit code 1,no_file,,False,0.0
+vid__tshirt__wan21_480p_t2v__seed42,video,tshirt,wan21_480p_t2v,42,local,Allowed,failed,0.0,0,0,,worker exit code 1,no_file,,False,0.0
+vid__sneaker__wan21_480p_t2v__seed42,video,sneaker,wan21_480p_t2v,42,local,Allowed,failed,0.0,0,0,,worker exit code 1,no_file,,False,0.0
+vid__serum__wan21_480p_t2v__seed42,video,serum,wan21_480p_t2v,42,local,Allowed,failed,0.0,0,0,,worker exit code 1,no_file,,False,0.0

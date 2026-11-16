@@ -4,6 +4,28 @@ Technical and commercial assessment, architecture and proof of concept, as of 20
 
 **Read this first.** The POCs run real pipeline logic with no keys and no spend. They do not produce AI video, and no LLM has been trained. Costs are estimates, and legal verdicts need a lawyer.
 
+The repository holds two things:
+
+1. **Research** for an AI video ad engine (Task 1) and Social 360 (Task 2): fact ledger, briefs, reports, diagrams, cost workbook, Kaggle benchmark notebooks and proofs of concept.
+2. **Ad Studio**, a FastAPI web app that turns a prompt into an ad. Code and tests are in [web_ec2/](web_ec2). It is live at http://13.205.82.99/editor. Setup, configuration and how to run it locally are in [web_ec2/README.md](web_ec2/README.md); the system design is [Doc 11](docs/11-ad-studio-system.md).
+
+## Repository map
+
+| Folder | Contents |
+|---|---|
+| [research/](research) | Fact ledger (`facts.csv`), research briefs, raw search output, verification queues and results |
+| [docs/](docs) | Numbered markdown deliverables (01 to 12), Word and PDF reports |
+| [diagrams/](diagrams) | Rendered diagrams (PNG, SVG); Mermaid sources in `diagrams/src/` |
+| [workbook/](workbook) | Comparison and pricing workbook |
+| [notebooks/](notebooks) | Kaggle benchmark notebooks |
+| [results/](results) | Kaggle benchmark outputs (CSV summaries and stills) |
+| [poc/](poc) | Video and Social 360 proofs of concept, with tests in `poc/tests/` |
+| [tools/](tools) | Build, check and notebook-generation scripts |
+| [web_ec2/](web_ec2) | Ad Studio app: `main.py`, ad engine and director, templates, `ad_template_library/`, `fal_schemas/`, tests in `web_ec2/tests/` |
+| [archive/](archive) | One-off patch, test and debug scripts (`archive/scripts/`), test media (`archive/media/`), a snapshot of earlier server files (`archive/ec2_remote_snapshot/`). Kept for history; not part of the app |
+
+API keys are never stored in the repository. Copy `web_ec2/.env.example` to `web_ec2/.env` and fill it in locally.
+
 ## Start here
 
 | If you want | Read |
@@ -11,6 +33,9 @@ Technical and commercial assessment, architecture and proof of concept, as of 20
 | The plan and risks | [Roadmap and YC readiness](docs/08-roadmap.md) |
 | The numbers | [Cost and credit pricing](docs/06-gpu-deployment-cost-assessment.md) |
 | What is real | [Demo plan](docs/07-demo-plan.md), [claims register](docs/09-claims-register.md) |
+| Kaggle notebooks | notebooks/synquic_kaggle_1_open_models.ipynb (free open models, GPU), notebooks/synquic_kaggle_2_api_models.ipynb (paid APIs, no GPU, keys in Kaggle Secrets), notebooks/synquic_video_benchmark.ipynb (older, builds the 30 s reel). Build with tools/build_kaggle_open.py and tools/build_kaggle_api.py, test with tools/test_kaggle_notebooks.py (dry run only, no model or endpoint was called) |
+| Model and tool decision | [Doc 10](docs/10-model-and-tool-decision.md). Word reports for sir: docs/Handoff-Task1-AI-Video-Engine-v4.docx, docs/Handoff-Task2-Social360-v3.docx, docs/Synquic-Final-Report-for-Sir.docx. Flow charts: diagrams 10 to 13 |
+| The Ad Studio app | [web_ec2/README.md](web_ec2/README.md), [Doc 11](docs/11-ad-studio-system.md), roadmap in docs/Synquic-Ad-Studio-Roadmap.docx, flow chart diagrams/14-ad-studio-flow.png |
 
 ## Task 1 final plan
 
@@ -65,17 +90,9 @@ python tools/check_claims.py       # honesty rules on the docs
 powershell -ExecutionPolicy Bypass -File tools\render_diagrams.ps1
 ```
 
+To run the Ad Studio app, follow [web_ec2/README.md](web_ec2/README.md). Its tests run with `python -m pytest web_ec2/tests -q`.
+
 ## Labels
 
 `[REAL: test]` runs today. `[MOCK]` is a stand-in. `[SIMULATED]` is synthetic. `[DESIGN]` is specified, not built. `[ESTIMATE]` is modelled. `[VENDOR-CLAIM]` is published, not reproduced. `[ASSUMPTION]` is chosen by us. `[COUNSEL]` needs a lawyer.
 
-## Layout
-
-```
-docs/       deliverables, plus the two earlier reports as supplied
-workbook/   comparison and pricing workbook
-diagrams/   rendered diagrams and sources
-research/   fact ledger, briefs, verification, audit list
-poc/        video and Social 360 proofs of concept
-tools/      build and check scripts
-```

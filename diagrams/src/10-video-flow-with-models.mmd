@@ -1,0 +1,23 @@
+flowchart TB
+    A[1. Brand brief: product, goal, format 30 s, 9:16 or 16:9] --> B[2. Director: LLM writes script and storyboard, Scene JSON, AI spend cap]
+    B --> C[3. Stills: Nano Banana 2.1 with brand and product references]
+    C --> D{4. Shot type}
+    D -- Product hero, image to video --> E1[MiniMax H3 768p, or FLUX 3 Video if no China-origin]
+    D -- Long scene, text to video --> E2[Wan 3.0, or Gemini Omni Flash 1.1]
+    D -- Filler or b-roll --> E3[Grok Imagine 1.5 Lite or animated image]
+    D -- Person wearing product --> E4[FASHN Try-On Max, then animate]
+    E1 --> F[5. Upscale to 1080p: Topaz Proteus]
+    E2 --> F
+    E3 --> F
+    E4 --> F
+    B --> V[6. Voice: ElevenLabs v4 Turbo or Sarvam for Hinglish]
+    B --> M[7. Music: Pixabay or Lyria 3.5]
+    F --> Q{8. Quality checks: ffprobe, PySceneDetect, PaddleOCR, SigLIP 2, vision LLM}
+    Q -- Fail, budget left --> D
+    Q -- Fail, budget used --> X[Animated image fallback, no human step]
+    Q -- Pass --> T[9. FFmpeg timeline: captions from script, logo overlay, audio mix]
+    X --> T
+    V --> T
+    M --> T
+    T --> O[10. Final 1080p MP4, manifest, cost ledger, AI disclosure and C2PA]
+    Q -. every call .-> L[(Cost ledger and credits)]

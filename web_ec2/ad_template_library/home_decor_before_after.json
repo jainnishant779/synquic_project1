@@ -1,0 +1,172 @@
+{
+  "id": "home_decor_before_after",
+  "name": "Room decor before and after",
+  "best_for": [
+    "home decor",
+    "furniture",
+    "interior design",
+    "lighting",
+    "styling"
+  ],
+  "description": "Inspiring transformation from an unstyled room to a cozy modern sanctuary without exaggerated claims. For interior stylists, furniture, lighting and decor.",
+  "length_s": 16,
+  "platform": "reels",
+  "look": {
+    "card": "light",
+    "text": "#1E293B",
+    "highlight": "#0D9488",
+    "color": null
+  },
+  "preview_color": "#0F766E",
+  "audio": {
+    "music_volume": 0.16,
+    "captions": false,
+    "voice": true
+  },
+  "scenes": [
+    {
+      "purpose": "hook",
+      "visual": "lifestyle",
+      "weight": 3.5,
+      "direction": "A plain, bare and uninspired living room corner with blank walls and flat lighting",
+      "voice": true,
+      "text": [
+        {
+          "role": "label",
+          "style": "plain",
+          "position": "top",
+          "size": "s",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 1,
+          "example": "Before",
+          "fixed": true
+        },
+        {
+          "role": "hook",
+          "style": "kinetic",
+          "position": "center",
+          "size": "l",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 5,
+          "example": "Tired of *dull* corners?",
+          "fixed": false
+        },
+        {
+          "role": "brand",
+          "style": "lower_third",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.35,
+          "end": null,
+          "max_words": 3,
+          "example": "HavenLiving",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "reveal",
+      "visual": "lifestyle",
+      "weight": 4.0,
+      "direction": "The exact same corner beautifully restyled with a plush armchair, warm floor lamp and potted plant in soft daylight",
+      "voice": true,
+      "text": [
+        {
+          "role": "label",
+          "style": "plain",
+          "position": "top",
+          "size": "s",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 1,
+          "example": "After",
+          "fixed": true
+        },
+        {
+          "role": "reveal",
+          "style": "slide",
+          "position": "center",
+          "size": "m",
+          "color": null,
+          "start": 0.2,
+          "end": null,
+          "max_words": 6,
+          "example": "Warmth and *cozy* character added",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "feature",
+      "visual": "product",
+      "weight": 4.0,
+      "direction": "Close-up of crafted wooden coffee table and ceramic vase with dried botanicals under soft afternoon light",
+      "voice": true,
+      "text": [
+        {
+          "role": "feature",
+          "style": "wipe",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 5,
+          "example": "Thoughtfully *crafted* accents",
+          "fixed": false
+        },
+        {
+          "role": "tagline",
+          "style": "plain",
+          "position": "bottom",
+          "size": "s",
+          "color": null,
+          "start": 0.35,
+          "end": null,
+          "max_words": 6,
+          "example": "Transform every *corner easily*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "cta",
+      "visual": "card",
+      "weight": 4.5,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "brand",
+          "style": "brand",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.05,
+          "end": null,
+          "max_words": 3,
+          "example": "HavenLiving",
+          "fixed": false
+        },
+        {
+          "role": "cta",
+          "style": "cta",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.25,
+          "end": null,
+          "max_words": 4,
+          "example": "Style your *home*",
+          "fixed": false
+        }
+      ]
+    }
+  ]
+}

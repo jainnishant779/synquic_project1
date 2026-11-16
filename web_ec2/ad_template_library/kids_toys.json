@@ -1,0 +1,149 @@
+{
+  "id": "kids_toys",
+  "name": "Creative kids play and learn",
+  "best_for": [
+    "toys",
+    "kids",
+    "learning",
+    "puzzles",
+    "screen-free",
+    "parents"
+  ],
+  "description": "Bright and joyful toy spotlight communicating screen-free creative play, safety and imagination directly to parents. For educational toys, games and kits.",
+  "length_s": 15,
+  "platform": "reels",
+  "look": {
+    "card": "bold",
+    "text": "#FFFFFF",
+    "highlight": "#FBBF24",
+    "color": null
+  },
+  "preview_color": "#4F46E5",
+  "audio": {
+    "music_volume": 0.18,
+    "captions": false,
+    "voice": true
+  },
+  "scenes": [
+    {
+      "purpose": "hook",
+      "visual": "lifestyle",
+      "weight": 3.5,
+      "direction": "A young child completely captivated building a colourful wooden block tower in a cheerful play area",
+      "voice": true,
+      "text": [
+        {
+          "role": "hook",
+          "style": "kinetic",
+          "position": "top",
+          "size": "l",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 6,
+          "example": "Screen-free play that *sparks curiosity*",
+          "fixed": false
+        },
+        {
+          "role": "brand",
+          "style": "lower_third",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.35,
+          "end": null,
+          "max_words": 3,
+          "example": "LittleThinkers",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "reveal",
+      "visual": "product",
+      "weight": 3.5,
+      "direction": "An eco-friendly wooden building blocks set arranged neatly on a clean pastel playmat",
+      "voice": true,
+      "text": [
+        {
+          "role": "reveal",
+          "style": "slide",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 5,
+          "example": "100% *safe* non-toxic wood",
+          "fixed": false
+        },
+        {
+          "role": "tagline",
+          "style": "plain",
+          "position": "bottom",
+          "size": "s",
+          "color": null,
+          "start": 0.35,
+          "end": null,
+          "max_words": 6,
+          "example": "Designed for *little hands*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "benefit",
+      "visual": "lifestyle",
+      "weight": 4.0,
+      "direction": "Mother and child laughing together solving a shape puzzle on the living room rug",
+      "voice": true,
+      "text": [
+        {
+          "role": "benefit",
+          "style": "wipe",
+          "position": "center",
+          "size": "m",
+          "color": null,
+          "start": 0.15,
+          "end": null,
+          "max_words": 6,
+          "example": "Learning through *creative play*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "cta",
+      "visual": "card",
+      "weight": 4.0,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "brand",
+          "style": "brand",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.05,
+          "end": null,
+          "max_words": 3,
+          "example": "LittleThinkers",
+          "fixed": false
+        },
+        {
+          "role": "cta",
+          "style": "cta",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.25,
+          "end": null,
+          "max_words": 4,
+          "example": "Shop *play kits*",
+          "fixed": false
+        }
+      ]
+    }
+  ]
+}

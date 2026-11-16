@@ -1,0 +1,26 @@
+flowchart TB
+    subgraph MAKE["Make the ad"]
+        direction LR
+        A["1. One line about the product<br/>+ photo, logo (optional)<br/>+ platform, length, level"] --> B["2. AI director<br/>brand, language, 4-8 scenes,<br/>text, voice lines, picture ideas"]
+        B --> C["3. Python checks<br/>hook, brand in 3 s, CTA,<br/>safe zones, no overlaps;<br/>flags invented claims"]
+        C --> D{"4. Picture<br/>per scene"}
+        D -->|"product + photo"| E1["Real product cut-out<br/>on AI background,<br/>parallax"]
+        D -->|"lifestyle"| E2["AI image from<br/>the product photo"]
+        D -->|"Video level"| E3["AI image, then<br/>image-to-video"]
+        D -->|"Free / failure / cap"| E4["Designed card<br/>or your photo"]
+        E1 --> F["5. Voice-over in the<br/>prompt's language<br/>+ your music"]
+        E2 --> F
+        E3 --> F
+        E4 --> F
+        F --> G["6. Render: FFmpeg +<br/>animated text,<br/>each scene cached"]
+    end
+    subgraph EDIT["Edit any moment"]
+        direction LR
+        H["7. Pause at any second:<br/>see the scene and the<br/>text on screen then"] --> I["Change text, style, colour,<br/>size, timing; split, move,<br/>delete; new picture or own photo"]
+        H --> J["Or type it:<br/>'0:07 par Free delivery<br/>likho, peele rang mein'"]
+        J --> K["AI turns it into edit<br/>operations; changes shown<br/>before applying"]
+        I --> L["Re-render only changed<br/>scenes; new version;<br/>Undo / Redo"]
+        K --> L
+        L -.-> H
+    end
+    MAKE --> EDIT

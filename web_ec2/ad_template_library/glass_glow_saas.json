@@ -1,0 +1,137 @@
+{
+  "id": "glass_glow_saas",
+  "name": "Glass glow modern SaaS",
+  "best_for": [
+    "saas",
+    "mobile app",
+    "fintech",
+    "ai tools",
+    "b2b",
+    "tech startup"
+  ],
+  "description": "High-tech aesthetic featuring translucent frosted glass cards, cyan neon highlights, and crisp floating feature points over an ambient dark mesh background.",
+  "length_s": 15,
+  "platform": "reels",
+  "look": {
+    "card": "glass",
+    "text": "#FFFFFF",
+    "highlight": "#22D3EE",
+    "color": null
+  },
+  "preview_color": "#0284C7",
+  "audio": {
+    "music_volume": 0.16,
+    "captions": false,
+    "voice": true
+  },
+  "scenes": [
+    {
+      "purpose": "hook",
+      "visual": "card",
+      "weight": 3.0,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "hook",
+          "style": "kinetic",
+          "position": "top",
+          "size": "l",
+          "color": null,
+          "start": 0.05,
+          "end": null,
+          "max_words": 5,
+          "example": "Your entire *workflow* simplified",
+          "fixed": false
+        },
+        {
+          "role": "brand",
+          "style": "lower_third",
+          "position": "bottom",
+          "size": "s",
+          "color": null,
+          "start": 0.35,
+          "end": null,
+          "max_words": 2,
+          "example": "Pulse",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "feature",
+      "visual": "lifestyle",
+      "weight": 4.0,
+      "direction": "Professional team working seamlessly with modern dashboard interfaces glowing in high-tech office",
+      "voice": true,
+      "text": [
+        {
+          "role": "feature",
+          "style": "wipe",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 5,
+          "example": "Automate *tasks instantly*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "benefit",
+      "visual": "card",
+      "weight": 4.0,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "benefit",
+          "style": "slide",
+          "position": "center",
+          "size": "m",
+          "color": null,
+          "start": 0.15,
+          "end": null,
+          "max_words": 5,
+          "example": "Built for *fast teams*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "cta",
+      "visual": "card",
+      "weight": 4.0,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "brand",
+          "style": "brand",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.05,
+          "end": null,
+          "max_words": 2,
+          "example": "Pulse",
+          "fixed": false
+        },
+        {
+          "role": "cta",
+          "style": "cta",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.25,
+          "end": null,
+          "max_words": 4,
+          "example": "Start *today free*",
+          "fixed": false
+        }
+      ]
+    }
+  ]
+}

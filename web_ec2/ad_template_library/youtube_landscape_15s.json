@@ -1,0 +1,137 @@
+{
+  "id": "youtube_landscape_15s",
+  "name": "Landscape YouTube demo",
+  "best_for": [
+    "youtube",
+    "landscape",
+    "hardware",
+    "gadgets",
+    "web ad",
+    "b2b"
+  ],
+  "description": "Widescreen 16:9 product demonstration ad for YouTube and web video. Features bold widescreen overlays, feature callout and clear desktop CTA.",
+  "length_s": 15,
+  "platform": "landscape",
+  "look": {
+    "card": "dark",
+    "text": "#FFFFFF",
+    "highlight": "#60A5FA",
+    "color": null
+  },
+  "preview_color": "#1E40AF",
+  "audio": {
+    "music_volume": 0.16,
+    "captions": false,
+    "voice": true
+  },
+  "scenes": [
+    {
+      "purpose": "hook",
+      "visual": "product",
+      "weight": 3.5,
+      "direction": "A sleek modern smart device centered on a wooden office desk in wide 16:9 cinematic studio framing",
+      "voice": true,
+      "text": [
+        {
+          "role": "hook",
+          "style": "kinetic",
+          "position": "top",
+          "size": "l",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 6,
+          "example": "The *smartest* way to work",
+          "fixed": false
+        },
+        {
+          "role": "brand",
+          "style": "lower_third",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.35,
+          "end": null,
+          "max_words": 3,
+          "example": "OmniDesk",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "feature",
+      "visual": "product",
+      "weight": 3.5,
+      "direction": "Macro camera glide across precision aluminum chassis and clean port connections in 16:9",
+      "voice": true,
+      "text": [
+        {
+          "role": "feature",
+          "style": "slide",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 5,
+          "example": "Seamless *plug & play* power",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "benefit",
+      "visual": "lifestyle",
+      "weight": 4.0,
+      "direction": "A creative professional effortlessly editing video across multiple connected screens in a modern studio",
+      "voice": true,
+      "text": [
+        {
+          "role": "benefit",
+          "style": "wipe",
+          "position": "center",
+          "size": "m",
+          "color": null,
+          "start": 0.15,
+          "end": null,
+          "max_words": 6,
+          "example": "Organise your *entire workspace*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "cta",
+      "visual": "card",
+      "weight": 4.0,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "brand",
+          "style": "brand",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.05,
+          "end": null,
+          "max_words": 3,
+          "example": "OmniDesk",
+          "fixed": false
+        },
+        {
+          "role": "cta",
+          "style": "cta",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.25,
+          "end": null,
+          "max_words": 4,
+          "example": "Learn more *online*",
+          "fixed": false
+        }
+      ]
+    }
+  ]
+}

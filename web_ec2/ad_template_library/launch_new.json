@@ -1,0 +1,147 @@
+{
+ "id": "launch_new",
+ "name": "New launch",
+ "best_for": [
+  "new product",
+  "new flavour",
+  "new collection",
+  "drinks"
+ ],
+ "description": "Ten fast seconds on bold colour: NEW, the product reveal, one punchy feature, call to action. For launches and new variants.",
+ "length_s": 10,
+ "platform": "reels",
+ "look": {
+  "card": "bold",
+  "text": "#FFFFFF",
+  "highlight": "#FFE14D",
+  "color": null
+ },
+ "preview_color": "#D6246E",
+ "audio": {
+  "music_volume": 0.22,
+  "captions": false,
+  "voice": true
+ },
+ "scenes": [
+  {
+   "purpose": "hook",
+   "visual": "card",
+   "weight": 2,
+   "direction": "",
+   "voice": true,
+   "text": [
+    {
+     "role": "hook",
+     "style": "kinetic",
+     "position": "center",
+     "size": "xl",
+     "color": null,
+     "start": 0.0,
+     "end": null,
+     "max_words": 2,
+     "example": "*NEW*",
+     "fixed": false
+    },
+    {
+     "role": "brand",
+     "style": "lower_third",
+     "position": "bottom",
+     "size": "m",
+     "color": null,
+     "start": 0.3,
+     "end": null,
+     "max_words": 4,
+     "example": "Zing",
+     "fixed": false
+    }
+   ]
+  },
+  {
+   "purpose": "reveal",
+   "visual": "product",
+   "weight": 2.5,
+   "direction": "The new product bursting into frame, splash or confetti, vivid colour, high energy",
+   "voice": true,
+   "text": [
+    {
+     "role": "brand",
+     "style": "brand",
+     "position": "top",
+     "size": "l",
+     "color": null,
+     "start": 0.05,
+     "end": null,
+     "max_words": 3,
+     "example": "Zing",
+     "fixed": false
+    },
+    {
+     "role": "tagline",
+     "style": "slide",
+     "position": "bottom",
+     "size": "m",
+     "color": null,
+     "start": 0.3,
+     "end": null,
+     "max_words": 5,
+     "example": "Now in *mango*",
+     "fixed": false
+    }
+   ]
+  },
+  {
+   "purpose": "feature",
+   "visual": "lifestyle",
+   "weight": 2,
+   "direction": "Young people enjoying the product outdoors, golden hour, lively",
+   "voice": true,
+   "text": [
+    {
+     "role": "feature",
+     "style": "kinetic",
+     "position": "center",
+     "size": "l",
+     "color": null,
+     "start": 0.05,
+     "end": null,
+     "max_words": 4,
+     "example": "*Chilled* and fizzy",
+     "fixed": false
+    }
+   ]
+  },
+  {
+   "purpose": "cta",
+   "visual": "card",
+   "weight": 3.5,
+   "direction": "",
+   "voice": true,
+   "text": [
+    {
+     "role": "brand",
+     "style": "brand",
+     "position": "top",
+     "size": "l",
+     "color": null,
+     "start": 0.05,
+     "end": null,
+     "max_words": 4,
+     "example": "Zing",
+     "fixed": false
+    },
+    {
+     "role": "cta",
+     "style": "cta",
+     "position": "bottom",
+     "size": "m",
+     "color": null,
+     "start": 0.25,
+     "end": null,
+     "max_words": 4,
+     "example": "Try it today",
+     "fixed": false
+    }
+   ]
+  }
+ ]
+}

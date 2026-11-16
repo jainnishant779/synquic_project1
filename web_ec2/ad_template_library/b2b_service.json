@@ -1,0 +1,148 @@
+{
+  "id": "b2b_service",
+  "name": "B2B service client pitch",
+  "best_for": [
+    "b2b",
+    "consulting",
+    "agency",
+    "corporate",
+    "logistics"
+  ],
+  "description": "Clear problem-to-consultation flow for corporate services, consultants and B2B platforms. Focuses on efficiency, teamwork and booking a discovery call.",
+  "length_s": 16,
+  "platform": "reels",
+  "look": {
+    "card": "dark",
+    "text": "#F8FAFC",
+    "highlight": "#38BDF8",
+    "color": null
+  },
+  "preview_color": "#0369A1",
+  "audio": {
+    "music_volume": 0.16,
+    "captions": false,
+    "voice": true
+  },
+  "scenes": [
+    {
+      "purpose": "hook",
+      "visual": "lifestyle",
+      "weight": 3.5,
+      "direction": "A professional business team in a boardroom analyzing charts with concerned expressions",
+      "voice": true,
+      "text": [
+        {
+          "role": "hook",
+          "style": "kinetic",
+          "position": "top",
+          "size": "l",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 6,
+          "example": "Team spending hours on *manual ops*?",
+          "fixed": false
+        },
+        {
+          "role": "brand",
+          "style": "lower_third",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.35,
+          "end": null,
+          "max_words": 3,
+          "example": "ScaleSync",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "solution",
+      "visual": "lifestyle",
+      "weight": 4.0,
+      "direction": "A polished corporate consultant shaking hands with a smiling client across a sunlit office table",
+      "voice": true,
+      "text": [
+        {
+          "role": "solution",
+          "style": "slide",
+          "position": "center",
+          "size": "m",
+          "color": null,
+          "start": 0.15,
+          "end": null,
+          "max_words": 6,
+          "example": "Streamline workflows with *expert support*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "benefit",
+      "visual": "card",
+      "weight": 4.0,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "benefit",
+          "style": "wipe",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 5,
+          "example": "Built for growing *enterprises*",
+          "fixed": false
+        },
+        {
+          "role": "tagline",
+          "style": "plain",
+          "position": "bottom",
+          "size": "s",
+          "color": null,
+          "start": 0.35,
+          "end": null,
+          "max_words": 6,
+          "example": "Save hours every *single week*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "cta",
+      "visual": "card",
+      "weight": 4.5,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "brand",
+          "style": "brand",
+          "position": "top",
+          "size": "l",
+          "color": null,
+          "start": 0.05,
+          "end": null,
+          "max_words": 3,
+          "example": "ScaleSync",
+          "fixed": false
+        },
+        {
+          "role": "cta",
+          "style": "cta",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.25,
+          "end": null,
+          "max_words": 4,
+          "example": "Book a *discovery call*",
+          "fixed": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,181 @@
+{
+ "id": "three_reasons",
+ "name": "3 reasons",
+ "best_for": [
+  "any product",
+  "sneakers",
+  "gadgets",
+  "food",
+  "apps"
+ ],
+ "description": "A numbered list: hook, three reasons with big numbers, call to action. Easy to follow and great for products with clear benefits.",
+ "length_s": 15,
+ "platform": "reels",
+ "look": {
+  "card": "bold",
+  "text": "#FFFFFF",
+  "highlight": "#FFD84D",
+  "color": null
+ },
+ "preview_color": "#E5483B",
+ "audio": {
+  "music_volume": 0.18,
+  "captions": false,
+  "voice": true
+ },
+ "scenes": [
+  {
+   "purpose": "hook",
+   "visual": "card",
+   "weight": 2.5,
+   "direction": "",
+   "voice": true,
+   "text": [
+    {
+     "role": "hook",
+     "style": "kinetic",
+     "position": "center",
+     "size": "l",
+     "color": null,
+     "start": 0.0,
+     "end": null,
+     "max_words": 6,
+     "example": "3 reasons to pick *StrideX*",
+     "fixed": false
+    }
+   ]
+  },
+  {
+   "purpose": "benefit",
+   "visual": "lifestyle",
+   "weight": 3,
+   "direction": "The product in action showing the first benefit, energetic, natural light",
+   "voice": true,
+   "text": [
+    {
+     "role": "label",
+     "style": "kinetic",
+     "position": "top",
+     "size": "xl",
+     "color": null,
+     "start": 0.0,
+     "end": null,
+     "max_words": 1,
+     "example": "1",
+     "fixed": true
+    },
+    {
+     "role": "benefit",
+     "style": "slide",
+     "position": "bottom",
+     "size": "m",
+     "color": null,
+     "start": 0.2,
+     "end": null,
+     "max_words": 6,
+     "example": "*Featherlight* on every run",
+     "fixed": false
+    }
+   ]
+  },
+  {
+   "purpose": "benefit",
+   "visual": "lifestyle",
+   "weight": 3,
+   "direction": "A different setting showing the second benefit, close and detailed",
+   "voice": true,
+   "text": [
+    {
+     "role": "label",
+     "style": "kinetic",
+     "position": "top",
+     "size": "xl",
+     "color": null,
+     "start": 0.0,
+     "end": null,
+     "max_words": 1,
+     "example": "2",
+     "fixed": true
+    },
+    {
+     "role": "benefit",
+     "style": "slide",
+     "position": "bottom",
+     "size": "m",
+     "color": null,
+     "start": 0.2,
+     "end": null,
+     "max_words": 6,
+     "example": "Stays *cool* for miles",
+     "fixed": false
+    }
+   ]
+  },
+  {
+   "purpose": "benefit",
+   "visual": "product",
+   "weight": 3,
+   "direction": "The product itself, crisp studio light, showing the third benefit",
+   "voice": true,
+   "text": [
+    {
+     "role": "label",
+     "style": "kinetic",
+     "position": "top",
+     "size": "xl",
+     "color": null,
+     "start": 0.0,
+     "end": null,
+     "max_words": 1,
+     "example": "3",
+     "fixed": true
+    },
+    {
+     "role": "benefit",
+     "style": "slide",
+     "position": "bottom",
+     "size": "m",
+     "color": null,
+     "start": 0.2,
+     "end": null,
+     "max_words": 6,
+     "example": "Built for *daily* runs",
+     "fixed": false
+    }
+   ]
+  },
+  {
+   "purpose": "cta",
+   "visual": "card",
+   "weight": 3.5,
+   "direction": "",
+   "voice": true,
+   "text": [
+    {
+     "role": "brand",
+     "style": "brand",
+     "position": "top",
+     "size": "l",
+     "color": null,
+     "start": 0.05,
+     "end": null,
+     "max_words": 4,
+     "example": "StrideX",
+     "fixed": false
+    },
+    {
+     "role": "cta",
+     "style": "cta",
+     "position": "bottom",
+     "size": "m",
+     "color": null,
+     "start": 0.25,
+     "end": null,
+     "max_words": 4,
+     "example": "Shop now",
+     "fixed": false
+    }
+   ]
+  }
+ ]
+}

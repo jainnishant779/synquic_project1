@@ -1,10 +1,39 @@
+# Secrets: never commit keys or credentials
+*.pem
+*.key
+id_rsa*
+.env
+.env.*
+!.env.example
+
+# Python and tooling caches
 __pycache__/
 *.pyc
 .venv/
+venv/
 .pytest_cache/
 node_modules/
-.env
+
+# Office lock files
+~$*
+
+# Proof-of-concept runtime output
 poc/runs/
 poc/social360/data/
-~$*.xlsx
-~$*.docx
+
+# Ad Studio runtime folders (generated on the server or locally)
+web_ec2/data/
+web_ec2/static/media/
+web_ec2/template_previews/
+
+# Raw agent session transcripts (contain server and shell details)
+archive/sessions/
+
+# Large media (over 5 MB) kept locally, not in git
+archive/media/bgm_energetic.wav
+archive/media/bgm_luxury.wav
+
+# OS clutter
+Thumbs.db
+desktop.ini
+.DS_Store

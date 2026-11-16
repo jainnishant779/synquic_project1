@@ -1,0 +1,171 @@
+{
+ "id": "desi_festive",
+ "name": "Festive greeting",
+ "best_for": [
+  "Diwali",
+  "Eid",
+  "Holi",
+  "Rakhi",
+  "weddings",
+  "sweets",
+  "gifts"
+ ],
+ "description": "Warm festive card with gold sparkles: occasion greeting, product, family moment, gift line, call to action. Name the occasion in your prompt.",
+ "length_s": 15,
+ "platform": "reels",
+ "look": {
+  "card": "festive",
+  "text": "#FFF6E0",
+  "highlight": "#FFD166",
+  "color": null
+ },
+ "preview_color": "#9C1C3A",
+ "audio": {
+  "music_volume": 0.2,
+  "captions": false,
+  "voice": true
+ },
+ "scenes": [
+  {
+   "purpose": "hook",
+   "visual": "card",
+   "weight": 3,
+   "direction": "",
+   "voice": true,
+   "text": [
+    {
+     "role": "hook",
+     "style": "kinetic",
+     "position": "center",
+     "size": "l",
+     "color": null,
+     "start": 0.0,
+     "end": null,
+     "max_words": 6,
+     "example": "Is Diwali, ghar laaiye *mithaas*",
+     "fixed": false
+    },
+    {
+     "role": "brand",
+     "style": "lower_third",
+     "position": "bottom",
+     "size": "m",
+     "color": null,
+     "start": 0.4,
+     "end": null,
+     "max_words": 4,
+     "example": "Mithaas Sweets",
+     "fixed": false
+    }
+   ]
+  },
+  {
+   "purpose": "reveal",
+   "visual": "product",
+   "weight": 3,
+   "direction": "The product beautifully arranged with marigold flowers and diyas, warm festive light",
+   "voice": true,
+   "text": [
+    {
+     "role": "brand",
+     "style": "brand",
+     "position": "top",
+     "size": "l",
+     "color": null,
+     "start": 0.05,
+     "end": null,
+     "max_words": 3,
+     "example": "Mithaas",
+     "fixed": false
+    },
+    {
+     "role": "tagline",
+     "style": "slide",
+     "position": "bottom",
+     "size": "m",
+     "color": null,
+     "start": 0.3,
+     "end": null,
+     "max_words": 6,
+     "example": "*Shuddh* desi ghee ki mithai",
+     "fixed": false
+    }
+   ]
+  },
+  {
+   "purpose": "benefit",
+   "visual": "lifestyle",
+   "weight": 3,
+   "direction": "A family celebrating the festival together at home, diya light, joyful and warm",
+   "voice": true,
+   "text": [
+    {
+     "role": "benefit",
+     "style": "wipe",
+     "position": "center",
+     "size": "m",
+     "color": null,
+     "start": 0.1,
+     "end": null,
+     "max_words": 5,
+     "example": "Apno ke saath *khushiyaan*",
+     "fixed": false
+    }
+   ]
+  },
+  {
+   "purpose": "offer",
+   "visual": "card",
+   "weight": 3,
+   "direction": "",
+   "voice": true,
+   "text": [
+    {
+     "role": "offer",
+     "style": "slide",
+     "position": "center",
+     "size": "m",
+     "color": null,
+     "start": 0.1,
+     "end": null,
+     "max_words": 6,
+     "example": "Gift box *ready* hai",
+     "fixed": false
+    }
+   ]
+  },
+  {
+   "purpose": "cta",
+   "visual": "card",
+   "weight": 3.5,
+   "direction": "",
+   "voice": true,
+   "text": [
+    {
+     "role": "brand",
+     "style": "brand",
+     "position": "top",
+     "size": "l",
+     "color": null,
+     "start": 0.05,
+     "end": null,
+     "max_words": 4,
+     "example": "Mithaas",
+     "fixed": false
+    },
+    {
+     "role": "cta",
+     "style": "cta",
+     "position": "bottom",
+     "size": "m",
+     "color": null,
+     "start": 0.25,
+     "end": null,
+     "max_words": 4,
+     "example": "Order karein",
+     "fixed": false
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,180 @@
+{
+ "id": "feature_spotlight",
+ "name": "Feature spotlight",
+ "best_for": [
+  "gadgets",
+  "electronics",
+  "tech",
+  "tools"
+ ],
+ "description": "Sleek and dark with a cool highlight: product hero, then three numbered features in quick cuts. For tech and products with specs.",
+ "length_s": 12,
+ "platform": "reels",
+ "look": {
+  "card": "dark",
+  "text": "#FFFFFF",
+  "highlight": "#4DD4FF",
+  "color": null
+ },
+ "preview_color": "#2457D6",
+ "audio": {
+  "music_volume": 0.2,
+  "captions": false,
+  "voice": true
+ },
+ "scenes": [
+  {
+   "purpose": "hook",
+   "visual": "product",
+   "weight": 2,
+   "direction": "The product floating in darkness with a cool blue rim light, sleek tech look",
+   "voice": true,
+   "text": [
+    {
+     "role": "hook",
+     "style": "kinetic",
+     "position": "top",
+     "size": "l",
+     "color": null,
+     "start": 0.0,
+     "end": null,
+     "max_words": 4,
+     "example": "Meet *Pulse X*",
+     "fixed": false
+    }
+   ]
+  },
+  {
+   "purpose": "feature",
+   "visual": "product",
+   "weight": 2.5,
+   "direction": "Macro detail of the product's key part, dark background, precise light",
+   "voice": true,
+   "text": [
+    {
+     "role": "label",
+     "style": "kinetic",
+     "position": "top",
+     "size": "s",
+     "color": null,
+     "start": 0.0,
+     "end": null,
+     "max_words": 1,
+     "example": "01",
+     "fixed": true
+    },
+    {
+     "role": "feature",
+     "style": "slide",
+     "position": "bottom",
+     "size": "m",
+     "color": null,
+     "start": 0.15,
+     "end": null,
+     "max_words": 4,
+     "example": "*All-day* battery",
+     "fixed": false
+    }
+   ]
+  },
+  {
+   "purpose": "feature",
+   "visual": "lifestyle",
+   "weight": 2.5,
+   "direction": "A person using the product on the move, city at night, neon reflections",
+   "voice": true,
+   "text": [
+    {
+     "role": "label",
+     "style": "kinetic",
+     "position": "top",
+     "size": "s",
+     "color": null,
+     "start": 0.0,
+     "end": null,
+     "max_words": 1,
+     "example": "02",
+     "fixed": true
+    },
+    {
+     "role": "feature",
+     "style": "slide",
+     "position": "bottom",
+     "size": "m",
+     "color": null,
+     "start": 0.15,
+     "end": null,
+     "max_words": 4,
+     "example": "*Crystal* clear calls",
+     "fixed": false
+    }
+   ]
+  },
+  {
+   "purpose": "feature",
+   "visual": "product",
+   "weight": 2.5,
+   "direction": "The product from a new angle on a dark glossy surface",
+   "voice": true,
+   "text": [
+    {
+     "role": "label",
+     "style": "kinetic",
+     "position": "top",
+     "size": "s",
+     "color": null,
+     "start": 0.0,
+     "end": null,
+     "max_words": 1,
+     "example": "03",
+     "fixed": true
+    },
+    {
+     "role": "feature",
+     "style": "slide",
+     "position": "bottom",
+     "size": "m",
+     "color": null,
+     "start": 0.15,
+     "end": null,
+     "max_words": 4,
+     "example": "Fits *every* ear",
+     "fixed": false
+    }
+   ]
+  },
+  {
+   "purpose": "cta",
+   "visual": "card",
+   "weight": 2.5,
+   "direction": "",
+   "voice": true,
+   "text": [
+    {
+     "role": "brand",
+     "style": "brand",
+     "position": "top",
+     "size": "l",
+     "color": null,
+     "start": 0.05,
+     "end": null,
+     "max_words": 4,
+     "example": "Pulse X",
+     "fixed": false
+    },
+    {
+     "role": "cta",
+     "style": "cta",
+     "position": "bottom",
+     "size": "m",
+     "color": null,
+     "start": 0.25,
+     "end": null,
+     "max_words": 4,
+     "example": "Shop now",
+     "fixed": false
+    }
+   ]
+  }
+ ]
+}

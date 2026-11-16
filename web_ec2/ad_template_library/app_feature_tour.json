@@ -1,0 +1,205 @@
+{
+  "id": "app_feature_tour",
+  "name": "App feature tour",
+  "best_for": [
+    "mobile app",
+    "saas",
+    "fintech",
+    "productivity",
+    "tech"
+  ],
+  "description": "Clean 3-feature walkthrough of a modern mobile app with bright cards and intuitive interface highlights. Ideal for SaaS, fintech, utility and lifestyle apps.",
+  "length_s": 18,
+  "platform": "reels",
+  "look": {
+    "card": "light",
+    "text": "#0F172A",
+    "highlight": "#0EA5E9",
+    "color": null
+  },
+  "preview_color": "#0284C7",
+  "audio": {
+    "music_volume": 0.14,
+    "captions": false,
+    "voice": true
+  },
+  "scenes": [
+    {
+      "purpose": "hook",
+      "visual": "lifestyle",
+      "weight": 3.0,
+      "direction": "A person on a commute effortlessly tapping a smartphone with smooth animated notifications",
+      "voice": true,
+      "text": [
+        {
+          "role": "hook",
+          "style": "kinetic",
+          "position": "top",
+          "size": "l",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 6,
+          "example": "Managing daily tasks *made effortless*",
+          "fixed": false
+        },
+        {
+          "role": "brand",
+          "style": "lower_third",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.35,
+          "end": null,
+          "max_words": 3,
+          "example": "FlowApp",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "feature",
+      "visual": "product",
+      "weight": 3.5,
+      "direction": "A modern smartphone showing a clean visual analytics dashboard on a sunlit oak desk",
+      "voice": true,
+      "text": [
+        {
+          "role": "label",
+          "style": "plain",
+          "position": "top",
+          "size": "s",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 2,
+          "example": "01",
+          "fixed": true
+        },
+        {
+          "role": "feature",
+          "style": "slide",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.2,
+          "end": null,
+          "max_words": 5,
+          "example": "*Instant* live sync",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "feature",
+      "visual": "card",
+      "weight": 3.5,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "label",
+          "style": "plain",
+          "position": "top",
+          "size": "s",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 2,
+          "example": "02",
+          "fixed": true
+        },
+        {
+          "role": "feature",
+          "style": "slide",
+          "position": "center",
+          "size": "m",
+          "color": null,
+          "start": 0.2,
+          "end": null,
+          "max_words": 5,
+          "example": "One-tap *smart* sharing",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "feature",
+      "visual": "card",
+      "weight": 3.5,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "label",
+          "style": "plain",
+          "position": "top",
+          "size": "s",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 2,
+          "example": "03",
+          "fixed": true
+        },
+        {
+          "role": "feature",
+          "style": "wipe",
+          "position": "center",
+          "size": "m",
+          "color": null,
+          "start": 0.2,
+          "end": null,
+          "max_words": 5,
+          "example": "Organised in *seconds*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "cta",
+      "visual": "card",
+      "weight": 4.5,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "brand",
+          "style": "brand",
+          "position": "top",
+          "size": "l",
+          "color": null,
+          "start": 0.05,
+          "end": null,
+          "max_words": 3,
+          "example": "FlowApp",
+          "fixed": false
+        },
+        {
+          "role": "tagline",
+          "style": "plain",
+          "position": "center",
+          "size": "s",
+          "color": null,
+          "start": 0.2,
+          "end": null,
+          "max_words": 5,
+          "example": "Available on *iOS & Android*",
+          "fixed": false
+        },
+        {
+          "role": "cta",
+          "style": "cta",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.3,
+          "end": null,
+          "max_words": 4,
+          "example": "Download the *app*",
+          "fixed": false
+        }
+      ]
+    }
+  ]
+}

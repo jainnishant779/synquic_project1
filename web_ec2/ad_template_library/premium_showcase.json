@@ -1,0 +1,157 @@
+{
+ "id": "premium_showcase",
+ "name": "Premium showcase",
+ "best_for": [
+  "luxury",
+  "jewellery",
+  "watches",
+  "perfume",
+  "fashion"
+ ],
+ "description": "Slow, dark and elegant: few words, gold highlights, close details of the product. For premium goods that sell on feel.",
+ "length_s": 15,
+ "platform": "reels",
+ "look": {
+  "card": "dark",
+  "text": "#F5F1E8",
+  "highlight": "#D4AF37",
+  "color": null
+ },
+ "preview_color": "#8A6B2F",
+ "audio": {
+  "music_volume": 0.2,
+  "captions": false,
+  "voice": true
+ },
+ "scenes": [
+  {
+   "purpose": "reveal",
+   "visual": "product",
+   "weight": 3,
+   "direction": "Dramatic low-key hero shot of the product on dark stone, a single rim light, luxury mood",
+   "voice": true,
+   "text": [
+    {
+     "role": "brand",
+     "style": "brand",
+     "position": "top",
+     "size": "l",
+     "color": null,
+     "start": 0.0,
+     "end": null,
+     "max_words": 3,
+     "example": "AURELIA",
+     "fixed": false
+    },
+    {
+     "role": "tagline",
+     "style": "plain",
+     "position": "bottom",
+     "size": "s",
+     "color": null,
+     "start": 0.45,
+     "end": null,
+     "max_words": 5,
+     "example": "Crafted to *last*",
+     "fixed": false
+    }
+   ]
+  },
+  {
+   "purpose": "feature",
+   "visual": "lifestyle",
+   "weight": 3,
+   "direction": "Slow detail close-up of the material and finish, dark elegant setting, soft highlights",
+   "voice": true,
+   "text": [
+    {
+     "role": "feature",
+     "style": "plain",
+     "position": "bottom",
+     "size": "m",
+     "color": null,
+     "start": 0.15,
+     "end": null,
+     "max_words": 4,
+     "example": "Hand-finished *details*",
+     "fixed": false
+    }
+   ]
+  },
+  {
+   "purpose": "feature",
+   "visual": "product",
+   "weight": 3,
+   "direction": "The product at an angle on black velvet, glints of light, macro lens",
+   "voice": true,
+   "text": [
+    {
+     "role": "feature",
+     "style": "plain",
+     "position": "top",
+     "size": "m",
+     "color": null,
+     "start": 0.15,
+     "end": null,
+     "max_words": 5,
+     "example": "Made for *every day*",
+     "fixed": false
+    }
+   ]
+  },
+  {
+   "purpose": "tagline",
+   "visual": "lifestyle",
+   "weight": 3,
+   "direction": "An elegant person wearing or using the product in a refined, dimly lit space",
+   "voice": true,
+   "text": [
+    {
+     "role": "tagline",
+     "style": "wipe",
+     "position": "center",
+     "size": "m",
+     "color": null,
+     "start": 0.15,
+     "end": null,
+     "max_words": 4,
+     "example": "Quiet *luxury*",
+     "fixed": false
+    }
+   ]
+  },
+  {
+   "purpose": "cta",
+   "visual": "card",
+   "weight": 3,
+   "direction": "",
+   "voice": true,
+   "text": [
+    {
+     "role": "brand",
+     "style": "brand",
+     "position": "center",
+     "size": "xl",
+     "color": null,
+     "start": 0.05,
+     "end": null,
+     "max_words": 3,
+     "example": "AURELIA",
+     "fixed": false
+    },
+    {
+     "role": "cta",
+     "style": "cta",
+     "position": "bottom",
+     "size": "s",
+     "color": null,
+     "start": 0.4,
+     "end": null,
+     "max_words": 3,
+     "example": "Discover more",
+     "fixed": false
+    }
+   ]
+  }
+ ]
+}

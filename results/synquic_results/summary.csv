@@ -1,0 +1,7 @@
+task,model,licence,items,made,qc_pass,avg_render_s,usd_per_generated_unit,rated,accept_rate,usd_per_accepted_unit,peak_vram_gb
+image,flux2_klein_4b,Allowed,4,4,4,29.6,0.0073,0,,,8.4
+image,z_image_turbo,Allowed,4,4,0,50.0,0.0124,0,,,12.8
+image,sana_1600m,Allowed,4,4,4,22.1,0.0055,0,,,5.3
+video,wan22_5b_i2v,Allowed,4,0,0,,,0,,,15.5
+video,kandinsky6_lite,Counsel,4,0,0,,,0,,,
+video,wan21_480p_t2v,Allowed,4,0,0,,,0,,,

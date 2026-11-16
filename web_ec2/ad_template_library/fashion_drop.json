@@ -1,0 +1,157 @@
+{
+  "id": "fashion_drop",
+  "name": "Fashion collection drop",
+  "best_for": [
+    "fashion",
+    "streetwear",
+    "clothing",
+    "apparel",
+    "launch"
+  ],
+  "description": "High-energy new collection drop with fast cuts, bold text cards and street style visuals. Best for streetwear, fashion launches and seasonal drops.",
+  "length_s": 12,
+  "platform": "reels",
+  "look": {
+    "card": "bold",
+    "text": "#FFFFFF",
+    "highlight": "#FFE600",
+    "color": null
+  },
+  "preview_color": "#E6005C",
+  "audio": {
+    "music_volume": 0.18,
+    "captions": false,
+    "voice": true
+  },
+  "scenes": [
+    {
+      "purpose": "hook",
+      "visual": "lifestyle",
+      "weight": 2.0,
+      "direction": "A confident young model walking briskly down a sunlit city avenue wearing contemporary streetwear",
+      "voice": true,
+      "text": [
+        {
+          "role": "hook",
+          "style": "kinetic",
+          "position": "top",
+          "size": "l",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 6,
+          "example": "Stop scrolling: *Drop 01* is here",
+          "fixed": false
+        },
+        {
+          "role": "brand",
+          "style": "lower_third",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.3,
+          "end": null,
+          "max_words": 3,
+          "example": "UrbanKicks",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "reveal",
+      "visual": "product",
+      "weight": 2.5,
+      "direction": "A close-up shot of an oversized heavyweight streetwear jacket displayed on a sleek minimalist rack",
+      "voice": true,
+      "text": [
+        {
+          "role": "reveal",
+          "style": "wipe",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 5,
+          "example": "Designed for the *streets*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "feature",
+      "visual": "lifestyle",
+      "weight": 2.5,
+      "direction": "Macro detail of textured organic cotton fabric and precision stitching under bright studio lights",
+      "voice": true,
+      "text": [
+        {
+          "role": "feature",
+          "style": "slide",
+          "position": "center",
+          "size": "m",
+          "color": null,
+          "start": 0.15,
+          "end": null,
+          "max_words": 6,
+          "example": "Heavyweight cotton with *clean* silhouette",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "benefit",
+      "visual": "card",
+      "weight": 2.5,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "benefit",
+          "style": "kinetic",
+          "position": "center",
+          "size": "l",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 5,
+          "example": "*Limited* pieces crafted",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "cta",
+      "visual": "card",
+      "weight": 2.5,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "brand",
+          "style": "brand",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.05,
+          "end": null,
+          "max_words": 3,
+          "example": "UrbanKicks",
+          "fixed": false
+        },
+        {
+          "role": "cta",
+          "style": "cta",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.25,
+          "end": null,
+          "max_words": 4,
+          "example": "Shop the *drop*",
+          "fixed": false
+        }
+      ]
+    }
+  ]
+}
