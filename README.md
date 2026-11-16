@@ -9,6 +9,8 @@ The repository holds two things:
 1. **Research** for an AI video ad engine (Task 1) and Social 360 (Task 2): fact ledger, briefs, reports, diagrams, cost workbook, Kaggle benchmark notebooks and proofs of concept.
 2. **Ad Studio**, a FastAPI web app that turns a prompt into an ad. Code and tests are in [web_ec2/](web_ec2). It is live at http://13.205.82.99/editor. Setup, configuration and how to run it locally are in [web_ec2/README.md](web_ec2/README.md); the system design is [Doc 11](docs/11-ad-studio-system.md).
 
+**Picking this up?** Read [HANDOFF.md](HANDOFF.md): current state, next steps in order, decisions taken and open risks. Before spending on fal.ai, follow [Doc 13](docs/13-fal-spend-plan.md).
+
 ## Repository map
 
 | Folder | Contents |
