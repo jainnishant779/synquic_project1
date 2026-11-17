@@ -1,0 +1,244 @@
+{
+  "id": "long_60s_explainer",
+  "name": "60-second deep explainer",
+  "best_for": [
+    "explainer",
+    "appliances",
+    "software",
+    "fintech",
+    "courses"
+  ],
+  "description": "Comprehensive 60-second deep dive for complex products and services. 8 scenes covering problem, science, features, comparison and proof.",
+  "length_s": 60,
+  "platform": "reels",
+  "look": {
+    "card": "light",
+    "text": "#1E293B",
+    "highlight": "#2563EB",
+    "color": null
+  },
+  "preview_color": "#1E40AF",
+  "audio": {
+    "music_volume": 0.16,
+    "captions": false,
+    "voice": true
+  },
+  "scenes": [
+    {
+      "purpose": "hook",
+      "visual": "card",
+      "weight": 7.5,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "hook",
+          "style": "kinetic",
+          "position": "center",
+          "size": "l",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 6,
+          "example": "The smarter way to *solve* it",
+          "fixed": false
+        },
+        {
+          "role": "brand",
+          "style": "lower_third",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.3,
+          "end": null,
+          "max_words": 4,
+          "example": "OmniStack",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "problem",
+      "visual": "lifestyle",
+      "weight": 7.5,
+      "direction": "Person struggling with complicated legacy tools, candid expression of friction at work desk",
+      "voice": true,
+      "text": [
+        {
+          "role": "problem",
+          "style": "slide",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 6,
+          "example": "Old methods cost *valuable* time",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "solution",
+      "visual": "card",
+      "weight": 7.5,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "solution",
+          "style": "wipe",
+          "position": "center",
+          "size": "m",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 6,
+          "example": "Engineered for *effortless* speed",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "feature",
+      "visual": "product",
+      "weight": 7.5,
+      "direction": "Precision engineered metallic device on matte graphite plinth under crisp studio lighting",
+      "voice": true,
+      "text": [
+        {
+          "role": "feature",
+          "style": "slide",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 5,
+          "example": "Modern hardware, *simple* design",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "step",
+      "visual": "card",
+      "weight": 7.5,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "label",
+          "style": "plain",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 1,
+          "example": "01",
+          "fixed": true
+        },
+        {
+          "role": "feature",
+          "style": "slide",
+          "position": "center",
+          "size": "m",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 6,
+          "example": "Plug and play in *seconds*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "step",
+      "visual": "card",
+      "weight": 7.5,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "label",
+          "style": "plain",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 1,
+          "example": "02",
+          "fixed": true
+        },
+        {
+          "role": "feature",
+          "style": "slide",
+          "position": "center",
+          "size": "m",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 6,
+          "example": "Automates your *repetitive* work",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "proof",
+      "visual": "lifestyle",
+      "weight": 7.5,
+      "direction": "Satisfied user smiling at work desk with clean organized workspace and relaxed calm confidence",
+      "voice": true,
+      "text": [
+        {
+          "role": "proof",
+          "style": "slide",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 6,
+          "example": "Trusted by thousands of *teams*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "cta",
+      "visual": "card",
+      "weight": 7.5,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "tagline",
+          "style": "plain",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 5,
+          "example": "Transform your everyday *flow*",
+          "fixed": false
+        },
+        {
+          "role": "cta",
+          "style": "cta",
+          "position": "bottom",
+          "size": "l",
+          "color": null,
+          "start": 0.2,
+          "end": null,
+          "max_words": 5,
+          "example": "Schedule a *live* demo",
+          "fixed": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,157 @@
+{
+  "id": "feed_portrait_story",
+  "name": "Feed portrait 4:5 narrative",
+  "best_for": [
+    "feed",
+    "story",
+    "skincare",
+    "apparel",
+    "decor"
+  ],
+  "description": "20-second immersive 4:5 feed video story. Fluid harmonic mesh look, pacing designed for feed scrolling, and an authentic product journey.",
+  "length_s": 20,
+  "platform": "feed",
+  "look": {
+    "card": "mesh",
+    "text": "#FFFFFF",
+    "highlight": "#FDE047",
+    "color": null
+  },
+  "preview_color": "#0D9488",
+  "audio": {
+    "music_volume": 0.16,
+    "captions": false,
+    "voice": true
+  },
+  "scenes": [
+    {
+      "purpose": "hook",
+      "visual": "card",
+      "weight": 4.0,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "hook",
+          "style": "kinetic",
+          "position": "center",
+          "size": "l",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 6,
+          "example": "A story of *mindful* craft",
+          "fixed": false
+        },
+        {
+          "role": "brand",
+          "style": "lower_third",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.35,
+          "end": null,
+          "max_words": 4,
+          "example": "Solace",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "problem",
+      "visual": "lifestyle",
+      "weight": 4.0,
+      "direction": "Person taking a calm deep breath in cozy sunlit room surrounded by indoor greenery",
+      "voice": true,
+      "text": [
+        {
+          "role": "problem",
+          "style": "slide",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 6,
+          "example": "Find moments of *true* calm",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "reveal",
+      "visual": "product",
+      "weight": 4.0,
+      "direction": "Warm textured linen surface bathed in soft afternoon sunbeams with organic botanical shadows",
+      "voice": true,
+      "text": [
+        {
+          "role": "feature",
+          "style": "wipe",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 5,
+          "example": "Formulated with *pure* care",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "benefit",
+      "visual": "lifestyle",
+      "weight": 4.0,
+      "direction": "Gentle smile of quiet confidence and effortless wellbeing in warm ambient light",
+      "voice": true,
+      "text": [
+        {
+          "role": "benefit",
+          "style": "slide",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 6,
+          "example": "Feels natural from *day* one",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "cta",
+      "visual": "card",
+      "weight": 4.0,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "tagline",
+          "style": "plain",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 5,
+          "example": "Begin your peaceful *routine*",
+          "fixed": false
+        },
+        {
+          "role": "cta",
+          "style": "cta",
+          "position": "bottom",
+          "size": "l",
+          "color": null,
+          "start": 0.2,
+          "end": null,
+          "max_words": 5,
+          "example": "Shop the *collection*",
+          "fixed": false
+        }
+      ]
+    }
+  ]
+}

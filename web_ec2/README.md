@@ -13,7 +13,7 @@ FastAPI app with two parts:
 | `ad_engine.py` | Timeline, validation, edit operations (split, colour, size, timing...), platform safe zones, lint, animated text (libass), product layer with parallax, logo, captions, voice and music mix, per-scene render cache |
 | `media_providers.py` | fal.ai images, reference edits, Bria cut-out, image-to-video per model; Google / ElevenLabs / edge-tts voice |
 | `ad_templates.py` | Ad templates: format checker, library loader, saved templates (from a finished ad, optionally with brand, logo and music), gallery previews; CLI `check` and `preview` |
-| `ad_template_library/` | Built-in templates, one JSON file each (42 now); format in its README. New files appear in the gallery without a restart. Card looks glow, dark, light, glass use photo and studio backgrounds from `static/media/backgrounds/` (needs numpy; the photos are not in git and their licence is unconfirmed) |
+| `ad_template_library/` | Built-in templates, one JSON file each (72 now); format in its README. New files appear in the gallery without a restart. The 11 card looks (glow, dark, light, bold, festive, glass, mesh, paper, neon, duotone, minimal) are drawn in code from the brand colour (needs numpy; no photo files) |
 | `ad_routes.py` | Create (optionally from a template), edit, instruct, undo/redo, uploads, regenerate, save as template, spend cap, paid lock, password |
 | `templates/editor.html` | Prompt-first page with the template gallery, timeline with playhead, moment inspector, typed edits, undo/redo, look settings |
 

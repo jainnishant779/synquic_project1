@@ -37,3 +37,6 @@ archive/media/bgm_luxury.wav
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Gemini originals (about 75 MB); the cropped 9:16 versions are in assets/gemini_backgrounds/
+web_ec2/Gemini_Generated_Image_*.png

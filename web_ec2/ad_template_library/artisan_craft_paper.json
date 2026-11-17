@@ -1,0 +1,137 @@
+{
+  "id": "artisan_craft_paper",
+  "name": "Artisan craft & bakery paper",
+  "best_for": [
+    "bakery",
+    "cafe",
+    "crafts",
+    "organic",
+    "restaurant",
+    "handmade"
+  ],
+  "description": "Warm tactile paper texture with corner accents, ideal for organic food, artisanal crafts, cafes, and bakeries.",
+  "length_s": 15,
+  "platform": "reels",
+  "look": {
+    "card": "paper",
+    "text": "#1F2937",
+    "highlight": "#B91C1C",
+    "color": null
+  },
+  "preview_color": "#D97706",
+  "audio": {
+    "music_volume": 0.16,
+    "captions": false,
+    "voice": true
+  },
+  "scenes": [
+    {
+      "purpose": "hook",
+      "visual": "card",
+      "weight": 3.0,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "hook",
+          "style": "kinetic",
+          "position": "top",
+          "size": "l",
+          "color": null,
+          "start": 0.05,
+          "end": null,
+          "max_words": 5,
+          "example": "Baked fresh *every single dawn*",
+          "fixed": false
+        },
+        {
+          "role": "brand",
+          "style": "lower_third",
+          "position": "bottom",
+          "size": "s",
+          "color": null,
+          "start": 0.3,
+          "end": null,
+          "max_words": 2,
+          "example": "Heritage Bakehouse",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "feature",
+      "visual": "lifestyle",
+      "weight": 4.0,
+      "direction": "Hands dusting flour over rustic sourdough bread on a dark oak kitchen counter, warm baker studio",
+      "voice": true,
+      "text": [
+        {
+          "role": "feature",
+          "style": "wipe",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 5,
+          "example": "Traditional *stone ground grains*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "benefit",
+      "visual": "product",
+      "weight": 4.5,
+      "direction": "Crispy golden loaf resting on linen kitchen cloth beside raw wheat stalks",
+      "voice": true,
+      "text": [
+        {
+          "role": "benefit",
+          "style": "slide",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.15,
+          "end": null,
+          "max_words": 5,
+          "example": "Zero additives *pure honest taste*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "cta",
+      "visual": "card",
+      "weight": 3.5,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "offer",
+          "style": "slide",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 5,
+          "example": "Taste the *authentic tradition*",
+          "fixed": false
+        },
+        {
+          "role": "cta",
+          "style": "cta",
+          "position": "bottom",
+          "size": "l",
+          "color": null,
+          "start": 0.2,
+          "end": null,
+          "max_words": 3,
+          "example": "Visit Our *Bakery*",
+          "fixed": false
+        }
+      ]
+    }
+  ]
+}

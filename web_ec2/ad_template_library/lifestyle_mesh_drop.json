@@ -1,0 +1,136 @@
+{
+  "id": "lifestyle_mesh_drop",
+  "name": "Lifestyle mesh beauty drop",
+  "best_for": [
+    "beauty",
+    "skincare",
+    "wellness",
+    "lifestyle",
+    "cosmetics"
+  ],
+  "description": "Modern multi-tone gradient mesh background crafted for beauty, wellness, and lifestyle product reveals.",
+  "length_s": 15,
+  "platform": "reels",
+  "look": {
+    "card": "mesh",
+    "text": "#FFFFFF",
+    "highlight": "#FDE047",
+    "color": null
+  },
+  "preview_color": "#EC4899",
+  "audio": {
+    "music_volume": 0.16,
+    "captions": false,
+    "voice": true
+  },
+  "scenes": [
+    {
+      "purpose": "hook",
+      "visual": "card",
+      "weight": 3.0,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "hook",
+          "style": "kinetic",
+          "position": "top",
+          "size": "l",
+          "color": null,
+          "start": 0.05,
+          "end": null,
+          "max_words": 5,
+          "example": "Glow from *within today*",
+          "fixed": false
+        },
+        {
+          "role": "brand",
+          "style": "lower_third",
+          "position": "bottom",
+          "size": "s",
+          "color": null,
+          "start": 0.3,
+          "end": null,
+          "max_words": 2,
+          "example": "Lumière Botanics",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "benefit",
+      "visual": "lifestyle",
+      "weight": 4.0,
+      "direction": "Radiant person gently applying serum in soft morning sunlight, serene and dewy skin",
+      "voice": true,
+      "text": [
+        {
+          "role": "benefit",
+          "style": "wipe",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 5,
+          "example": "Hydration that *lasts all day*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "solution",
+      "visual": "product",
+      "weight": 4.5,
+      "direction": "Amber dropper bottle on frosted rose marble with subtle sunlight refractions",
+      "voice": true,
+      "text": [
+        {
+          "role": "solution",
+          "style": "slide",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.15,
+          "end": null,
+          "max_words": 5,
+          "example": "Pure *plant elixir* formula",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "cta",
+      "visual": "card",
+      "weight": 3.5,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "tagline",
+          "style": "slide",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 5,
+          "example": "Experience *your true radiance*",
+          "fixed": false
+        },
+        {
+          "role": "cta",
+          "style": "cta",
+          "position": "bottom",
+          "size": "l",
+          "color": null,
+          "start": 0.2,
+          "end": null,
+          "max_words": 3,
+          "example": "Shop Now *Today*",
+          "fixed": false
+        }
+      ]
+    }
+  ]
+}

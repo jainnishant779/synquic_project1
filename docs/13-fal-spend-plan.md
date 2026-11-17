@@ -16,7 +16,7 @@ Bugs found this way, all fixed before any spend:
 3. `negative_prompt` was sent to five video models that do not accept it (silently ignored). Now only Wan gets it.
 4. Problem scenes sent the user's product photo to the image model, so the AI would have drawn our own product as "the problem" (and paid the dearer edit price). The director now marks `shows_product`, and the photo goes only to scenes that show the product, never to problem scenes. Edits fell from 10 to 5 in the dry run.
 5. Product scenes described the product in the background prompt, so the AI would have drawn a second jar or shoe under the real cut-out. Now the director writes only the setting, and the prompt asks for an empty set.
-6. Voice lines in "AI decides" ads were too long for their scenes (2 to 3 lines cut per ad). Now at most 1.7 words per second; one cut was left in 7 ads.
+6. Voice lines in "AI decides" ads were too long for their scenes (2 to 3 lines cut per ad). First fix: at most 1.7 words per second; one cut was left in 7 ads. On 2026-11-17 this became 2.4 words per second, together with trimming the silence text-to-speech adds before and after each line (about 0.25 s and 0.85 s), because 1.7 left 5 to 7 s of silence in a 15 s ad; now 1.6 to 2.7 s, and no line is cut.
 
 Also added: notes that AI pictures of buildings are not the user's project (real estate) and that AI cannot draw an app's screens (apps).
 

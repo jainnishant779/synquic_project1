@@ -1,0 +1,136 @@
+{
+  "id": "customer_quote",
+  "name": "Real customer review",
+  "best_for": [
+    "skincare",
+    "appliances",
+    "services",
+    "ecommerce",
+    "fitness"
+  ],
+  "description": "Authentic customer review layout. The quote slot is used ONLY when the prompt includes a real review; otherwise writes a product benefit. Never invents reviews.",
+  "length_s": 15,
+  "platform": "reels",
+  "look": {
+    "card": "paper",
+    "text": "#1C1917",
+    "highlight": "#EA580C",
+    "color": null
+  },
+  "preview_color": "#C2410C",
+  "audio": {
+    "music_volume": 0.16,
+    "captions": false,
+    "voice": true
+  },
+  "scenes": [
+    {
+      "purpose": "hook",
+      "visual": "card",
+      "weight": 3.5,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "hook",
+          "style": "kinetic",
+          "position": "center",
+          "size": "l",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 6,
+          "example": "Here is what *people* are saying",
+          "fixed": false
+        },
+        {
+          "role": "brand",
+          "style": "lower_third",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.35,
+          "end": null,
+          "max_words": 4,
+          "example": "CleanPure",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "proof",
+      "visual": "card",
+      "weight": 4.0,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "proof",
+          "style": "slide",
+          "position": "center",
+          "size": "m",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 8,
+          "example": "Genuine *customer* review if provided, or key benefit",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "reveal",
+      "visual": "product",
+      "weight": 3.5,
+      "direction": "Minimalist natural stone pedestal with gentle ambient side lighting and fresh botanical leaves",
+      "voice": true,
+      "text": [
+        {
+          "role": "feature",
+          "style": "wipe",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 5,
+          "example": "Crafted for *reliable* results",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "cta",
+      "visual": "card",
+      "weight": 4.0,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "tagline",
+          "style": "plain",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.0,
+          "end": null,
+          "max_words": 5,
+          "example": "Experience genuine *quality*",
+          "fixed": false
+        },
+        {
+          "role": "cta",
+          "style": "cta",
+          "position": "bottom",
+          "size": "l",
+          "color": null,
+          "start": 0.2,
+          "end": null,
+          "max_words": 5,
+          "example": "Try it *today*",
+          "fixed": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "id": "cyber_neon_velocity",
+  "name": "Cyber neon tech velocity",
+  "best_for": [
+    "gaming",
+    "electronics",
+    "gadgets",
+    "tech",
+    "nightlife",
+    "app launch"
+  ],
+  "description": "Futuristic dark obsidian canvas with electric neon streak accents for gaming gear, tech startups, and nightlife events.",
+  "length_s": 15,
+  "platform": "reels",
+  "look": {
+    "card": "neon",
+    "text": "#FFFFFF",
+    "highlight": "#38BDF8",
+    "color": null
+  },
+  "preview_color": "#06B6D4",
+  "audio": {
+    "music_volume": 0.16,
+    "captions": false,
+    "voice": true
+  },
+  "scenes": [
+    {
+      "purpose": "hook",
+      "visual": "card",
+      "weight": 3.0,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "hook",
+          "style": "kinetic",
+          "position": "top",
+          "size": "l",
+          "color": null,
+          "start": 0.05,
+          "end": null,
+          "max_words": 5,
+          "example": "Zero lag *pure instant power*",
+          "fixed": false
+        },
+        {
+          "role": "brand",
+          "style": "lower_third",
+          "position": "bottom",
+          "size": "s",
+          "color": null,
+          "start": 0.3,
+          "end": null,
+          "max_words": 2,
+          "example": "Apex Pro",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "feature",
+      "visual": "lifestyle",
+      "weight": 4.0,
+      "direction": "Competitive esports player focused intensely in dark room with ambient cyan RGB glow",
+      "voice": true,
+      "text": [
+        {
+          "role": "feature",
+          "style": "wipe",
+          "position": "bottom",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 5,
+          "example": "Ultra responsive *custom optical switches*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "reveal",
+      "visual": "product",
+      "weight": 4.5,
+      "direction": "Sleek wireless gaming mouse floating over matte dark carbon fiber surface with illuminated edges",
+      "voice": true,
+      "text": [
+        {
+          "role": "reveal",
+          "style": "slide",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.15,
+          "end": null,
+          "max_words": 5,
+          "example": "Engineered for *flawless victory*",
+          "fixed": false
+        }
+      ]
+    },
+    {
+      "purpose": "cta",
+      "visual": "card",
+      "weight": 3.5,
+      "direction": "",
+      "voice": true,
+      "text": [
+        {
+          "role": "tagline",
+          "style": "slide",
+          "position": "top",
+          "size": "m",
+          "color": null,
+          "start": 0.1,
+          "end": null,
+          "max_words": 5,
+          "example": "Upgrade your *setup today*",
+          "fixed": false
+        },
+        {
+          "role": "cta",
+          "style": "cta",
+          "position": "bottom",
+          "size": "l",
+          "color": null,
+          "start": 0.2,
+          "end": null,
+          "max_words": 3,
+          "example": "Claim *Your Edge*",
+          "fixed": false
+        }
+      ]
+    }
+  ]
+}

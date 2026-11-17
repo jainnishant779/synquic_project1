@@ -111,6 +111,50 @@ class PhaseAInspectionTests(unittest.TestCase):
             self.assertGreater(mean, -40.0, "voice went silent after the split point")
 
 
+class TextFitTests(unittest.TestCase):
+    def test_a_long_single_word_is_shrunk_to_fit_the_safe_width(self):
+        import re
+        for width, height in ((720, 1280), (1080, 1920)):
+            area = ae.safe_area("reels", width, height)
+            room = (area[2] - area[0]) - 2 * int(width * 0.02)
+            for brand, style, size in (("LedgerLite", "brand", "xl"), ("Kaveri Leather", "brand", "xl"), ("Extraordinarily", "kinetic", "xl"), ("स्वादिष्ट", "brand", "xl")):
+                scene = {"id": "s1", "duration": 3, "text": [{"id": "t1", "text": brand, "style": style, "position": "center", "size": size,
+                                                             "color": None, "start": 0.2, "end": 2.8}]}
+                ass = ae.build_ass(scene, width, height, "#2E7D32", "DejaVu Sans")
+                fs = int(re.search(r"\\fs(\d+)", next(l for l in ass.splitlines() if l.startswith("Dialogue:"))).group(1))
+                longest = max(len(w) for w in brand.split())
+                em = 0.6 if ae.DEVANAGARI.search(brand) else 0.72
+                self.assertLessEqual(longest * fs * em, room, f"{brand} at {width}px")
+        short = {"id": "s1", "duration": 3, "text": [{"id": "t1", "text": "Go", "style": "brand", "position": "center", "size": "l", "color": None, "start": 0.2, "end": 2.8}]}
+        base = min(0.075 * 1920, 0.125 * 1080)
+        fs = int(__import__("re").search(r"\\fs(\d+)", next(l for l in ae.build_ass(short, 1080, 1920, "#2E7D32", "DejaVu Sans").splitlines() if l.startswith("Dialogue:"))).group(1))
+        self.assertEqual(fs, int(base * ae.STYLE_SCALE["brand"] * ae.TEXT_SIZES["l"]), "short text keeps its size")
+
+
+class VoiceSilenceTests(unittest.TestCase):
+    def test_tts_silence_is_removed_so_lines_start_at_once_and_are_not_flagged(self):
+        import subprocess
+        t = ae.default_timeline("Homingo", resolution="720p")
+        t["scenes"] = [{"id": "s1", "kind": "card", "duration": 2, "narration": "Line", "text": []},
+                       {"id": "s2", "kind": "card", "duration": 2, "narration": "Line", "text": []}]
+        t = ae.validate_timeline(t)
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            clip = tmp / "tts.wav"   # like edge-tts: 0.3 s silence, 1.6 s of speech, 0.9 s silence = 2.8 s, longer than the 1.8 s room
+            subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono:d=0.3",
+                            "-f", "lavfi", "-i", "sine=frequency=440:duration=1.6:sample_rate=24000",
+                            "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono:d=0.9",
+                            "-filter_complex", "[0][1][2]concat=n=3:v=0:a=1", str(clip)], check=True)
+            out = tmp / "voice.wav"
+            warnings = ae.build_voice_track(t, {"s1": clip, "s2": clip}, out, tmp)
+            self.assertEqual(warnings, [], "only the silence was too long, not the speech")
+            probe = subprocess.run(["ffmpeg", "-hide_banner", "-i", str(out), "-af", "silencedetect=noise=-40dB:d=0.1", "-f", "null", "-"],
+                                   capture_output=True, text=True).stderr
+            first_end = float(probe.split("silence_end: ")[1].split()[0])
+            self.assertLess(first_end, 0.25, "the line starts right after the cut, not 0.4 s later")
+            self.assertFalse(list(tmp.glob("vt_*.wav")), "trimmed copies are cleaned up")
+
+
 class PhaseADirectorTests(unittest.TestCase):
     def test_director_plan_schema_has_on_screen_and_tts(self):
         t, brief, notes = ad_director.plan_ad("make ad for organic honey", length_s=15)

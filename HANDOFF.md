@@ -11,10 +11,12 @@ As of 2026-11-16. For whoever continues this work.
 
 | Part | State |
 |---|---|
-| Free level (designed cards, animated text, voice-over, music, 42 templates, 6 card looks) | Live and working |
+| Free level (designed cards, animated text, voice-over, music, 72 templates, 11 card looks drawn from the brand colour) | Live and working since 2026-11-17 |
 | AI director (plans ads, understands typed edits) | Live: OpenRouter `google/gemma-4-31b-it`, under $0.01 per ad |
 | AI images, product cut-out, AI video (fal.ai) | Code ready and checked against fal's published schemas; no paid call made yet (no key) |
-| Spend guards (budget, cache, ledger, stop after a repeating error, dry run) | In the code and tested; **not yet deployed to the live server** (live has no fal key, so nothing is at risk there) |
+| Spend guards (budget, cache, ledger, stop after a repeating error, dry run) | Live since 2026-11-17 (still no fal key on the server, so paid levels answer 409) |
+| Voice | Silence that text-to-speech adds around each line is cut, and the director writes 2.4 words per second of a scene, so a 15 s ad has about 2 to 3 s of silence instead of 5 to 7 s |
+| Text on screen | Long single words (brand names) are shrunk to fit the safe width instead of running off the frame |
 | Voice | edge-tts (free, test quality only) |
 | Music | the user's own upload only |
 | Tests | `web_ec2/tests/`: director 11, providers 4, spend guard 11, templates 21, phase A 5, engine 22, routes 15 |

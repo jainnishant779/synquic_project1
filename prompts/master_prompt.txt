@@ -24,8 +24,9 @@ Rules:
   (surface, background, light, props). Never mention the product, its pack or another one like it there.
 - shows_product: true only when the user's own product must be visible in a "lifestyle" picture (someone using or holding it).
   false for problem scenes (never show our product as the problem) and for pictures without it.
-- voice: one short spoken line per scene, at most 1.7 words per second of the scene (2 s: 3 words, 3 s: 5 words, 4 s: 6 words);
-  a longer line is cut off when the next scene starts.
+- voice: COUNT the words. Each scene's voice line has exactly 2.4 words per second of that scene, rounded down:
+  2 s = 4 words, 3 s = 7 words, 4 s = 9 words. More is cut off when the next scene starts; fewer leaves silent gaps,
+  so a 3-second scene with a 5-word line is wrong. Add a benefit or detail to reach the count.
 - Write text and voice in the language of the request: English for English, Hindi in Devanagari for Hindi, Hinglish in Latin script for Hinglish.
 - Use only facts the request gives. Never add prices, discounts, offers, free trials, phone numbers, addresses, percentages,
   customer counts, "limited stock", "best", awards or certifications unless the request states them.
@@ -51,5 +52,5 @@ Background behind the real product cut-out:
 - Hook on screen at once and the brand within the first 3 seconds.
 - A call to action in the last scene.
 - Text inside the platform's safe zone; no two lines in the same place at the same time.
-- Voice line cut at a word boundary if longer than 1.7 words per second of the scene.
+- Voice line cut at a word boundary if longer than 2.4 words per second of the scene.
 - Any number or claim not in the request is shown to the user as a note to check.

@@ -26,7 +26,7 @@ python ad_templates.py preview ad_template_library template_previews   # contact
   "length_s": 15,                      // default length in seconds, 6 to 60 (the user can change it; scenes scale)
   "platform": "reels",                 // reels | tiktok | shorts | feed | square | landscape
   "look": {
-    "card": "glow",                    // background of designed text cards: glow | dark | light | bold | festive
+    "card": "glow",                    // background of designed text cards: glow | dark | light | bold | festive | glass | mesh | paper | neon | duotone | minimal
     "text": "#FFFFFF",                 // default text colour on those cards (use a dark colour with "light")
     "highlight": "#FFD84D",            // colour of *starred* words and of the call-to-action button
     "color": null                      // null = the brand's colour chosen per ad; a hex fixes the colour for every ad
@@ -76,6 +76,15 @@ python ad_templates.py preview ad_template_library template_previews   # contact
 - Never put facts in a template that a user might not have: no prices, discounts, phone numbers, ratings, customer counts or awards.
   An `offer`, `proof` or `location` slot is fine: the director writes a neutral line when the prompt gives no such fact.
 - Examples should read like a real ad for some product, so the director copies the tone, not the content.
-- Vary the looks: `light` needs dark `text` (for example `#1B1B1F`) and a highlight with contrast (for example `#E4572E`);
-  `dark` suits premium goods with a gold (`#D4AF37`) or cool (`#4DD4FF`) highlight; `bold` suits launches and sales;
-  `festive` suits Diwali, Eid, Holi, weddings and other occasions.
+- Vary the looks:
+  - `glow`: soft gradient mesh derived from the brand colour with light grain.
+  - `dark`: obsidian near-black with brand-coloured glows (no empty pedestal).
+  - `light`: warm paper white with subtle brand tint; pairs with dark text (`#1B1B1F` / `#141414`).
+  - `bold`: high-energy saturated brand tones, ideal for sales and big launches.
+  - `festive`: deep jewel tones with gold filigree and sparkling accents for Diwali, Eid, Holi, weddings.
+  - `glass`: frosted glass card over glowing brand-tinted blurred shapes.
+  - `mesh`: multi-tone harmonic gradient mesh derived from the brand colour, for lifestyle and beauty.
+  - `paper`: warm tactile paper with a thin brand border and corner brackets, for food, crafts, cafes.
+  - `neon`: sleek near-black canvas with horizontal neon light streaks and corner flares, for tech, gaming, nightlife.
+  - `duotone`: two bold contrasting tones divided by a dynamic diagonal split.
+  - `minimal`: serene brand-tinted background with a soft radial vignette, for luxury and clean aesthetics.

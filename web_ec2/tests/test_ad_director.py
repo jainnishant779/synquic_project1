@@ -140,7 +140,7 @@ class PlanTests(unittest.TestCase):
         self.assertEqual([s["gen"] for s in t2["scenes"]][1], "edit")
         self.assertEqual([s["gen"] for s in t2["scenes"]][3], "image")
         for scene in t2["scenes"]:
-            self.assertLessEqual(len(scene["narration"].split()), max(3, int(scene["duration"] * 1.7)), "voice fits its scene")
+            self.assertLessEqual(len(scene["narration"].split()), ad.voice_words(scene["duration"]), "voice fits its scene")
         for scene in t["scenes"]:
             if scene["kind"] == "product":
                 self.assertFalse(any(l["position"] == "center" for l in scene["text"]), "centre text would cover the product")

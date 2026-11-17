@@ -55,25 +55,49 @@ CUTOUT_NAME = re.compile(r"^[A-Za-z0-9_][A-Za-z0-9_.-]{0,80}\.png$")
 STYLE_SCALE = {"kinetic": 1.0, "slide": 0.8, "wipe": 0.9, "lower_third": 0.62, "cta": 0.62, "brand": 1.2, "plain": 0.7, "caption": 0.5}
 HIGHLIGHT = "#FFD84D"   # emphasised words: a warm yellow reads on any brand colour, which the brand colour itself does not
 # A look is the ad's visual theme: the background of designed cards, the default text colour on those cards, and the highlight colour.
-CARD_STYLES = ("glow", "dark", "light", "bold", "festive", "glass")
+CARD_STYLES = ("glow", "dark", "light", "bold", "festive", "glass", "mesh", "paper", "neon", "duotone", "minimal")
 DEFAULT_LOOK = {"card": "glow", "text": "#FFFFFF", "highlight": HIGHLIGHT}
 
 
 def _luma(hex_color):
     h = hex_color.lstrip("#")
+    if len(h) == 3:
+        h = "".join(c * 2 for c in h)
     r, g, b = (int(h[i:i + 2], 16) for i in (0, 2, 4))
     return (0.299 * r + 0.587 * g + 0.114 * b) / 255
 
 
 def card_look(look, brand_color):
-    """The look as drawn on a designed card. A bold card is flat brand colour: with a light brand colour (yellow, mint) white text
-    and a yellow highlight wash out, so the text turns dark and the highlight takes a colour that stands out from the background."""
-    if look["card"] != "bold" or _luma(brand_color) <= 0.6:
-        return look
-    text = look["text"] if _luma(look["text"]) < 0.5 else "#141414"
-    highlight = look["highlight"]
-    if abs(_luma(highlight) - _luma(brand_color)) < 0.3:
-        highlight = "#C62828" if abs(_luma("#C62828") - _luma(brand_color)) >= 0.3 else "#1E3A8A"
+    """The look as drawn on a designed card. For styles with light backgrounds (light, paper, or bold/duotone/minimal with a light brand colour),
+    dark text is used so contrast remains sharp. Highlights are adjusted if they clash with the background."""
+    card = look.get("card", "glow")
+    is_light = _luma(brand_color) > 0.6
+
+    if card in ("light", "paper"):
+        text = "#141414"
+        highlight = look.get("highlight", HIGHLIGHT)
+        if abs(_luma(highlight) - 0.75) < 0.25:
+            highlight = "#C62828" if abs(_luma("#C62828") - _luma(brand_color)) >= 0.25 else "#1E3A8A"
+        return dict(look, text=text, highlight=highlight)
+
+    if card in ("bold", "duotone", "minimal"):
+        if is_light:
+            text = "#141414"
+            highlight = look.get("highlight", HIGHLIGHT)
+            if abs(_luma(highlight) - _luma(brand_color)) < 0.3:
+                highlight = "#C62828" if abs(_luma("#C62828") - _luma(brand_color)) >= 0.3 else "#1E3A8A"
+            return dict(look, text=text, highlight=highlight)
+        else:
+            text = "#FFFFFF"
+            highlight = look.get("highlight", HIGHLIGHT)
+            return dict(look, text=text, highlight=highlight)
+
+    text = look.get("text", "#FFFFFF")
+    if _luma(text) < 0.5:
+        text = "#FFFFFF"
+    highlight = look.get("highlight", HIGHLIGHT)
+    if card == "festive" and highlight == HIGHLIGHT:
+        highlight = "#FFD700"
     return dict(look, text=text, highlight=highlight)
 
 
@@ -437,6 +461,20 @@ def text_y(position, area):
     return {"top": top + int(span * 0.12), "center": top + span // 2, "bottom": bottom - int(span * 0.12)}[position]
 
 
+def fit_font_size(text, size, max_width):
+    """Largest font size up to `size` at which the longest word of `text` still fits max_width pixels. The bold font's letters are
+    about 0.72 em wide (Devanagari about 0.6), plus a little for the letter spacing of the brand style. Never below 40% of `size`."""
+    words = text.replace("*", "").split()
+    longest = max((len(w) for w in words), default=0)
+    if not longest:
+        return size
+    em = 0.6 if DEVANAGARI.search(text) else 0.72
+    estimate = longest * size * em + longest * 8
+    if estimate <= max_width:
+        return size
+    return max(int(size * 0.4), int((max_width - longest * 8) / (longest * em)))
+
+
 def build_ass(scene, width, height, accent, font_name, platform="reels", captions_text="", hindi_font=None, look=None, on_card=False):
     """One scene's animated text as an ASS script. Times are scene-local. hindi_font is the family used for Devanagari lines.
     The look's text colour applies on designed cards only; over photos and clips the default text stays white over a dark scrim."""
@@ -464,10 +502,14 @@ def build_ass(scene, width, height, accent, font_name, platform="reels", caption
             text = f"{{\\fn{hindi_font}}}" + text
         lines.append(f"Dialogue: {layer},{_ass_time(start)},{_ass_time(end)},{style},,0,0,0,,{text}")
 
+    text_width = (right - left) - 2 * int(width * 0.02)   # a single word cannot wrap, so the longest word must fit this
+
     for item in scene["text"]:
         style, text = item["style"], item["text"]
         start, end = item["start"], item["end"]
         size = int(base * STYLE_SCALE[style] * TEXT_SIZES[item.get("size") or "m"])
+        if style in ("kinetic", "slide", "wipe", "brand", "plain"):
+            size = fit_font_size(text, size, text_width)
         color = item.get("color") or default_text
         cy = text_y(item["position"], area)
         span = int(round((end - start) * 1000))
@@ -554,337 +596,400 @@ def probe(path):
 
 
 def _hex_rgb(hex_color):
-    h = hex_color.lstrip("#")
+    h = str(hex_color).lstrip("#")
+    if len(h) == 3:
+        h = "".join(c * 2 for c in h)
     return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
 
 
-def _legacy_card_background(path, width, height, color, style="glow"):
-    """A designed background so a text card does not look empty. Styles: glow (brand gradient with soft light), dark (near black
-    with a brand-coloured glow, for premium looks), light (warm paper white, for dark text), bold (flat brand colour with diagonal
-    bands, for launches and sales), festive (deep brand gradient with gold sparkles)."""
-    import random
-    from PIL import Image, ImageDraw, ImageFilter
-    r, g, b = _hex_rgb(color)
+def _rgb_to_hsl(r, g, b):
+    import colorsys
+    h, l, s = colorsys.rgb_to_hls(r / 255.0, g / 255.0, b / 255.0)
+    return h * 360.0, s, l
 
-    def gradient(top, bottom):
-        image = Image.new("RGB", (width, height))
-        draw = ImageDraw.Draw(image)
-        for y in range(height):
-            k = y / max(1, height - 1)
-            draw.line([(0, y), (width, y)], fill=tuple(int(top[i] + (bottom[i] - top[i]) * k) for i in range(3)))
-        return image.convert("RGBA")
+
+def _hsl_to_rgb(h, s, l):
+    import colorsys
+    r, g, b = colorsys.hls_to_rgb((h % 360.0) / 360.0, max(0.0, min(1.0, l)), max(0.0, min(1.0, s)))
+    return int(round(r * 255)), int(round(g * 255)), int(round(b * 255))
+
+
+def _card_glow(width, height, r, g, b):
+    # Soft gradient mesh of the brand colour and nearby hues with light grain, no photo files
+    from PIL import Image, ImageDraw, ImageFilter
+    import numpy as np
+
+    h, s, l = _rgb_to_hsl(r, g, b)
+    sat = max(0.65, s)
+    h1_r, h1_g, h1_b = _hsl_to_rgb(h + 35, sat, 0.5)
+    h2_r, h2_g, h2_b = _hsl_to_rgb(h - 35, sat, 0.5)
+
+    base_r = int(12 + r * 0.12)
+    base_g = int(12 + g * 0.12)
+    base_b = int(15 + b * 0.12)
+    image = Image.new("RGBA", (width, height), (base_r, base_g, base_b, 255))
 
     shapes = Image.new("RGBA", (width, height), (0, 0, 0, 0))
     sd = ImageDraw.Draw(shapes)
-    blur = width * 0.02
-    if style == "dark":
-        image = gradient((10, 10, 14), (24, 24, 30))
-        sd.ellipse([int(width * -0.45), int(height * 0.55), int(width * 0.75), int(height * 1.25)], fill=(r, g, b, 90))
-        sd.ellipse([int(width * 0.6), int(height * -0.15), int(width * 1.3), int(height * 0.25)], fill=(r, g, b, 45))
-        blur = width * 0.12
-    elif style == "light":
-        image = gradient((251, 247, 240), (240, 232, 219))
-        sd.ellipse([int(width * 0.5), int(height * -0.1), int(width * 1.35), int(height * 0.35)], fill=(r, g, b, 38))
-        sd.ellipse([int(width * -0.4), int(height * 0.7), int(width * 0.45), int(height * 1.15)], fill=(r, g, b, 30))
-        blur = width * 0.06
-    elif style == "bold":
-        image = Image.new("RGBA", (width, height), (r, g, b, 255))
-        dark = (int(r * 0.72), int(g * 0.72), int(b * 0.72), 255)
-        sd.polygon([(0, int(height * 0.62)), (width, int(height * 0.38)), (width, int(height * 0.58)), (0, int(height * 0.82))], fill=dark)
-        sd.polygon([(0, int(height * 0.86)), (width, int(height * 0.62)), (width, int(height * 0.66)), (0, int(height * 0.9))], fill=(255, 255, 255, 40))
-        blur = 0
-    elif style == "festive":
-        image = gradient((int(r * 0.22), int(g * 0.18), int(b * 0.2) + 8), (int(r * 0.7), int(g * 0.5), int(b * 0.45)))
-        rng = random.Random(7)   # the same sparkles every render, so cached scenes stay identical
-        for _ in range(46):
-            x, y, d = rng.randint(0, width), rng.randint(0, height), rng.randint(int(width * 0.006), int(width * 0.03))
-            sd.ellipse([x - d, y - d, x + d, y + d], fill=(233, 185, 73, rng.randint(60, 150)))
-        sd.rectangle([int(width * 0.04), int(height * 0.025), int(width * 0.96), int(height * 0.975)], outline=(233, 185, 73, 120), width=max(2, width // 240))
-        blur = width * 0.002
+    sd.ellipse([int(width * 0.50), int(-height * 0.08), int(width * 1.3), int(height * 0.22)], fill=(r, g, b, 130))
+    sd.ellipse([int(-width * 0.35), int(height * 0.72), int(width * 0.45), int(height * 1.15)], fill=(h1_r, h1_g, h1_b, 110))
+    sd.ellipse([int(width * 0.75), int(height * 0.36), int(width * 1.25), int(height * 0.46)], fill=(h2_r, h2_g, h2_b, 80))
+
+    layer = shapes.filter(ImageFilter.GaussianBlur(width * 0.14))
+    comp = Image.alpha_composite(image, layer)
+
+    rng = np.random.default_rng(42)
+    arr = np.array(comp.convert("RGB"), dtype=np.int16)
+    noise = rng.normal(0, 1.2, arr.shape[:2])
+    arr = np.clip(arr + noise[:, :, None], 0, 255).astype(np.uint8)
+    return Image.fromarray(arr, mode="RGB")
+
+
+def _card_dark(width, height, r, g, b):
+    # Near black with brand-coloured glow, NO pedestal
+    from PIL import Image, ImageDraw, ImageFilter
+    import numpy as np
+
+    base_r = int(10 + r * 0.14)
+    base_g = int(10 + g * 0.14)
+    base_b = int(13 + b * 0.14)
+
+    image = Image.new("RGB", (width, height))
+    idr = ImageDraw.Draw(image)
+    for y in range(height):
+        k = y / max(1, height - 1)
+        cr = int(base_r + 6 * k)
+        cg = int(base_g + 6 * k)
+        cb = int(base_b + 7 * k)
+        idr.line([(0, y), (width, y)], fill=(cr, cg, cb))
+    image = image.convert("RGBA")
+
+    shapes = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    sd = ImageDraw.Draw(shapes)
+    sd.ellipse([int(-width * 0.1), int(-height * 0.12), int(width * 1.1), int(height * 0.18)], fill=(r, g, b, 80))
+    sd.ellipse([int(-width * 0.2), int(height * 0.80), int(width * 1.2), int(height * 1.15)], fill=(r, g, b, 90))
+
+    layer = shapes.filter(ImageFilter.GaussianBlur(width * 0.14))
+    comp = Image.alpha_composite(image, layer)
+
+    rng = np.random.default_rng(42)
+    arr = np.array(comp.convert("RGB"), dtype=np.int16)
+    noise = rng.normal(0, 1.0, arr.shape[:2])
+    arr = np.clip(arr + noise[:, :, None], 0, 255).astype(np.uint8)
+    return Image.fromarray(arr, mode="RGB")
+
+
+def _card_glass(width, height, r, g, b):
+    # Blurred brand-coloured shapes behind a frosted rounded panel, no photo files
+    from PIL import Image, ImageDraw, ImageFilter
+
+    h, s, l = _rgb_to_hsl(r, g, b)
+    sat = max(0.65, s)
+    h1_r, h1_g, h1_b = _hsl_to_rgb(h + 40, sat, 0.5)
+
+    base = Image.new("RGBA", (width, height), (int(12 + r * 0.12), int(12 + g * 0.12), int(16 + b * 0.12), 255))
+    shapes = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    sd = ImageDraw.Draw(shapes)
+    sd.ellipse([int(width * 0.50), int(-height * 0.06), int(width * 1.25), int(height * 0.24)], fill=(r, g, b, 140))
+    sd.ellipse([int(-width * 0.3), int(height * 0.72), int(width * 0.5), int(height * 1.15)], fill=(h1_r, h1_g, h1_b, 120))
+    layer = shapes.filter(ImageFilter.GaussianBlur(width * 0.12))
+    base = Image.alpha_composite(base, layer)
+
+    pad_x, pad_y = int(width * 0.055), int(height * 0.065)
+    radius = int(width * 0.05)
+    card_box = [pad_x, pad_y, width - pad_x, height - pad_y]
+
+    blurred = base.filter(ImageFilter.GaussianBlur(max(6, int(width * 0.02))))
+    mask = Image.new("L", (width, height), 0)
+    ImageDraw.Draw(mask).rounded_rectangle(card_box, radius=radius, fill=255)
+    comp = Image.composite(blurred, base, mask)
+
+    glass_fx = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    gd = ImageDraw.Draw(glass_fx)
+    gd.rounded_rectangle(card_box, radius=radius, fill=(255, 255, 255, 18))
+    gd.rounded_rectangle(card_box, radius=radius, outline=(255, 255, 255, 85), width=max(1, width // 480))
+    in_p = max(2, int(width * 0.008))
+    in_box = [pad_x + in_p, pad_y + in_p, width - pad_x - in_p, height - pad_y - in_p]
+    gd.rounded_rectangle(in_box, radius=max(1, radius - in_p), outline=(255, 255, 255, 16), width=1)
+    gd.polygon([
+        (pad_x, pad_y + int(height * 0.36)),
+        (width - pad_x, pad_y + int(height * 0.08)),
+        (width - pad_x, pad_y + int(height * 0.16)),
+        (pad_x, pad_y + int(height * 0.44))
+    ], fill=(255, 255, 255, 12))
+
+    final = Image.alpha_composite(comp, glass_fx)
+    return final.convert("RGB")
+
+
+def _card_light(width, height, r, g, b):
+    # Warm paper white tinted with brand color, for dark text
+    from PIL import Image, ImageDraw, ImageFilter
+
+    base_r = int(246 - (255 - r) * 0.15)
+    base_g = int(246 - (255 - g) * 0.15)
+    base_b = int(246 - (255 - b) * 0.15)
+
+    image = Image.new("RGB", (width, height))
+    idr = ImageDraw.Draw(image)
+    for y in range(height):
+        k = y / max(1, height - 1)
+        cr = int(base_r - 8 * k)
+        cg = int(base_g - 8 * k)
+        cb = int(base_b - 8 * k)
+        idr.line([(0, y), (width, y)], fill=(cr, cg, cb))
+    image = image.convert("RGBA")
+
+    shapes = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    sd = ImageDraw.Draw(shapes)
+    sd.ellipse([int(width * 0.6), int(-height * 0.08), int(width * 1.3), int(height * 0.18)], fill=(r, g, b, 45))
+    sd.ellipse([int(-width * 0.3), int(height * 0.8), int(width * 0.4), int(height * 1.15)], fill=(r, g, b, 40))
+    layer = shapes.filter(ImageFilter.GaussianBlur(width * 0.12))
+    comp = Image.alpha_composite(image, layer)
+
+    draw = ImageDraw.Draw(comp)
+    m_x, m_y = int(width * 0.04), int(height * 0.03)
+    draw.rectangle([m_x, m_y, width - m_x, height - m_y], outline=(r, g, b, 65), width=max(1, width // 540))
+    return comp.convert("RGB")
+
+
+def _card_bold(width, height, r, g, b):
+    # Flat brand colour with diagonal bands, for launches and sales
+    from PIL import Image, ImageDraw
+
+    brand_lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+    if brand_lum <= 0.6:
+        canvas_r, canvas_g, canvas_b = int(r * 0.78), int(g * 0.78), int(b * 0.78)
     else:
-        image = gradient((int(r * 0.25), int(g * 0.25), int(b * 0.25) + 18), (r, g, b))
-        sd.ellipse([int(width * 0.55), int(height * -0.08), int(width * 1.3), int(height * 0.38)], fill=(255, 255, 255, 26))
-        sd.ellipse([int(width * -0.35), int(height * 0.62), int(width * 0.5), int(height * 1.1)], fill=(255, 255, 255, 20))
-    layer = shapes.filter(ImageFilter.GaussianBlur(blur)) if blur else shapes
-    Image.alpha_composite(image, layer).convert("RGB").save(path, "JPEG", quality=92)
+        canvas_r, canvas_g, canvas_b = r, g, b
+
+    image = Image.new("RGBA", (width, height), (canvas_r, canvas_g, canvas_b, 255))
+    shapes = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    sd = ImageDraw.Draw(shapes)
+
+    dark = (int(canvas_r * 0.68), int(canvas_g * 0.68), int(canvas_b * 0.68), 230)
+    sd.polygon([(0, int(height * 0.44)), (width, int(height * 0.37)), (width, int(height * 0.42)), (0, int(height * 0.49))], fill=dark)
+    sd.polygon([(0, int(height * 0.86)), (width, int(height * 0.67)), (width, int(height * 0.72)), (0, int(height * 0.91))], fill=(255, 255, 255, 45))
+
+    comp = Image.alpha_composite(image, shapes)
+    return comp.convert("RGB")
 
 
+def _card_festive(width, height, r, g, b):
+    # Deep brand gradient with gold sparkles
+    import random
+    from PIL import Image, ImageDraw, ImageFilter
+
+    top_r, top_g, top_b = int(r * 0.22), int(g * 0.18), int(b * 0.2) + 8
+    bot_r, bot_g, bot_b = int(r * 0.65), int(g * 0.45), int(b * 0.40)
+    image = Image.new("RGB", (width, height))
+    idr = ImageDraw.Draw(image)
+    for y in range(height):
+        k = y / max(1, height - 1)
+        cr = int(top_r + (bot_r - top_r) * k)
+        cg = int(top_g + (bot_g - top_g) * k)
+        cb = int(top_b + (bot_b - top_b) * k)
+        idr.line([(0, y), (width, y)], fill=(cr, cg, cb))
+    image = image.convert("RGBA")
+
+    shapes = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    sd = ImageDraw.Draw(shapes)
+    rng = random.Random(7)
+    for _ in range(46):
+        x, y, d = rng.randint(0, width), rng.randint(0, height), rng.randint(int(width * 0.006), int(width * 0.024))
+        sd.ellipse([x - d, y - d, x + d, y + d], fill=(233, 185, 73, rng.randint(50, 130)))
+    shapes = shapes.filter(ImageFilter.GaussianBlur(max(1, width // 720)))
+    comp = Image.alpha_composite(image, shapes)
+
+    cd = ImageDraw.Draw(comp)
+    p1_x, p1_y = int(width * 0.04), int(height * 0.028)
+    p2_x, p2_y = int(width * 0.052), int(height * 0.036)
+    gold = (233, 185, 73, 160)
+    cd.rectangle([p1_x, p1_y, width - p1_x, height - p1_y], outline=gold, width=max(2, width // 360))
+    cd.rectangle([p2_x, p2_y, width - p2_x, height - p2_y], outline=(233, 185, 73, 85), width=1)
+    csz = int(width * 0.018)
+    for cx_c, cy_c in [(p1_x, p1_y), (width - p1_x, p1_y), (p1_x, height - p1_y), (width - p1_x, height - p1_y)]:
+        cd.polygon([(cx_c, cy_c - csz), (cx_c + csz, cy_c), (cx_c, cy_c + csz), (cx_c - csz, cy_c)], fill=(245, 215, 110, 210))
+
+    return comp.convert("RGB")
+
+
+def _card_mesh(width, height, r, g, b):
+    # Rich multi-tone gradient mesh from the brand colour, for lifestyle brands
+    from PIL import Image, ImageDraw, ImageFilter
+    import numpy as np
+
+    h, s, l = _rgb_to_hsl(r, g, b)
+    sat = max(0.65, s)
+    h1_r, h1_g, h1_b = _hsl_to_rgb(h + 45, sat, 0.45)
+    h2_r, h2_g, h2_b = _hsl_to_rgb(h - 45, sat, 0.45)
+    comp_r, comp_g, comp_b = _hsl_to_rgb(h + 180, sat * 0.8, 0.45)
+
+    base = Image.new("RGBA", (width, height), (int(12 + r * 0.08), int(12 + g * 0.08), int(16 + b * 0.08), 255))
+    shapes = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    sd = ImageDraw.Draw(shapes)
+    sd.ellipse([int(width * 0.55), int(-height * 0.08), int(width * 1.3), int(height * 0.22)], fill=(r, g, b, 130))
+    sd.ellipse([int(-width * 0.35), int(height * 0.72), int(width * 0.45), int(height * 1.15)], fill=(h1_r, h1_g, h1_b, 110))
+    sd.ellipse([int(-width * 0.25), int(-height * 0.05), int(width * 0.45), int(height * 0.20)], fill=(h2_r, h2_g, h2_b, 90))
+    sd.ellipse([int(width * 0.65), int(height * 0.80), int(width * 1.25), int(height * 1.15)], fill=(comp_r, comp_g, comp_b, 80))
+
+    layer = shapes.filter(ImageFilter.GaussianBlur(width * 0.16))
+    comp = Image.alpha_composite(base, layer)
+
+    rng = np.random.default_rng(42)
+    arr = np.array(comp.convert("RGB"), dtype=np.int16)
+    noise = rng.normal(0, 1.2, arr.shape[:2])
+    arr = np.clip(arr + noise[:, :, None], 0, 255).astype(np.uint8)
+    return Image.fromarray(arr, mode="RGB")
+
+
+def _card_paper(width, height, r, g, b):
+    # Warm textured paper with a thin brand-coloured border and corner accents, for food, crafts, local shops
+    from PIL import Image, ImageDraw, ImageFilter
+    import numpy as np
+
+    base_r = int(246 - (255 - r) * 0.15)
+    base_g = int(246 - (255 - g) * 0.15)
+    base_b = int(246 - (255 - b) * 0.15)
+
+    rng = np.random.default_rng(77)
+    y, x = np.ogrid[:height, :width]
+    base_lum = (y / height) * 6 + (x / width) * 4
+    noise = rng.normal(0, 1.8, (height, width))
+    R = np.clip(base_r - base_lum + noise + 2, 0, 255).astype(np.uint8)
+    G = np.clip(base_g - base_lum + noise, 0, 255).astype(np.uint8)
+    B = np.clip(base_b - base_lum + noise - 4, 0, 255).astype(np.uint8)
+    img = Image.fromarray(np.stack([R, G, B], axis=-1), mode="RGB").convert("RGBA")
+
+    shapes = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    sd = ImageDraw.Draw(shapes)
+    sd.ellipse([int(width * 0.7), int(-height * 0.06), int(width * 1.25), int(height * 0.16)], fill=(r, g, b, 45))
+    sd.ellipse([int(-width * 0.25), int(height * 0.82), int(width * 0.35), int(height * 1.12)], fill=(r, g, b, 40))
+    layer = shapes.filter(ImageFilter.GaussianBlur(width * 0.12))
+    img = Image.alpha_composite(img, layer)
+
+    draw = ImageDraw.Draw(img)
+    pad_x, pad_y = int(width * 0.045), int(height * 0.032)
+    draw.rectangle([pad_x, pad_y, width - pad_x, height - pad_y], outline=(r, g, b, 140), width=max(1, width // 540))
+    arm = int(width * 0.035)
+    thick = max(2, width // 360)
+    draw.line([(pad_x, pad_y), (pad_x + arm, pad_y)], fill=(r, g, b, 220), width=thick)
+    draw.line([(pad_x, pad_y), (pad_x, pad_y + arm)], fill=(r, g, b, 220), width=thick)
+    draw.line([(width - pad_x, pad_y), (width - pad_x - arm, pad_y)], fill=(r, g, b, 220), width=thick)
+    draw.line([(width - pad_x, pad_y), (width - pad_x, pad_y + arm)], fill=(r, g, b, 220), width=thick)
+    draw.line([(pad_x, height - pad_y), (pad_x + arm, height - pad_y)], fill=(r, g, b, 220), width=thick)
+    draw.line([(pad_x, height - pad_y), (pad_x, height - pad_y - arm)], fill=(r, g, b, 220), width=thick)
+    draw.line([(width - pad_x, height - pad_y), (width - pad_x - arm, height - pad_y)], fill=(r, g, b, 220), width=thick)
+    draw.line([(width - pad_x, height - pad_y), (width - pad_x, height - pad_y - arm)], fill=(r, g, b, 220), width=thick)
+
+    return img.convert("RGB")
+
+
+def _card_neon(width, height, r, g, b):
+    # Near-black with brand-coloured light streaks and glow, for tech, gaming, nightlife; text area stays dark
+    from PIL import Image, ImageDraw, ImageFilter
+
+    base_r = int(10 + r * 0.12)
+    base_g = int(10 + g * 0.12)
+    base_b = int(14 + b * 0.12)
+    img = Image.new("RGBA", (width, height), (base_r, base_g, base_b, 255))
+
+    streaks = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    sd = ImageDraw.Draw(streaks)
+    top_y = int(height * 0.06)
+    bot_y = int(height * 0.92)
+    sd.line([(0, top_y), (width, top_y)], fill=(r, g, b, 200), width=max(4, width // 120))
+    sd.line([(int(width * 0.2), top_y), (int(width * 0.8), top_y)], fill=(255, 255, 255, 240), width=max(2, width // 240))
+
+    sd.line([(0, bot_y), (width, bot_y)], fill=(r, g, b, 180), width=max(4, width // 120))
+    sd.line([(int(width * 0.3), bot_y), (int(width * 0.7), bot_y)], fill=(255, 255, 255, 220), width=max(2, width // 240))
+
+    sd.ellipse([int(-width * 0.1), int(-height * 0.05), int(width * 0.35), int(height * 0.12)], fill=(r, g, b, 140))
+    sd.ellipse([int(width * 0.65), int(height * 0.88), int(width * 1.1), int(height * 1.05)], fill=(r, g, b, 130))
+
+    layer = streaks.filter(ImageFilter.GaussianBlur(max(8, width // 60)))
+    img = Image.alpha_composite(img, layer)
+
+    cores = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    cd = ImageDraw.Draw(cores)
+    cd.line([(int(width * 0.1), top_y), (int(width * 0.9), top_y)], fill=(min(255, r + 80), min(255, g + 80), min(255, b + 80), 220), width=max(1, width // 480))
+    cd.line([(int(width * 0.15), bot_y), (int(width * 0.85), bot_y)], fill=(min(255, r + 80), min(255, g + 80), min(255, b + 80), 180), width=max(1, width // 480))
+    img = Image.alpha_composite(img, cores)
+
+    return img.convert("RGB")
+
+
+def _card_duotone(width, height, r, g, b):
+    # Two flat tones (brand colour and a darker or complementary tone) split by a bold diagonal or curve
+    from PIL import Image, ImageDraw
+
+    brand_lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+    if brand_lum <= 0.6:
+        tone_a = (int(r * 0.78), int(g * 0.78), int(b * 0.78))
+        tone_b = (int(r * 0.35), int(g * 0.35), int(b * 0.35))
+    else:
+        tone_a = (r, g, b)
+        tone_b = (int(255 - (255 - r) * 0.40), int(255 - (255 - g) * 0.40), int(255 - (255 - b) * 0.40))
+
+    img = Image.new("RGBA", (width, height), (*tone_b, 255))
+    overlay = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    od = ImageDraw.Draw(overlay)
+    od.polygon([(0, 0), (width, 0), (width, int(height * 0.42)), (0, int(height * 0.68))], fill=(*tone_a, 255))
+    comp = Image.alpha_composite(img, overlay)
+    return comp.convert("RGB")
+
+
+def _card_minimal(width, height, r, g, b):
+    # One calm brand-tinted colour with a soft vignette, for premium and clean ads
+    from PIL import Image
+    import numpy as np
+
+    brand_lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+    y, x = np.ogrid[:height, :width]
+    cx, cy = width / 2.0, height / 2.0
+    dist = np.sqrt(((x - cx) / (width * 0.75)) ** 2 + ((y - cy) / (height * 0.75)) ** 2)
+    dist = np.clip(dist, 0.0, 1.0)
+    vignette = 1.0 - 0.18 * (dist ** 1.5)
+
+    if brand_lum <= 0.6:
+        base_r = 14 + r * 0.18
+        base_g = 14 + g * 0.18
+        base_b = 16 + b * 0.18
+        R = np.clip(base_r * vignette, 0, 255).astype(np.uint8)
+        G = np.clip(base_g * vignette, 0, 255).astype(np.uint8)
+        B = np.clip(base_b * vignette, 0, 255).astype(np.uint8)
+    else:
+        base_r = 246 - (255 - r) * 0.18
+        base_g = 246 - (255 - g) * 0.18
+        base_b = 246 - (255 - b) * 0.18
+        R = np.clip(base_r * vignette, 0, 255).astype(np.uint8)
+        G = np.clip(base_g * vignette, 0, 255).astype(np.uint8)
+        B = np.clip(base_b * vignette, 0, 255).astype(np.uint8)
+
+    return Image.fromarray(np.stack([R, G, B], axis=-1), mode="RGB")
+
+
+LOOK_GENERATORS = {
+    "glow": _card_glow,
+    "dark": _card_dark,
+    "glass": _card_glass,
+    "light": _card_light,
+    "bold": _card_bold,
+    "festive": _card_festive,
+    "mesh": _card_mesh,
+    "paper": _card_paper,
+    "neon": _card_neon,
+    "duotone": _card_duotone,
+    "minimal": _card_minimal,
+}
 
 
 def make_card_background(path, width, height, color, style="glow"):
-    """Ultra-aesthetic, studio-grade card backgrounds:
-    - glass: True frosted glassmorphism over vibrant 3D fluid / aurora backdrop with specular chamfer bevel & sheen
-    - dark: Minimalist 3D studio cyclorama with overhead conic spotlight and product pedestal
-    - light: Warm editorial limestone with architectural window louver gobo sunlight shadows
-    - glow: Multi-node vibrant fluid gradient mesh with film grain
-    - bold: High-energy carbon stage with sharp brand accent wedges & electric rim
-    - festive: Deep royal jewel silk with gold foil filigree border & floating starlight dust
-    """
-    if style in ("bold", "festive"):   # flat brand-colour looks: the brand colour stays visible and text on it stays readable
-        return _legacy_card_background(path, width, height, color, style)
-    import numpy as np
-    from PIL import Image, ImageDraw, ImageFilter
-
+    """Procedurally render a designed card background in code from the brand colour."""
     r, g, b = _hex_rgb(color)
-    rng = np.random.default_rng(42)
-    bg_dir = Path(__file__).parent / "static" / "media" / "backgrounds"
-
-    def load_or_crop_bg(fname):
-        full_path = bg_dir / fname
-        if full_path.is_file():
-            try:
-                with Image.open(full_path) as im:
-                    im_aspect = im.width / im.height
-                    tgt_aspect = width / height
-                    if im_aspect > tgt_aspect:
-                        nw = int(im.height * tgt_aspect)
-                        off = (im.width - nw) // 2
-                        cr = im.crop((off, 0, off + nw, im.height))
-                    else:
-                        nh = int(im.width / tgt_aspect)
-                        off = (im.height - nh) // 2
-                        cr = im.crop((0, off, im.width, off + nh))
-                    return cr.resize((width, height), Image.Resampling.LANCZOS).convert("RGBA")
-            except Exception:
-                return None
-        return None
-
-    if style == "glass":
-        # 1. Base backdrop: high-res 3D fluid silk or procedural chromatic aurora
-        base = load_or_crop_bg("3d_fluid_silk.jpg")
-        if base is None:
-            base = load_or_crop_bg("aurora_mesh_dream.jpg")
-        if base is None:
-            y, x = np.ogrid[:height, :width]
-            cR = 12 + (y / height) * 10
-            cG = 14 + (y / height) * 12
-            cB = 22 + (y / height) * 18
-            cx1, cy1 = width * 0.72, height * 0.38
-            d1 = np.sqrt(((x - cx1) / 1.0)**2 + ((y - cy1) / 0.8)**2)
-            orb1 = np.exp(-d1 / (width * 0.38))
-            cx2, cy2 = width * 0.25, height * 0.72
-            d2 = np.sqrt(((x - cx2) / 1.1)**2 + ((y - cy2) / 0.7)**2)
-            orb2 = np.exp(-d2 / (width * 0.42))
-            R = np.clip(cR + orb1 * (r * 0.75) + orb2 * 120, 0, 255).astype(np.uint8)
-            G = np.clip(cG + orb1 * (g * 0.75) + orb2 * 40, 0, 255).astype(np.uint8)
-            B = np.clip(cB + orb1 * (b * 0.75) + orb2 * 180, 0, 255).astype(np.uint8)
-            base = Image.fromarray(np.stack([R, G, B], axis=-1), mode="RGB").convert("RGBA")
-
-        # 2. True Frosted Glassmorphism
-        pad_x, pad_y = int(width * 0.055), int(height * 0.065)
-        radius = int(width * 0.05)
-        card_box = [pad_x, pad_y, width - pad_x, height - pad_y]
-
-        blur_radius = max(8, int(width * 0.024))
-        blurred = base.filter(ImageFilter.GaussianBlur(blur_radius))
-
-        card_mask = Image.new("L", (width, height), 0)
-        cmd = ImageDraw.Draw(card_mask)
-        cmd.rounded_rectangle(card_box, radius=radius, fill=255)
-
-        glass_composite = Image.composite(blurred, base, card_mask)
-
-        glass_fx = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-        gd = ImageDraw.Draw(glass_fx)
-        gd.rounded_rectangle(card_box, radius=radius, fill=(255, 255, 255, 26))
-        in_p = max(2, int(width * 0.008))
-        in_box = [pad_x + in_p, pad_y + in_p, width - pad_x - in_p, height - pad_y - in_p]
-        gd.rounded_rectangle(in_box, radius=max(1, radius - in_p), outline=(255, 255, 255, 18), width=1)
-        gd.rounded_rectangle(card_box, radius=radius, outline=(255, 255, 255, 110), width=max(2, width // 480))
-
-        shd = ImageDraw.Draw(glass_fx)
-        shd.polygon([
-            (pad_x, pad_y + int(height * 0.36)),
-            (width - pad_x, pad_y + int(height * 0.07)),
-            (width - pad_x, pad_y + int(height * 0.21)),
-            (pad_x, pad_y + int(height * 0.50))
-        ], fill=(255, 255, 255, 18))
-
-        final = Image.alpha_composite(glass_composite, glass_fx)
-        final.convert("RGB").save(path, "JPEG", quality=93)
-        return
-
-    elif style == "dark":
-        # Minimalist 3D Dark Studio Cyclorama with Overhead Conic Spotlight & Product Pedestal
-        y, x = np.ogrid[:height, :width]
-        horizon = height * 0.68
-        wall = 12 + (y / horizon) * 16
-        floor = 22 - ((y - horizon) / max(1, height - horizon)) * 10
-        canvas = np.where(y < horizon, wall, floor)
-
-        cx = width / 2.0
-        cy_spot = height * 0.30
-        spot_dist = np.sqrt(((x - cx) / 1.0)**2 + ((y - cy_spot) / 0.68)**2)
-        spot = np.exp(-spot_dist / (width * 0.44)) * 90
-
-        glow_dist = np.sqrt(((x - cx) / 1.2)**2 + ((y - horizon * 0.96) / 0.5)**2)
-        glow = np.exp(-glow_dist / (width * 0.36))
-
-        R = np.clip(canvas + spot + glow * (r * 0.5), 0, 255)
-        G = np.clip(canvas + spot + glow * (g * 0.5), 0, 255)
-        B = np.clip(canvas + spot + glow * (b * 0.5), 0, 255)
-
-        noise = rng.normal(0, 1.6, (height, width))
-        R = np.clip(R + noise, 0, 255).astype(np.uint8)
-        G = np.clip(G + noise, 0, 255).astype(np.uint8)
-        B = np.clip(B + noise, 0, 255).astype(np.uint8)
-
-        img = Image.fromarray(np.stack([R, G, B], axis=-1), mode="RGB").convert("RGBA")
-
-        ped_w = int(width * 0.62)
-        ped_h = int(height * 0.11)
-        ped_x = (width - ped_w) // 2
-        ped_y = int(height * 0.66)
-        ped_depth = int(height * 0.05)
-
-        draw_layer = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-        d = ImageDraw.Draw(draw_layer)
-
-        shadow = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-        sd = ImageDraw.Draw(shadow)
-        shadow_box = [ped_x - int(width * 0.06), ped_y + ped_depth - int(height * 0.02),
-                      ped_x + ped_w + int(width * 0.06), ped_y + ped_depth + ped_h + int(height * 0.04)]
-        sd.ellipse(shadow_box, fill=(0, 0, 0, 170))
-        shadow = shadow.filter(ImageFilter.GaussianBlur(width * 0.035))
-        img = Image.alpha_composite(img, shadow)
-
-        d.rectangle([ped_x, ped_y + ped_h // 2, ped_x + ped_w, ped_y + ped_h // 2 + ped_depth], fill=(28, 30, 36, 255))
-        d.ellipse([ped_x, ped_y + ped_depth, ped_x + ped_w, ped_y + ped_depth + ped_h], fill=(28, 30, 36, 255))
-
-        for i in range(ped_w):
-            col_x = ped_x + i
-            rel = (i - ped_w / 2) / (ped_w / 2)
-            factor = max(0.0, 1.0 - rel**2)
-            lum = int(24 + factor * 22)
-            d.line([(col_x, ped_y + ped_h // 2), (col_x, ped_y + ped_depth + ped_h // 2)], fill=(lum, lum + 2, lum + 5, 255))
-
-        top_box = [ped_x, ped_y, ped_x + ped_w, ped_y + ped_h]
-        d.ellipse(top_box, fill=(42, 45, 52, 255))
-        d.ellipse(top_box, outline=(255, 255, 255, 95), width=max(1, width // 540))
-        inner_box = [ped_x + int(ped_w * 0.08), ped_y + int(ped_h * 0.08),
-                     ped_x + int(ped_w * 0.92), ped_y + int(ped_h * 0.92)]
-        d.ellipse(inner_box, outline=(r, g, b, 55), width=max(1, width // 720))
-
-        img = Image.alpha_composite(img, draw_layer)
-        img.convert("RGB").save(path, "JPEG", quality=93)
-        return
-
-    elif style == "light":
-        # Warm Limestone Editorial with Architectural Window Louver Gobo Sunlight Shadows
-        y, x = np.ogrid[:height, :width]
-        base_lum = 242 - (y / height) * 14 - (x / width) * 10
-        noise = rng.normal(0, 2.2, (height, width))
-        diag = (x * 0.55 + y * 0.45)
-        period = height * 0.22
-        slat_phase = (diag % period) / period
-        sunlight = np.sin(slat_phase * 2 * np.pi)
-        sunlight = np.clip(sunlight * 1.6, -0.6, 1.0)
-        sunlight = (sunlight + 0.6) / 1.6
-        sun_intensity = sunlight * 24
-        R = np.clip(base_lum + sun_intensity + 8 + noise, 0, 255)
-        G = np.clip(base_lum + sun_intensity + 4 + noise, 0, 255)
-        B = np.clip(base_lum + sun_intensity - 6 + noise, 0, 255)
-        cx, cy = width * 0.85, height * 0.15
-        d = np.sqrt(((x - cx) / 1.0)**2 + ((y - cy) / 0.8)**2)
-        bglow = np.exp(-d / (width * 0.35))
-        R = np.clip(R + bglow * (r * 0.12), 0, 255).astype(np.uint8)
-        G = np.clip(G + bglow * (g * 0.12), 0, 255).astype(np.uint8)
-        B = np.clip(B + bglow * (b * 0.12), 0, 255).astype(np.uint8)
-        bg = Image.fromarray(np.stack([R, G, B], axis=-1), mode="RGB").convert("RGBA")
-        bg = bg.filter(ImageFilter.GaussianBlur(width * 0.005))
-
-        draw = ImageDraw.Draw(bg)
-        m_x, m_y = int(width * 0.04), int(height * 0.03)
-        draw.rectangle([m_x, m_y, width - m_x, height - m_y], outline=(r, g, b, 45), width=max(1, width // 540))
-        bg.convert("RGB").save(path, "JPEG", quality=93)
-        return
-
-    elif style == "bold":
-        # High-Energy Kinetic Drop Stage with Saturated Brand Energy Wedges & Carbon Grid
-        bg = load_or_crop_bg("cyber_neon_glow.jpg")
-        if bg is None:
-            bg = Image.new("RGBA", (width, height), (r, g, b, 255))
-        else:
-            tint = Image.new("RGBA", (width, height), (r, g, b, 120))
-            bg = Image.alpha_composite(bg, tint)
-
-        overlay = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-        od = ImageDraw.Draw(overlay)
-        dark = (int(r * 0.45), int(g * 0.45), int(b * 0.45), 230)
-        od.polygon([(0, int(height * 0.62)), (width, int(height * 0.36)), (width, int(height * 0.58)), (0, int(height * 0.84))], fill=dark)
-        od.polygon([(0, int(height * 0.85)), (width, int(height * 0.59)), (width, int(height * 0.64)), (0, int(height * 0.90))], fill=(255, 255, 255, 75))
-        od.polygon([(0, 0), (int(width * 0.45), 0), (0, int(height * 0.25))], fill=(255, 255, 255, 30))
-        composite = Image.alpha_composite(bg, overlay)
-        composite.convert("RGB").save(path, "JPEG", quality=92)
-        return
-
-    elif style == "festive":
-        # Royal Silk & Gold Foil Filigree
-        bg = load_or_crop_bg("royal_gold_festive.jpg")
-        if bg is None:
-            y, x = np.ogrid[:height, :width]
-            top_r, top_g, top_b = int(r * 0.22), int(g * 0.18), int(b * 0.2) + 8
-            bot_r, bot_g, bot_b = int(r * 0.72), int(g * 0.52), int(b * 0.46)
-            k = y / max(1, height - 1)
-            R = (top_r + (bot_r - top_r) * k).astype(np.uint8)
-            G = (top_g + (bot_g - top_g) * k).astype(np.uint8)
-            B = (top_b + (bot_b - top_b) * k).astype(np.uint8)
-            bg = Image.fromarray(np.stack([R, G, B], axis=-1), mode="RGB").convert("RGBA")
-        else:
-            tint = Image.new("RGBA", (width, height), (r, g, b, 70))
-            bg = Image.alpha_composite(bg, tint)
-
-        festive_layer = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-        fd = ImageDraw.Draw(festive_layer)
-        pad_x1, pad_y1 = int(width * 0.04), int(height * 0.03)
-        pad_x2, pad_y2 = int(width * 0.052), int(height * 0.038)
-        gold = (233, 185, 73, 170)
-        fd.rectangle([pad_x1, pad_y1, width - pad_x1, height - pad_y1], outline=gold, width=max(2, width // 360))
-        fd.rectangle([pad_x2, pad_y2, width - pad_x2, height - pad_y2], outline=(233, 185, 73, 90), width=1)
-        csz = int(width * 0.02)
-        for cx_c, cy_c in [(pad_x1, pad_y1), (width - pad_x1, pad_y1), (pad_x1, height - pad_y1), (width - pad_x1, height - pad_y1)]:
-            fd.polygon([(cx_c, cy_c - csz), (cx_c + csz, cy_c), (cx_c, cy_c + csz), (cx_c - csz, cy_c)], fill=(245, 215, 110, 220))
-
-        composite = Image.alpha_composite(bg, festive_layer)
-        composite.convert("RGB").save(path, "JPEG", quality=92)
-        return
-
-    else:
-        # style == "glow" (Modern Fluid Aurora Gradient Mesh)
-        bg = load_or_crop_bg("gradient_mesh_vibrant.jpg")
-        if bg is None:
-            bg = load_or_crop_bg("aurora_mesh_dream.jpg")
-        if bg is None:
-            y, x = np.ogrid[:height, :width]
-            cR = 10 + (y / height) * 14
-            cG = 12 + (y / height) * 16
-            cB = 24 + (y / height) * 32
-            c1x, c1y = width * 0.8, height * 0.25
-            d1 = np.sqrt(((x - c1x) / 1.0)**2 + ((y - c1y) / 0.8)**2)
-            w1 = np.exp(-d1 / (width * 0.45))
-            c2x, c2y = width * 0.2, height * 0.45
-            d2 = np.sqrt(((x - c2x) / 0.9)**2 + ((y - c2y) / 0.7)**2)
-            w2 = np.exp(-d2 / (width * 0.38))
-            c3x, c3y = width * 0.75, height * 0.8
-            d3 = np.sqrt(((x - c3x) / 1.1)**2 + ((y - c3y) / 0.9)**2)
-            w3 = np.exp(-d3 / (width * 0.48))
-            R = cR + w1 * (r * 0.85) + w2 * 30 + w3 * 180
-            G = cG + w1 * (g * 0.85) + w2 * 170 + w3 * 40
-            B = cB + w1 * (b * 0.85) + w2 * 230 + w3 * 220
-            noise = rng.normal(0, 1.8, (height, width))
-            R = np.clip(R + noise, 0, 255).astype(np.uint8)
-            G = np.clip(G + noise, 0, 255).astype(np.uint8)
-            B = np.clip(B + noise, 0, 255).astype(np.uint8)
-            bg = Image.fromarray(np.stack([R, G, B], axis=-1), mode="RGB").convert("RGBA")
-        else:
-            glow_layer = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-            gd = ImageDraw.Draw(glow_layer)
-            gd.ellipse([int(width * 0.2), int(height * 0.3), int(width * 0.8), int(height * 0.7)], fill=(r, g, b, 70))
-            glow_layer = glow_layer.filter(ImageFilter.GaussianBlur(width * 0.12))
-            bg = Image.alpha_composite(bg, glow_layer)
-
-        bg.convert("RGB").save(path, "JPEG", quality=92)
-        return
+    gen = LOOK_GENERATORS.get(style, _card_glow)
+    img = gen(width, height, r, g, b)
+    img.save(path, "JPEG", quality=92)
 
 
 def make_scrim(path, width, height):
@@ -936,7 +1041,7 @@ def scene_hash(scene, timeline, project_dir, is_last):
     captions = scene_captions(scene, timeline)
     key = {"scene": {k: v for k, v in scene.items() if k not in ("narration", "visual_prompt", "label", "purpose")}, "brand": timeline["brand"]["color"],
            "res": [timeline["resolution"], timeline["platform"]], "files": [_file_stat(source), _file_stat(product), _file_stat(logo)],
-           "captions": captions, "v": 4}   # v4: Devanagari brand lines and bold-card contrast render differently
+           "captions": captions, "v": 6}   # v5: expanded procedural looks with brand color contrast; v6: long words are fitted to the safe width
     look = timeline.get("look")
     if look and look != DEFAULT_LOOK:   # only then, so ads made before looks existed keep their cached scenes
         key["look"] = look
@@ -1037,20 +1142,36 @@ def render_scene(scene, timeline, project_dir, cache_dir, is_last=False):
     return out, False
 
 
+def _trim_silence(clip, cache_dir):
+    """The spoken part of a voice clip. Text-to-speech adds about 0.25 s of silence before a line and 0.85 s after it
+    (edge-tts, measured 2026-11-17); counted as speech, that made lines look too long and left gaps between them."""
+    out = Path(cache_dir) / f"vt_{hashlib.sha256(Path(clip).read_bytes()).hexdigest()[:16]}.wav"
+    if not out.is_file():
+        edge = "silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.03"
+        _run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(clip), "-af",
+              f"{edge},areverse,{edge.replace('0.03', '0.08')},areverse", "-ar", "48000", "-ac", "1", str(out)])
+    if probe(out)["duration"] < 0.2:   # nearly nothing left (a very quiet clip): keep the original
+        out.unlink(missing_ok=True)
+        return Path(clip), False
+    return out, True
+
+
 def build_voice_track(timeline, clips_by_scene, out_wav, cache_dir):
     """One voice track as long as the ad. clips_by_scene maps scene id to a narration audio file. Returns warnings.
 
     A line starts with its scene and may carry on through the following scenes that have no line of their own,
-    so splitting a scene neither cuts its voice-over nor plays it twice."""
+    so splitting a scene neither cuts its voice-over nor plays it twice. Silence at both ends of each clip is removed first."""
     warnings = []
     total = total_duration(timeline)
     starts = scene_starts(timeline)
     scenes = timeline["scenes"]
     narrated = [i for i, s in enumerate(scenes) if clips_by_scene.get(s["id"])]
-    inputs, filters = [], []
+    inputs, filters, trimmed = [], [], []
     for k, i in enumerate(narrated):
         scene = scenes[i]
-        clip = clips_by_scene[scene["id"]]
+        clip, made = _trim_silence(clips_by_scene[scene["id"]], cache_dir)
+        if made:
+            trimmed.append(clip)
         until = starts[narrated[k + 1]] if k + 1 < len(narrated) else total
         room = max(0.5, until - starts[i] - 0.2)
         length = probe(clip)["duration"]
@@ -1074,6 +1195,8 @@ def build_voice_track(timeline, clips_by_scene, out_wav, cache_dir):
     mixed = "".join(f"[v{n}]" for n in range(len(filters)))
     graph = ";".join(filters) + f";{mixed}amix=inputs={len(filters)}:duration=longest:normalize=0,apad=whole_dur={total}[out]"
     _run(["ffmpeg", "-y", "-loglevel", "error", *inputs, "-filter_complex", graph, "-map", "[out]", "-ac", "1", "-t", str(total), str(out_wav)])
+    for path in trimmed:   # cheap to make again; the disk is short
+        path.unlink(missing_ok=True)
     return warnings
 
 

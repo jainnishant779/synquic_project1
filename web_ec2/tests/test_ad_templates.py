@@ -38,7 +38,7 @@ class LibraryTests(unittest.TestCase):
             (lambda t: t["scenes"][0]["text"][0].update(start=0.5), "hook"),
             (lambda t: t["scenes"][1]["text"].append(dict(t["scenes"][1]["text"][0])), "same place"),
             (lambda t: t["scenes"][1]["text"][0].update(style="sparkle"), "scenes[1].text[0].style"),
-            (lambda t: t["look"].update(card="neon"), "look.card"),
+            (lambda t: t["look"].update(card="sparkle"), "look.card"),
             (lambda t: t.update(id="Bad Id"), "id"),
             (lambda t: t.update(scenes=t["scenes"][:1]), "scenes"),
         ]
@@ -71,7 +71,7 @@ class LookTests(unittest.TestCase):
         light = ae.apply_edit(t, {"op": "set_look", "card": "light", "text": "#1B1B1F"})
         self.assertEqual(light["look"], {"card": "light", "text": "#1B1B1F", "highlight": ae.HIGHLIGHT})
         with self.assertRaises(ae.AdError):
-            ae.apply_edit(t, {"op": "set_look", "card": "neon"})
+            ae.apply_edit(t, {"op": "set_look", "card": "sparkle"})
 
     def test_old_ads_keep_their_cached_scenes(self):
         t = ae.default_timeline("Brand")
@@ -174,7 +174,7 @@ class PlanTests(unittest.TestCase):
         self.assertAlmostEqual(reason["start"], round(0.2 * t["scenes"][1]["duration"], 2), delta=0.01)
         self.assertEqual(t["scenes"][-1]["text"][0]["text"], "BeePure", "brand slots hold the brand name")
         self.assertFalse([n for n in notes if "Check scene" in n], "the template's own labels (1, 2, 3) are not claims")
-        self.assertIn("voice at most", FakeFill.last_user)
+        self.assertIn("voice exactly", FakeFill.last_user, "each scene's voice line gets its own word count")
         ae.validate_timeline(t)
 
     def test_rules_fill_when_the_llm_fails_or_is_missing(self):
