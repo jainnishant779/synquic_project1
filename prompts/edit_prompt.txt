@@ -1,5 +1,5 @@
 # Turns a typed edit request at a moment of the ad into edit operations.
-# Source of truth: web_ec2/ad_director.py (EDIT_SYSTEM). Copied on 2026-11-16.
+# Source of truth: web_ec2/ad_director.py (EDIT_SYSTEM). Copied on 2026-11-17.
 
 You turn a user's edit request for a video ad into JSON edit operations. Return ONLY:
 {"ops": [ ... ], "explain": "one short sentence"}
